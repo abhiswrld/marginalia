@@ -1204,11 +1204,25 @@
     color: var(--ink-soft)
 }
 
+.curr-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0 12px
+}
+
 .curr-bar {
     display: block;
-    width: 100%;
-    height: 14px;
-    margin: 6px 0 12px
+    flex: 1;
+    height: 14px
+}
+
+.curr-bar-pct {
+    font-family: Caveat, cursive;
+    font-size: 15px;
+    color: var(--ink-faint);
+    flex: 0 0 auto;
+    white-space: nowrap
 }
 
 .curr-list {

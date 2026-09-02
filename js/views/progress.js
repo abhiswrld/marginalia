@@ -167,20 +167,20 @@ function toggleCurr(id) {
 }
 
 function progressBarHTML(prog, color) {
-    /* 1000 virtual units wide — SVG stretches to 100% via CSS,
-       preserveAspectRatio="none" lets it squish/grow freely.
-       The % label sits at the far right so it always aligns with
-       whatever number ends the section header. */
-    const VW = 1000, h = 14, pad = 2, lblW = 48;
-    const trackEnd = VW - lblW - 6;
-    const filled = Math.round(trackEnd * prog.pct / 100);
-    const d = roughLine(pad, h / 2, trackEnd, h / 2, 6, 1.5);
+    /* SVG stretches to 100% with preserveAspectRatio="none" — but
+       text gets squished vertically by that, so the % label lives
+       outside the SVG as a plain HTML span instead. */
+    const VW = 1000, h = 14, pad = 2;
+    const filled = Math.round(VW * prog.pct / 100);
+    const d = roughLine(pad, h / 2, VW - pad, h / 2, 6, 1.5);
     const df = filled > 4 ? roughLine(pad, h / 2, filled, h / 2, 6, 1.2) : '';
-    return `<svg class="curr-bar" viewBox="0 0 ${VW} ${h}" preserveAspectRatio="none">
-    <path d="${d}" fill="none" stroke="#d8cdb2" stroke-width="6" stroke-linecap="round"/>
-    ${df ? `<path d="${df}" fill="none" stroke="${color}" stroke-width="6" stroke-linecap="round"/>` : ''}
-    <text x="${trackEnd + 10}" y="${h / 2 + 4}" font-family="Caveat,cursive" font-size="56" fill="var(--ink-faint)" textLength="${lblW - 4}" lengthAdjust="spacingAndGlyphs">${prog.pct}%</text>
-  </svg>`;
+    return `<div class="curr-bar-wrap">
+    <svg class="curr-bar" viewBox="0 0 ${VW} ${h}" preserveAspectRatio="none">
+      <path d="${d}" fill="none" stroke="#d8cdb2" stroke-width="6" stroke-linecap="round"/>
+      ${df ? `<path d="${df}" fill="none" stroke="${color}" stroke-width="6" stroke-linecap="round"/>` : ''}
+    </svg>
+    <span class="curr-bar-pct">${prog.pct}%</span>
+  </div>`;
 }
 
 function currRow(list, slug, title, diff) {
