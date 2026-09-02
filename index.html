@@ -334,13 +334,13 @@ button:focus-visible,a:focus-visible,.idx-row:focus-visible,.pick-row:focus-visi
 .hint{font-family:Caveat,cursive;font-size:16px;color:var(--ink-faint);margin-top:12px}
 .ed-head{display:flex;gap:8px;align-items:center;font-family:Caveat,cursive;font-size:16px;color:var(--ink-faint);margin-bottom:7px;flex-wrap:wrap}
 .ed-head .lucide{width:14px;height:14px}
-.editor{display:flex;border-radius:9px;overflow:hidden;border:1.6px solid #3a3428;background:var(--code-bg);box-shadow:0 4px 14px rgba(35,28,21,.18)}
-.ed-gut{flex:0 0 48px;background:#1e1a13;color:#6b6450;font-family:'JetBrains Mono',monospace;font-size:13.5px;line-height:22px;text-align:right;padding:14px 10px 14px 0;overflow:hidden;user-select:none}
-.ed-stack{position:relative;flex:1;min-width:0}
-.ed-hl,.ed-ta{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13.5px;line-height:22px;padding:14px 16px;tab-size:2;-moz-tab-size:2}
-.ed-hl{position:absolute;inset:0;overflow:hidden;pointer-events:none;white-space:pre;color:var(--code-ink)}
-.ed-hl code{display:block;white-space:pre}
-.ed-ta{position:relative;display:block;width:100%;height:430px;background:transparent;border:0;resize:vertical;color:transparent;caret-color:#f3e9cf;outline:none;overflow:auto}
+.editor{display:flex;border-radius:9px;overflow:hidden;border:1.6px solid #3a3428;background:var(--code-bg);box-shadow:0 4px 14px rgba(35,28,21,.18);position:relative}
+.ed-gut{flex:0 0 52px;background:#1b1711;color:#6b6450;font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13.5px;line-height:22px;text-align:right;padding:14px 12px 14px 0;overflow:hidden;user-select:none;border-right:1px solid #2d261c;letter-spacing:0}
+.ed-stack{position:relative;flex:1;min-width:0;background:var(--code-bg)}
+.ed-hl,.ed-ta{font-family:'JetBrains Mono',ui-monospace,monospace;font-size:13.5px;line-height:22px;letter-spacing:0;font-variant-ligatures:none;-webkit-font-smoothing:antialiased;padding:14px 16px;margin:0;border:0;box-sizing:border-box;tab-size:4;-moz-tab-size:4;white-space:pre;word-wrap:normal}
+.ed-hl{position:absolute;inset:0;overflow:hidden;pointer-events:none;color:var(--code-ink)}
+.ed-hl code{display:block;white-space:pre;background:none;border:none;padding:0;font-family:inherit;font-size:inherit;line-height:inherit;letter-spacing:inherit}
+.ed-ta{position:relative;display:block;width:100%;height:430px;background:transparent;resize:vertical;color:transparent;caret-color:#f8ebcb;outline:none;overflow:auto}
 .tres{margin-top:16px}
 .tr-row{display:flex;gap:12px;align-items:baseline;padding:8px 10px;border-bottom:1px dashed #d5cab0;font-family:'JetBrains Mono',monospace;font-size:12.6px;flex-wrap:wrap}
 .tr-row .lucide{width:14px;height:14px;align-self:center}
@@ -1674,15 +1674,102 @@ function mountEditor(){
   };
   paint();
   ta.addEventListener('input',()=>{ paint(); session.code=ta.value; });
-  ta.addEventListener('scroll',()=>{
+  const syncScroll=()=>{
     pre.scrollTop=ta.scrollTop; pre.scrollLeft=ta.scrollLeft;
     gut.scrollTop=ta.scrollTop;
-  });
+  };
+  ta.addEventListener('scroll',syncScroll);
   ta.addEventListener('keydown',e=>{
+    const tabStr = lang==='py' ? '    ' : '  ';
+    const tabLen = tabStr.length;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const val = ta.value;
+
     if(e.key==='Tab'){
       e.preventDefault();
-      ta.setRangeText(lang==='py'?'    ':'  ',ta.selectionStart,ta.selectionEnd,'end');
+      if(start!==end){
+        const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+        const lineEnd = val.indexOf('\n', end);
+        const selBlock = val.slice(lineStart, lineEnd===-1 ? val.length : lineEnd);
+        const lines = selBlock.split('\n');
+        if(e.shiftKey){
+          const newLines = lines.map(l => l.startsWith(tabStr) ? l.slice(tabLen) : l.replace(/^\s{1,2}/, ''));
+          const newText = newLines.join('\n');
+          ta.setRangeText(newText, lineStart, lineEnd===-1 ? val.length : lineEnd, 'select');
+        } else {
+          const newLines = lines.map(l => tabStr + l);
+          const newText = newLines.join('\n');
+          ta.setRangeText(newText, lineStart, lineEnd===-1 ? val.length : lineEnd, 'select');
+        }
+      } else {
+        if(e.shiftKey){
+          const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+          const curLine = val.slice(lineStart, start);
+          if(curLine.endsWith(tabStr)){
+            ta.setRangeText('', start - tabLen, start, 'end');
+          } else if(curLine.endsWith(' ')){
+            ta.setRangeText('', start - 1, start, 'end');
+          }
+        } else {
+          ta.setRangeText(tabStr, start, end, 'end');
+        }
+      }
       paint(); session.code=ta.value;
+      return;
+    }
+
+    if(e.key==='Enter'){
+      e.preventDefault();
+      const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+      const curLine = val.slice(lineStart, start);
+      const matchIndent = curLine.match(/^\s*/)[0];
+      let extra = '';
+      const trimmed = curLine.trimEnd();
+      if(lang==='py' && trimmed.endsWith(':')){
+        extra = '    ';
+      } else if(lang==='js' && (trimmed.endsWith('{') || trimmed.endsWith('(') || trimmed.endsWith('['))){
+        extra = '  ';
+      }
+      const insertText = '\n' + matchIndent + extra;
+      ta.setRangeText(insertText, start, end, 'end');
+      paint(); session.code=ta.value;
+      return;
+    }
+
+    const pairs = { '(': ')', '[': ']', '{': '}', '"': '"', "'": "'", '`': '`' };
+    if(pairs[e.key] && !e.ctrlKey && !e.metaKey && !e.altKey){
+      if(start!==end){
+        e.preventDefault();
+        const sel = val.slice(start, end);
+        ta.setRangeText(e.key + sel + pairs[e.key], start, end, 'select');
+        paint(); session.code=ta.value;
+        return;
+      }
+      const nextChar = val[start];
+      if(e.key===nextChar && [')', ']', '}', '"', "'", '`'].includes(e.key)){
+        e.preventDefault();
+        ta.selectionStart = ta.selectionEnd = start + 1;
+        return;
+      }
+      if(!['"', "'", '`'].includes(e.key) || !nextChar || /\s/.test(nextChar)){
+        e.preventDefault();
+        ta.setRangeText(e.key + pairs[e.key], start, start, 'end');
+        ta.selectionStart = ta.selectionEnd = start + 1;
+        paint(); session.code=ta.value;
+        return;
+      }
+    }
+
+    if(e.key==='Backspace' && start===end && start>0){
+      const prevChar = val[start - 1];
+      const nextChar = val[start];
+      if(prevChar && pairs[prevChar]===nextChar){
+        e.preventDefault();
+        ta.setRangeText('', start - 1, start + 1, 'end');
+        paint(); session.code=ta.value;
+        return;
+      }
     }
   });
 }
