@@ -297,6 +297,15 @@ button:focus-visible,a:focus-visible,.idx-row:focus-visible,.pick-row:focus-visi
 .lib-head{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px}
 .lib-head .btn{margin-top:5px}
 .lib-title{font-family:Fraunces,serif;font-weight:650;font-size:28px;margin:0}
+.lib-filter-bar{display:flex;gap:12px;align-items:center;margin:18px 0 12px;flex-wrap:wrap}
+.lib-search{flex:1;min-width:200px;position:relative}
+.lib-search input{width:100%;padding:8px 12px 8px 34px;border-radius:10px;border:1.5px solid #cfc4a8;background:#fffdf6;font-family:Fraunces,serif;font-size:14.5px;color:var(--ink);box-sizing:border-box;box-shadow:inset 0 1px 2px rgba(87,72,44,.05);transition:border-color .15s,box-shadow .15s}
+.lib-search input:focus{outline:none;border-color:var(--ink);box-shadow:2px 3px 0 rgba(87,72,44,.12)}
+.lib-search .lucide{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--ink-faint);width:15px;height:15px;pointer-events:none}
+.fchips{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.fchip-btn{font-family:Caveat,cursive;font-size:15px;font-weight:700;border:1.5px solid #cfc4a8;background:#fffdf6;color:var(--ink-soft);padding:2px 11px;border-radius:255px 15px 225px 15px/15px 225px 15px 255px;cursor:pointer;transition:all .15s;box-shadow:0 1px 2px rgba(87,72,44,.04)}
+.fchip-btn:hover{border-color:var(--ink);color:var(--ink);transform:scale(1.04)}
+.fchip-btn.on{border-color:var(--red);color:var(--red);background:#fff9ec;box-shadow:0 0 0 1px var(--red)}
 .idx{list-style:none;padding:0;margin:6px 0 0}
 .idx-row{display:flex;align-items:baseline;gap:10px;padding:13px 8px;cursor:pointer;border-radius:8px;transition:transform .18s ease,background .18s ease}
 .idx-row:hover{background:#fff9ec;transform:translateX(5px)}
@@ -984,6 +993,8 @@ let session=null;   // practice session
 let draft=null;     // problem being created / edited
 let tickId=null;
 let FLOW={};
+let libSearch='';
+let libFilter='all';
 
 function go(h){ if(location.hash===h){ route(); } else { location.hash=h; } }
 window.addEventListener('hashchange', route);
@@ -1031,6 +1042,7 @@ function render(){
   else if(ui.view==='form') view=viewForm();
   else if(ui.view==='practice') view=viewPractice();
   app.innerHTML=mastheadHTML()+view;
+  if(ui.view==='library') mountLibrary();
   if(ui.view==='problem') mountProblem();
   if(ui.view==='practice') mountPractice();
   icons();
@@ -1058,8 +1070,27 @@ window.addEventListener('resize', ()=>{
 });
 
 /* ============ LIBRARY ============ */
+function filterProblems(){
+  const allP=store.problems;
+  return allP.filter(p=>{
+    if(libFilter==='easy' && p.difficulty!=='easy') return false;
+    if(libFilter==='medium' && p.difficulty!=='medium') return false;
+    if(libFilter==='hard' && p.difficulty!=='hard') return false;
+    if(libFilter==='py' && p.lang!=='py') return false;
+    if(libFilter==='js' && p.lang!=='js') return false;
+    if(libSearch.trim()){
+      const q=libSearch.toLowerCase().trim();
+      const matchTitle=(p.title||'').toLowerCase().includes(q);
+      const matchStmt=(p.statement||'').toLowerCase().includes(q);
+      const matchTags=(p.tags||[]).some(t=>t.toLowerCase().includes(q));
+      if(!matchTitle && !matchStmt && !matchTags) return false;
+    }
+    return true;
+  });
+}
 function viewLibrary(){
-  const P=store.problems;
+  const allP=store.problems;
+  const filtered=filterProblems();
   return `<div class="sheet">
     <div class="page">
       <div class="lib-head">
@@ -1070,12 +1101,41 @@ function viewLibrary(){
         <button class="btn" onclick="go('#new')"><i data-lucide="plus"></i>write a new page</button>
       </div>
       ${statbarHTML()}
-      ${P.length? `<ul class="idx">${P.map((p,i)=>idxRow(p,i)).join('')}</ul>`
+      <div class="lib-filter-bar">
+        <div class="lib-search">
+          <i data-lucide="search"></i>
+          <input id="lib-search-in" value="${esc(libSearch)}" placeholder="search questions, tags, topics…" autocomplete="off">
+        </div>
+        <div class="fchips">
+          ${[['all','all'],['easy','easy'],['medium','medium'],['hard','hard'],['js','JavaScript'],['py','Python']].map(([f,lbl])=>`
+            <button class="fchip-btn${libFilter===f?' on':''}" onclick="setLibFilter('${f}')">${lbl}</button>
+          `).join('')}
+        </div>
+      </div>
+      ${filtered.length? `<ul class="idx">${filtered.map((p)=>idxRow(p,allP.indexOf(p))).join('')}</ul>`
+        : allP.length? `<div class="empty"><p class="marg">no pages matched “${esc(libSearch||libFilter)}”.</p>
+           <button class="btn ghost sm" onclick="clearLibFilter()"><i data-lucide="rotate-ccw"></i>clear filter</button></div>`
         : `<div class="empty"><p class="marg">the notebook is empty — time to write the first page.</p>
            <button class="btn" onclick="go('#new')"><i data-lucide="plus"></i>write it</button></div>`}
     </div>
   </div>`;
 }
+function mountLibrary(){
+  const sin=$('#lib-search-in');
+  if(!sin) return;
+  sin.addEventListener('input', e=>{
+    libSearch=e.target.value;
+    const allP=store.problems;
+    const filtered=filterProblems();
+    const idxEl=$('.idx');
+    if(idxEl){
+      idxEl.innerHTML=filtered.map(p=>idxRow(p,allP.indexOf(p))).join('');
+      icons();
+    }
+  });
+}
+function setLibFilter(f){ libFilter=f; render(); }
+function clearLibFilter(){ libSearch=''; libFilter='all'; render(); }
 function statbarHTML(){
   const P=store.problems;
   const attempts=P.reduce((s,p)=>s+(p.attempts||[]).length,0);
@@ -2079,6 +2139,9 @@ function openSettings(){
     <label class="f-lbl">ink</label>
     <div class="set-inks">${INKS.map(([c,n])=>`<button class="set-ink${c===brand.ink?' on':''}" data-ink="${c}" title="${n}" aria-label="${n}" style="background:${c}"></button>`).join('')}</div>
     <div class="set-zone">
+      <button class="btn ghost xs" id="set-export"><i data-lucide="download"></i>export notebook</button>
+      <button class="btn ghost xs" id="set-import-btn"><i data-lucide="upload"></i>import backup</button>
+      <input type="file" id="set-import-file" accept=".json" style="display:none">
       <button class="btn ghost xs" id="set-clear"><i data-lucide="trash-2"></i>clear every page</button>
       <button class="btn ghost xs" id="set-restore"><i data-lucide="rotate-ccw"></i>restore sample pages</button>
     </div>
@@ -2102,6 +2165,45 @@ function openSettings(){
     brand.ink=ink;
     saveBrand(); applyBrand(); close();
     render(); toast('notebook updated','check');
+  });
+  $('#set-export',w).addEventListener('click',()=>{
+    const data=JSON.stringify({brand,problems:store.problems,exportedAt:Date.now()},null,2);
+    const blob=new Blob([data],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url; a.download=`marginalia-notes-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast('notebook exported as JSON','download');
+  });
+  $('#set-import-btn',w).addEventListener('click',()=>{
+    $('#set-import-file',w).click();
+  });
+  $('#set-import-file',w).addEventListener('change',e=>{
+    const file=e.target.files&&e.target.files[0];
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const parsed=JSON.parse(ev.target.result);
+        if(parsed&&Array.isArray(parsed.problems)){
+          store.problems=parsed.problems;
+          if(parsed.brand) brand=Object.assign(brand,parsed.brand);
+          store.save(); saveBrand(); applyBrand();
+          close(); render();
+          toast(`imported ${parsed.problems.length} pages`,'check');
+        } else if(Array.isArray(parsed)){
+          store.problems=parsed;
+          store.save(); close(); render();
+          toast(`imported ${parsed.length} pages`,'check');
+        } else {
+          toast('invalid backup format','trash-2');
+        }
+      }catch(err){
+        toast('failed to read JSON backup','trash-2');
+      }
+    };
+    reader.readAsText(file);
   });
   $('#set-clear',w).addEventListener('click',()=>{ close(); modal({
     title:'clear every page?',
