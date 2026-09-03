@@ -1,6 +1,8 @@
 # Marginalia
 **The notes you scribble while learning to code.**
 
+## Live Link: https://marginaliaweb.netlify.app/
+
 Marginalia is a practice notebook for coding problems that works the way your actual notebook does - a messy, honest, handwritten-style record of how you think.
 
 You write problem pages: the statement, what's given and what to return, how to solve it, and every approach you know (with time/space complexity). Then you take those pages into a timed practice room, solve from memory, and - this is the part that matters - every attempt gets saved and diffed against your previous ones, so improving isn't a feeling, it's a red-ink line-by-line comparison.
