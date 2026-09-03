@@ -1,5 +1,7 @@
-# Marginalia (https://marginaliaweb.netlify.app/)
+# Marginalia
 **The notes you scribble while learning to code.**
+
+[![Netlify Status](https://api.netlify.com/api/v1/badges/your-site-id/deploy-status)](https://marginaliaweb.netlify.app/) &nbsp; **[→ Live site](https://marginaliaweb.netlify.app/)**
 
 Marginalia is a practice notebook for coding problems that works the way your actual notebook does - a messy, honest, handwritten-style record of how you think.
 
