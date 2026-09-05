@@ -5,6 +5,9 @@ on:
     - cron: '0 * * * *' # Run at minute 0 of every hour
   workflow_dispatch: # Allow manual triggering
 
+permissions:
+  contents: write
+
 jobs:
   fetch_problems:
     runs-on: ubuntu-latest
