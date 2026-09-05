@@ -1,9 +1,9 @@
 /* =========================================================
    app.js — the spine
    ui state, the hash router, the render loop, masthead,
-   settings modal, toast & modal helpers — and the boot
-   calls at the very bottom. This is the ONLY file that
-   executes anything at load time.
+   settings modal (including the optional gemini key),
+   toast & modal helpers — and the boot calls at the bottom.
+   The ONLY file that executes anything at load time.
    ========================================================= */
 
 let ui = { view: 'library', pid: null };
@@ -17,14 +17,14 @@ function go(h) { if (location.hash === h) { route(); } else { location.hash = h;
 window.addEventListener('hashchange', route);
 
 /* hash → view:
-   #library · #p/<id> · #new · #edit/<id> · #practice · #practice/<id> */
+   #library · #p/<id> · #new · #edit/<id> · #practice · #practice/<id> · #progress */
 function route() {
     const h = (location.hash || '#library').slice(1);
     const parts = h.split('/'), a = parts[0], b = parts[1];
     clearInterval(tickId); tickId = null; FLOW = {};
     if (a === 'p' && store.byId(b)) { ui = { view: 'problem', pid: b }; }
     else if (a === 'new') {
-        if (!PREFILL_DRAFT) draft = blankProblem();   // keep the pre-filled draft from a curriculum row
+        if (!PREFILL_DRAFT) draft = blankProblem();   // keep a curriculum pre-fill alive
         PREFILL_DRAFT = false;
         ui = { view: 'form' };
     }
@@ -72,6 +72,7 @@ function render() {
     app.innerHTML = mastheadHTML() + view;
     try { if (ui.view === 'problem') mountProblem(); } catch (e) { console.error('mountProblem:', e); }
     try { if (ui.view === 'practice') mountPractice(); } catch (e) { console.error('mountPractice:', e); }
+    try { if (ui.view === 'form') { mountPasteBox(); mountAiGen(); mountPolish(); } } catch (e) { console.error('form mounts:', e); }
     icons();
     fitSquiggles();
 }
@@ -91,19 +92,24 @@ function fitSquiggles() {
     fit($('.lib-title span'), $('.lib-head .lswg'));
 }
 
-/* ---------- customize (the settings modal) ---------- */
+/* ---------- customize (settings) ----------
+   the gemini key is optional, stored in this browser only,
+   and used for the AI polish button on the page form. */
 function openSettings() {
     const w = document.createElement('div');
     w.className = 'mo-wrap';
     w.innerHTML = `<div class="mo mo-set">
     <h3>make it yours</h3>
-    <p>the name on the cover, the line under it, and the ink it’s written in.</p>
+    <p>the name on the cover, the line under it, the ink — and, optionally, a key for AI polish.</p>
     <label class="f-lbl" for="set-name">notebook name</label>
     <input class="fin" id="set-name" maxlength="42" value="${esc(brand.name)}" autocomplete="off" placeholder="Marginalia">
     <label class="f-lbl" for="set-tag">tagline</label>
     <input class="fin" id="set-tag" maxlength="96" value="${esc(brand.tag)}" autocomplete="off" placeholder="a line under the title…">
     <label class="f-lbl">ink</label>
     <div class="set-inks">${INKS.map(([c, n]) => `<button class="set-ink${c === brand.ink ? ' on' : ''}" data-ink="${c}" title="${n}" aria-label="${n}" style="background:${c}"></button>`).join('')}</div>
+    <label class="f-lbl" for="set-key">gemini api key · optional — powers AI polish</label>
+    <input class="fin" id="set-key" type="password" autocomplete="off" value="${esc(brand.geminiKey || '')}" placeholder="AIza…">
+    <p class="set-key-note">stored in this browser only · calls go straight from your browser to Google, never to this site · <a href="https://aistudio.google.com/apikey" target="_blank" style="color:var(--red)">get a free key ↗</a> · the code that uses it is <a href="https://github.com/abhiswrld/marginalia" target="_blank" style="color:var(--red)">public ↗</a></p>
     <div class="set-zone">
       <button class="btn ghost xs" id="set-clear"><i data-lucide="trash-2"></i>clear every page</button>
       <button class="btn ghost xs" id="set-restore"><i data-lucide="rotate-ccw"></i>restore sample pages</button>
@@ -126,6 +132,7 @@ function openSettings() {
         brand.name = $('#set-name', w).value.trim() || 'Marginalia';
         brand.tag = $('#set-tag', w).value.trim();
         brand.ink = ink;
+        brand.geminiKey = $('#set-key', w).value.trim();
         saveBrand(); applyBrand(); close();
         render(); toast('notebook updated', 'check');
     });
@@ -147,7 +154,7 @@ function openSettings() {
     $('#set-restore', w).addEventListener('click', () => {
         close(); modal({
             title: 'restore the sample pages?',
-            body: 'replaces whatever is in the notebook with the original three sample pages.',
+            body: 'replaces whatever is in the notebook with the worked example page.',
             actions: [
                 { label: 'keep mine', ghost: true },
                 {

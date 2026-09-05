@@ -247,16 +247,43 @@ function startFromCurriculum(listId, slug) {
     if (!list) return;
     const item = list.problems.find(p => p[0] === slug);
     if (!item) return;
-    const [s, title, cat, diff] = item;
+    const [s, num, title, cat, diff] = item;
+    
     draft = {
         id: 'p' + Date.now().toString(36) + Math.floor(Math.random() * 99),
-        title: title, difficulty: diff, lang: 'js',
+        title: title, difficulty: diff, lang: 'py',
         tagsStr: cat.toLowerCase() + (listId === 'blind75' ? ', blind 75' : ', neetcode 150'),
         link: LEETCODE_URL(slug),
         statement: '', given: '', ret: '', summary: '', starter: '',
         tests: [{ label: '', inputStr: '', expectedStr: '' }],
         approaches: [], attempts: [], sketch: null, createdAt: 0,
     };
+
+    // Auto-fill from preload data if available
+    if (window.PRELOADED_PROBLEMS && window.PRELOADED_PROBLEMS[slug]) {
+        const r = window.PRELOADED_PROBLEMS[slug];
+        if (r.statement) draft.statement = r.statement;
+        if (r.given) draft.given = r.given;
+        if (r.ret) draft.ret = r.ret;
+        if (r.summary) draft.summary = r.summary;
+        if (r.starter) draft.starter = r.starter;
+        
+        if (r.tests && r.tests.length) {
+            draft.tests = r.tests.map((t, i) => ({
+                label: t.label || ('example ' + (i + 1)),
+                inputStr: typeof t.inputStr === 'string' ? t.inputStr : JSON.stringify(t.inputStr),
+                expectedStr: typeof t.expectedStr === 'string' ? t.expectedStr : JSON.stringify(t.expectedStr)
+            }));
+        }
+        
+        if (r.approaches && r.approaches.length) {
+            draft.approaches = r.approaches.map(a => ({
+                name: a.name || '', time: a.time || '', space: a.space || '',
+                idea: a.idea || '', code: a.code || '', steps: a.steps || []
+            }));
+        }
+    }
+
     PREFILL_DRAFT = true;
     go('#new');
 }

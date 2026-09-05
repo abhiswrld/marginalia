@@ -1,8 +1,8 @@
 /* =========================================================
    paper.css — the stationery
    design tokens, the desk, masthead, sheets, buttons, stamps,
-   form controls, modals and toasts. The chrome — page.css
-   and practice.css hold the actual content.
+   form controls, the paste box, modals and toasts.
+   page.css and practice.css hold the actual content.
    ========================================================= */
 
 :root {
@@ -219,7 +219,7 @@ a:focus-visible,
     }
 }
 
-/* the red (or green, or blue...) margin line — follows the ink setting */
+/* the margin line — follows the ink setting */
 .sheet::before {
     content: '';
     position: absolute;
@@ -307,6 +307,12 @@ a:focus-visible,
     box-shadow: none
 }
 
+.btn:disabled {
+    opacity: .6;
+    transform: none;
+    cursor: default
+}
+
 .btn.ghost {
     background: transparent;
     color: var(--ink);
@@ -357,8 +363,7 @@ a:focus-visible,
     letter-spacing: -.4px
 }
 
-/* display:block guarantees the squiggle sits *below* the title text,
-   never beside it (this is what put it next to "the practice room") */
+/* block guarantees the squiggle sits BELOW the title, never beside it */
 .p-title .tswg {
     display: block;
     width: 100%;
@@ -654,6 +659,37 @@ a:focus-visible,
     gap: 5px
 }
 
+/* ---------- the paste box (new pages) ---------- */
+.pastebox {
+    border: 1.6px dashed #cfc4a8;
+    border-radius: 13px;
+    background: #fffdf6;
+    padding: 16px 18px 14px;
+    margin: 18px 0 6px
+}
+
+.pastebox .f-lbl {
+    margin-bottom: 8px
+}
+
+.paste-ta {
+    min-height: 130px
+}
+
+.paste-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 10px;
+    flex-wrap: wrap
+}
+
+.paste-hint {
+    font-family: Caveat, cursive;
+    font-size: 15px;
+    color: var(--ink-faint)
+}
+
 /* ---------- "see exactly what ran" (python error expander) ---------- */
 .wrapdet {
     flex-basis: 100%;
@@ -828,6 +864,14 @@ a:focus-visible,
     display: flex;
     gap: 10px;
     flex-wrap: wrap
+}
+
+.set-key-note {
+    font-family: Caveat, cursive;
+    font-size: 14px;
+    color: var(--ink-faint);
+    margin: 4px 0 0;
+    line-height: 1.45
 }
 
 /* ---------- shared responsive bits ---------- */

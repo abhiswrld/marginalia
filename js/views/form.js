@@ -1,25 +1,21 @@
 /* =========================================================
    views/form.js — write / edit a problem page
-   draft state lives in `draft` (from app.js); the form
-   harvests itself back into it on every structural change.
-
-   `draft.link` is set when a page is started from a
-   curriculum row (see startFromCurriculum in progress.js).
-   It's not a form input — it rides along on the draft until
-   save, then lives on the problem object.
+   New pages open with a paste box: paste the problem, hit
+   "set the table", and the parser (parse.js) pre-fills the
+   form. Whatever it can't read stays empty for the human.
    ========================================================= */
 
 function blankProblem() {
     return {
         id: 'p' + Date.now().toString(36) + Math.floor(Math.random() * 99),
-        title: '', difficulty: 'easy', lang: 'js', tagsStr: '', statement: '', given: '', ret: '', summary: '', starter: '',
+        title: '', difficulty: 'easy', lang: 'py', tagsStr: '', statement: '', given: '', ret: '', summary: '', starter: '',
         link: '',
         tests: [{ label: '', inputStr: '', expectedStr: '' }], approaches: [], attempts: [], sketch: null, createdAt: 0
     };
 }
 function draftFromProblem(p) {
     return {
-        id: p.id, title: p.title, difficulty: p.difficulty, lang: p.lang || 'js', tagsStr: p.tags.join(', '),
+        id: p.id, title: p.title, difficulty: p.difficulty, lang: p.lang || 'py', tagsStr: p.tags.join(', '),
         statement: p.statement, given: p.given, ret: p.ret, summary: p.summary, starter: p.starter || '',
         link: p.link || '',
         tests: p.tests.map(t => ({ label: t.label, inputStr: JSON.stringify(t.input), expectedStr: JSON.stringify(t.expected) })),
@@ -42,6 +38,30 @@ function fTa(lbl, attr, val = '', ph = '', rows = 3, cls = '') {
     return `<div class="f-field"><label class="f-lbl">${lbl}</label><textarea class="fin ta ${cls}" data-f="${attr}" rows="${rows}" placeholder="${esc(ph)}">${esc(val)}</textarea></div>`;
 }
 
+/* the paste-first entry — only on brand-new pages, never on edit */
+function pasteBoxHTML() {
+    if (store.problems.some(x => x.id === draft.id)) return '';
+    const hasKey = !!brand.geminiKey;
+    const aiBox = draft.title ? `
+    <div class="ai-gen-box" style="margin-bottom: 24px; padding: 16px; background: rgba(var(--red-rgb), 0.05); border: 1px dashed var(--red); border-radius: 8px;">
+      <p class="marg sm" style="margin-top:0"><strong>Auto-generate this page</strong>: Let AI write the statement, standard test cases, and approaches for <em>${esc(draft.title)}</em>.</p>
+      <button class="btn" id="ai-gen-btn" ${hasKey ? '' : 'disabled'}><i data-lucide="sparkles"></i>generate with AI</button>
+      ${hasKey ? '' : '<span class="paste-hint">add a Gemini API key in settings to use this feature</span>'}
+    </div>
+    ` : '';
+
+    return `<div class="pastebox">
+    ${aiBox}
+    <label class="f-lbl">${draft.title ? 'or paste the problem manually' : 'paste the problem — from LeetCode or anywhere'}</label>
+    <textarea class="fin ta code paste-ta" id="paste-ta" rows="7"
+      placeholder="paste the full description here — statement, examples, constraints, function signature…"></textarea>
+    <div class="paste-actions">
+      <button class="btn" id="parse-btn"><i data-lucide="wand-2"></i>set the table</button>
+      <span class="paste-hint">everything we can read gets filled in — you review before saving</span>
+    </div>
+  </div>`;
+}
+
 function viewForm() {
     const d = draft;
     const exists = store.problems.some(x => x.id === d.id);
@@ -53,6 +73,7 @@ function viewForm() {
       </div>
       <h1 class="p-title"><span>${exists ? 'edit a page' : 'write a new page'}</span>${svgSquiggle(230, 9, 'swg tswg')}</h1>
       <p class="marg">the more honestly this gets filled in, the better practice gets — future-you is reading.</p>
+      ${pasteBoxHTML()}
       <div id="f-errs"></div>
       <div class="f-sec">
         <div class="f-row3">
@@ -62,13 +83,13 @@ function viewForm() {
         </div>
         ${fField('tags (comma separated)', 'f-tags', d.tagsStr, 'arrays & hashing')}
         ${fTa('the question — full statement', 'f-statement', d.statement, d.link ? 'paste the problem statement from LeetCode →' : 'given an integer array nums, return true if…', 4)}
-        ${d.link ? `<p class="marg sm" style="margin:-6px 0 14px"><a href="${esc(d.link)}" target="_blank" style="color:var(--red)">open the problem on LeetCode ↗</a> — copy the description and paste it into the field above</p>` : ''}
+        ${d.link ? `<p class="marg sm" style="margin:-6px 0 14px"><a href="${esc(d.link)}" target="_blank" style="color:var(--red)">open the problem on LeetCode ↗</a> — copy the description and paste it above (or into the paste box)</p>` : ''}
         <div class="f-row2">
           ${fField('given', 'f-given', d.given, 'an integer array nums')}
           ${fField('return', 'f-return', d.ret, 'true if any value appears twice')}
         </div>
         ${fTa('how to solve it — the summary box', 'f-summary', d.summary, 'the whole trick in a sentence or two…', 3)}
-        ${fTa('starter code for practice (optional)', 'f-starter', d.starter, py ? '# leave empty and a template is generated from the first test' : '// leave empty and a template is generated from the first test', 4, 'code')}
+        ${fTa('starter code for practice (optional)', 'f-starter', d.starter, py ? '# leave empty and a LeetCode-style starter is generated from the signature' : '// leave empty and a LeetCode-style starter is generated from the signature', 4, 'code')}
       </div>
       <h2 class="sec"><span>tests</span>${svgSquiggle(64, 8, 'swg sec-swg')}</h2>
       <p class="marg sm">practice runs your code against these. input is a JSON object passed in as <code>input</code> — a dict in Python, an object in JavaScript; expected is JSON compared to what you return.</p>
@@ -80,6 +101,7 @@ function viewForm() {
       <button class="btn ghost sm" onclick="formAddAp()"><i data-lucide="plus"></i>add an approach</button>
       <div class="f-actions">
         <button class="btn" onclick="formSave()"><i data-lucide="check"></i>save this page</button>
+        <button class="btn ghost" id="btn-polish"><i data-lucide="sparkles"></i>AI polish</button>
         <button class="btn ghost" onclick="go('${exists ? '#p/' + d.id : '#library'}')">discard</button>
       </div>
     </div>
@@ -144,8 +166,8 @@ function harvest() {
     draft.tagsStr = dv('f-tags');
     draft.statement = dv('f-statement'); draft.given = dv('f-given'); draft.ret = dv('f-return');
     draft.summary = dv('f-summary'); draft.starter = dv('f-starter');
-    /* note: draft.link is intentionally NOT harvested — it's not
-       a form input, so it just survives whatever harvest does */
+    /* draft.link is NOT harvested — it isn't a form input, it
+       rides along from the curriculum row until save */
     draft.tests = $$('.rep-tests .rep-item').map(el => ({ label: dv('t-label', el), inputStr: dv('t-input', el), expectedStr: dv('t-expected', el) }));
     draft.approaches = $$('.rep-approaches .rep-ap').map(el => ({
         name: dv('a-name', el), time: dv('a-time', el), space: dv('a-space', el),
@@ -162,6 +184,111 @@ function formAddAp() { harvest(); draft.approaches.push({ name: '', time: '', sp
 function formDelAp(i) { harvest(); draft.approaches.splice(i, 1); render(); }
 function formAddStep(ai) { harvest(); draft.approaches[ai].steps.push({ label: '', note: '', from: '', to: '', yes: '', no: '' }); render(); }
 function formDelStep(ai, si) { harvest(); draft.approaches[ai].steps.splice(si, 1); render(); }
+
+/* ---------- the paste box: parse → prefill → review ----------
+   the parser only ever fills EMPTY fields — nothing typed is
+   overwritten, so clicking it twice is harmless. the statement
+   gets the core description only; examples and constraints
+   became tests, so the practice page stays clean. */
+function mountPasteBox() {
+    const btn = $('#parse-btn'); if (!btn) return;
+    const ta = $('#paste-ta'); if (!ta) return;
+    btn.addEventListener('click', () => {
+        const text = ta.value;
+        if (!text.trim()) { toast('paste the problem description first', 'pencil'); return; }
+        const parsed = parseProblemText(text);
+        harvest();   // keep anything already typed
+
+        if (parsed.lang) draft.lang = parsed.lang;   // the signature is the strongest signal
+        if (!draft.statement.trim()) draft.statement = parsed.core || text.trim();
+        if (parsed.given && !draft.given.trim()) draft.given = parsed.given;
+        if (parsed.ret && !draft.ret.trim()) draft.ret = parsed.ret;
+        if (parsed.titleGuess && !draft.title.trim()) draft.title = parsed.titleGuess;
+        if (parsed.starter && !draft.starter.trim()) draft.starter = parsed.starter;
+        if (parsed.tests.length && !draft.tests.some(t => t.inputStr.trim())) {
+            draft.tests = parsed.tests.map((t, i) => ({
+                label: 'example ' + (i + 1),
+                inputStr: JSON.stringify(t.input),
+                expectedStr: JSON.stringify(t.expected),
+            }));
+        }
+
+        const got = [], missed = [];
+        if (parsed.lang) got.push('language'); else missed.push('language');
+        if (parsed.tests.length) got.push('tests'); else missed.push('tests');
+        if (parsed.given) got.push('given'); else missed.push('given');
+        if (parsed.ret) got.push('return'); else missed.push('return');
+        if (parsed.titleGuess) got.push('title'); else missed.push('title');
+        if (parsed.starter) got.push('starter'); else missed.push('starter');
+        let msg = got.length ? 'filled in: ' + got.join(', ') : 'couldn\u2019t read much — fields left for you';
+        if (missed.length) msg += ' \u00b7 left for you: ' + missed.join(', ');
+        render();
+        toast(msg, got.length ? 'check' : 'pencil');
+    });
+}
+
+function mountAiGen() {
+    const btn = $('#ai-gen-btn'); if (!btn) return;
+    btn.addEventListener('click', async () => {
+        if (!draft.title) return;
+        harvest();
+        btn.disabled = true;
+        btn.innerHTML = '<i data-lucide="loader-2"></i>thinking\u2026'; icons();
+        
+        const r = await aiGenerateProblem(draft.title, draft.lang);
+        
+        btn.disabled = false;
+        btn.innerHTML = '<i data-lucide="sparkles"></i>generate with AI'; icons();
+        
+        if (r.err) { toast(r.err, 'pencil'); return; }
+        
+        if (r.statement) draft.statement = r.statement;
+        if (r.given) draft.given = r.given;
+        if (r.ret) draft.ret = r.ret;
+        if (r.summary) draft.summary = r.summary;
+        if (r.starter) draft.starter = r.starter;
+        
+        if (r.tests && r.tests.length) {
+            draft.tests = r.tests.map((t, i) => ({
+                label: t.label || ('example ' + (i + 1)),
+                inputStr: typeof t.inputStr === 'string' ? t.inputStr : JSON.stringify(t.inputStr),
+                expectedStr: typeof t.expectedStr === 'string' ? t.expectedStr : JSON.stringify(t.expectedStr)
+            }));
+        }
+        
+        if (r.approaches && r.approaches.length) {
+            draft.approaches = r.approaches.map(a => ({
+                name: a.name || '', time: a.time || '', space: a.space || '',
+                idea: a.idea || '', code: a.code || '', steps: a.steps || []
+            }));
+        }
+        
+        render();
+        toast('page generated! review and save when ready.', 'sparkles');
+    });
+}
+
+/* ---------- the AI polish button ----------
+   metadata only: given/return phrasing. the "how to solve it"
+   summary box stays human — that's the notebook's whole soul */
+function mountPolish() {
+    const b = $('#btn-polish'); if (!b) return;
+    b.addEventListener('click', async () => {
+        harvest();
+        if (!draft.statement.trim()) { toast('paste or type the statement first', 'pencil'); return; }
+        if (!brand.geminiKey) { toast('add a gemini key in settings (optional) — or phrase given/return yourself', 'pencil'); return; }
+        b.disabled = true;
+        b.innerHTML = '<i data-lucide="loader-2"></i>thinking\u2026'; icons();
+        const r = await aiPolish({ statement: draft.statement });
+        b.disabled = false;
+        b.innerHTML = '<i data-lucide="sparkles"></i>AI polish'; icons();
+        if (r.err) { toast(r.err, 'pencil'); return; }
+        if (r.given && !draft.given.trim()) draft.given = r.given;
+        if (r.ret && !draft.ret.trim()) draft.ret = r.ret;
+        render();
+        toast('given & return polished — the summary stays yours to write', 'check');
+    });
+}
 
 function formSave() {
     harvest();

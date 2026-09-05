@@ -1,0 +1,44 @@
+name: Preload Problems
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Run at minute 0 of every hour
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  fetch_problems:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          
+      - name: Run Fetch Script
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python3 scripts/preload_problems.py
+          
+      - name: Check for modifications
+        id: git-check
+        run: |
+          git status --porcelain
+          if [[ -n "$(git status --porcelain js/preload.js)" ]]; then
+            echo "modified=true" >> $GITHUB_OUTPUT
+          else
+            echo "modified=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Commit and push changes
+        if: steps.git-check.outputs.modified == 'true'
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add js/preload.js
+          git commit -m "Auto-fetch problems via Gemini"
+          git push

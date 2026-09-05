@@ -1,22 +1,23 @@
 /* =========================================================
    data.js — the notebook's contents
-   the three sample pages, the localStorage store, and the
-   per-visitor branding. Storage keys are prefixed
-   "marginalia-" and fall back to the older "margin-notes-"
-   keys so nobody's saved pages get orphaned by the rename.
+   the one worked example page, the localStorage store, and
+   the per-visitor branding (name, tagline, ink, and the
+   optional gemini key for AI polish).
    ========================================================= */
 
-/* ---------- the sample notebook ---------- */
+/* ---------- the example page (fresh visitors get one
+   worked example so every feature is demonstrable) ---------- */
 function seed() {
-    const now = Date.now(), D = 864e5;
+    const now = Date.now();
     return [
         {
             id: 'pContains', title: 'contains duplicate', difficulty: 'easy', lang: 'py',
             tags: ['arrays & hashing', 'example'],
+            link: 'https://leetcode.com/problems/contains-duplicate/',
             statement: 'Given an integer array nums, return true if any value appears at least twice in the array, and return false if every element is distinct.',
             given: 'an integer array nums',
             ret: 'true if any value shows up twice or more, false if every element is distinct',
-            summary: 'The question is really "how do I notice a repeat?" — compare every pair (slow), sort so duplicates become neighbours, or walk once and remember what I\'ve seen in a set. The set wins: one pass, O(1) lookups, and I can bail out the moment a value repeats.',
+            summary: 'The question is really “how do I notice a repeat?” — compare every pair (slow), sort so duplicates become neighbours, or walk once and remember what I’ve seen in a set. The set wins: one pass, O(1) lookups, and I can bail out the moment a value repeats.',
             starter: '',
             tests: [
                 { label: 'nums = [1,2,3,1]', input: { nums: [1, 2, 3, 1] }, expected: true },
@@ -26,7 +27,7 @@ function seed() {
             approaches: [
                 {
                     name: 'brute force', time: 'O(n²)', space: 'O(1)',
-                    idea: 'Check every pair (i, j). If any two are equal, there\'s a duplicate. Simple to write, painful to run — n² comparisons in the worst case.',
+                    idea: 'Check every pair (i, j). If any two are equal, there’s a duplicate. Simple to write, painful to run — n² comparisons in the worst case.',
                     code:
                         `nums = input["nums"]
 
@@ -66,7 +67,7 @@ return False           # no adjacent pair matched`,
                 },
                 {
                     name: 'hash set', time: 'O(n)', space: 'O(n)',
-                    idea: 'Walk the array once and remember every value in a set. Before adding each number, ask the set if it\'s already inside — set lookups are O(1). The moment it says yes, return True. Memory is the trade: up to n stored values.',
+                    idea: 'Walk the array once and remember every value in a set. Before adding each number, ask the set if it’s already inside — set lookups are O(1). The moment it says yes, return True. Memory is the trade: up to n stored values.',
                     code:
                         `nums = input["nums"]
 seen = set()   # remembers what we walk past
@@ -78,7 +79,7 @@ for num in nums:
 
 return False           # whole array walked, all unique`,
                     steps: [
-                        { label: 'create a set', note: 'a set only holds unique values and answers "in" in O(1) — that is the whole trick', lines: [1, 2] },
+                        { label: 'create a set', note: 'a set only holds unique values and answers “in” in O(1) — that is the whole trick', lines: [1, 2] },
                         { label: 'for each num', note: 'one clean left-to-right pass over the array', lines: [4, 4] },
                         { label: 'num in seen ?', yes: 'return True', no: 'add it to the set', note: 'the million-dollar question, answered in constant time', lines: [5, 6] },
                         { label: 'seen.add(num)', note: 'remember this value for the rest of the walk', lines: [7, 7] },
@@ -86,7 +87,7 @@ return False           # whole array walked, all unique`,
                     ]
                 }
             ],
-            attempts: [], sketch: null, createdAt: now - 7 * D || now - 7 * 864e5
+            attempts: [], sketch: null, createdAt: now
         }
     ];
 }
@@ -108,18 +109,21 @@ const store = {
     remove(id) { this.problems = this.problems.filter(p => p.id !== id); }
 };
 
-/* ---------- branding (per visitor, set in the settings modal) ---------- */
+/* ---------- branding (per visitor, set in the settings modal) ----------
+   geminiKey is optional: powers the AI polish button, stored in
+   this browser only, and the call goes browser → Google direct. */
 const LS_BRAND = 'marginalia-brand-v1';
 const INKS = [['#c2402a', 'red ink'], ['#2b5ea7', 'blue ink'], ['#1d6f6f', 'teal ink'], ['#8a3d7a', 'plum ink'], ['#9c5a1e', 'sepia ink']];
 let brand = {
     name: 'Marginalia',
     tag: 'practice makes perfect',
-    ink: '#c2402a'
+    ink: '#c2402a',
+    geminiKey: ''
 };
 function loadBrand() {
     try {
         let r = localStorage.getItem(LS_BRAND);
-        if (!r) r = localStorage.getItem('margin-notes-brand-v1');   // old key, same migration idea
+        if (!r) r = localStorage.getItem('margin-notes-brand-v1');   // old key, one-time carry-over
         if (r) brand = Object.assign(brand, JSON.parse(r));
     } catch (e) { }
 }
