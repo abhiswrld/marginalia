@@ -6108,5 +6108,657 @@ window.PRELOADED_PROBLEMS = {
         ]
       }
     ]
+  },
+  "insert-interval": {
+    "statement": "You are given an array of non-overlapping intervals `intervals` where `intervals[i] = [start_i, end_i]` represent the start and the end of the `i`-th interval, and `intervals` is sorted in ascending order by `start_i`. You are also given an interval `newInterval = [start, end]` that represents the start and end of another interval.\n\nInsert `newInterval` into `intervals` such that `intervals` is still sorted in ascending order by `start_i` and `intervals` still does not have any overlapping intervals (merge overlapping intervals if necessary).\n\nReturn `intervals` after the insertion.",
+    "given": "a sorted array of non-overlapping intervals `intervals` and a `newInterval`",
+    "ret": "a new list of non-overlapping intervals containing all merged intervals",
+    "summary": "Iterate through the array: collect intervals ending before `newInterval`, merge all intervals overlapping with `newInterval`, then add `newInterval` and remaining intervals.",
+    "starter": "class Solution:\n    def insert(self, intervals: List[List[int]], newInterval: List[int]) -> List[List[int]]:\n        pass",
+    "tests": [
+      {
+        "label": "intervals = [[1,3],[6,9]], newInterval = [2,5]",
+        "inputStr": "{\"intervals\": [[1,3],[6,9]], \"newInterval\": [2,5]}",
+        "expectedStr": "[[1,5],[6,9]]"
+      },
+      {
+        "label": "intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]",
+        "inputStr": "{\"intervals\": [[1,2],[3,5],[6,7],[8,10],[12,16]], \"newInterval\": [4,8]}",
+        "expectedStr": "[[1,2],[3,10],[12,16]]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Insert and Re-sort (Brute Force)",
+        "time": "O(N log N)",
+        "space": "O(N)",
+        "idea": "Append the `newInterval` to the `intervals` list, re-sort the entire list by start time, and then run a standard interval merging pass.",
+        "code": "class Solution:\n    def insert(self, intervals: List[List[int]], newInterval: List[int]) -> List[List[int]]:\n        intervals.append(newInterval)\n        intervals.sort(key=lambda x: x[0])\n        merged = []\n        for interval in intervals:\n            if not merged or merged[-1][1] < interval[0]:\n                merged.append(interval)\n            else:\n                merged[-1][1] = max(merged[-1][1], interval[1])\n        return merged",
+        "steps": [
+          {
+            "label": "Append new interval",
+            "note": "Add newInterval to the existing list of intervals",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "Sort intervals",
+            "note": "Sort all intervals by their start time O(N log N)",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "Initialize output array",
+            "note": "Create empty merged list to build non-overlapping intervals",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "Iterate through sorted intervals",
+            "note": "Check overlap with last interval in merged",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "Append non-overlapping interval",
+            "note": "If no overlap, append interval directly to merged",
+            "from": 7,
+            "to": 8,
+            "yes": "merged is empty or merged[-1].end < interval.start"
+          },
+          {
+            "label": "Merge overlapping interval",
+            "note": "Update end time of last interval in merged",
+            "from": 9,
+            "to": 10,
+            "no": "Intervals overlap"
+          }
+        ]
+      },
+      {
+        "name": "Linear Scan (Optimal)",
+        "time": "O(N)",
+        "space": "O(N)",
+        "idea": "Leverage the existing sorted order: add all intervals that end before `newInterval` starts, merge all overlapping intervals into `newInterval`, and finally add `newInterval` and remaining intervals.",
+        "code": "class Solution:\n    def insert(self, intervals: List[List[int]], newInterval: List[int]) -> List[List[int]]:\n        res = []\n        for i, interval in enumerate(intervals):\n            if newInterval[1] < interval[0]:\n                res.append(newInterval)\n                return res + intervals[i:]\n            elif newInterval[0] > interval[1]:\n                res.append(interval)\n            else:\n                newInterval = [min(newInterval[0], interval[0]), max(newInterval[1], interval[1])]\n        res.append(newInterval)\n        return res",
+        "steps": [
+          {
+            "label": "Initialize result array",
+            "note": "Create res list to hold output intervals",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "Iterate intervals",
+            "note": "Process each interval sequentially",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "Check if newInterval comes strictly before",
+            "note": "If newInterval finishes before interval starts, insert newInterval and concatenate rest",
+            "from": 5,
+            "to": 7,
+            "yes": "newInterval[1] < interval[0]"
+          },
+          {
+            "label": "Check if newInterval comes strictly after",
+            "note": "If current interval finishes before newInterval starts, append current interval",
+            "from": 8,
+            "to": 9,
+            "yes": "newInterval[0] > interval[1]"
+          },
+          {
+            "label": "Merge overlapping intervals",
+            "note": "Update newInterval bounds to encompass current overlapping interval",
+            "from": 10,
+            "to": 11,
+            "no": "Intervals overlap"
+          },
+          {
+            "label": "Append remaining newInterval",
+            "note": "Append newInterval if loop completes without early return",
+            "from": 12,
+            "to": 13
+          }
+        ]
+      }
+    ]
+  },
+  "merge-intervals": {
+    "statement": "Given an array of `intervals` where `intervals[i] = [start_i, end_i]`, merge all overlapping intervals, and return an array of the non-overlapping intervals that cover all the intervals in the input.",
+    "given": "an array of `intervals` where each interval has a start and end time",
+    "ret": "an array of non-overlapping intervals covering all input intervals",
+    "summary": "Sort the intervals by their start time, then iterate through to merge consecutive overlapping intervals.",
+    "starter": "class Solution:\n    def merge(self, intervals: List[List[int]]) -> List[List[int]]:\n        pass",
+    "tests": [
+      {
+        "label": "intervals = [[1,3],[2,6],[8,10],[15,18]]",
+        "inputStr": "{\"intervals\": [[1,3],[2,6],[8,10],[15,18]]}",
+        "expectedStr": "[[1,6],[8,10],[15,18]]"
+      },
+      {
+        "label": "intervals = [[1,4],[4,5]]",
+        "inputStr": "{\"intervals\": [[1,4],[4,5]]}",
+        "expectedStr": "[[1,5]]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Graph / Connected Components (Brute Force)",
+        "time": "O(N^2)",
+        "space": "O(N^2)",
+        "idea": "Build an undirected graph where nodes are intervals and edges represent overlap. Find connected components and merge each component into a single interval.",
+        "code": "class Solution:\n    def merge(self, intervals: List[List[int]]) -> List[List[int]]:\n        def overlap(a, b):\n            return a[0] <= b[1] and b[0] <= a[1]\n        \n        adj = {i: [] for i in range(len(intervals))}\n        for i in range(len(intervals)):\n            for j in range(i + 1, len(intervals)):\n                if overlap(intervals[i], intervals[j]):\n                    adj[i].append(j)\n                    adj[j].append(i)\n        \n        visited = set()\n        res = []\n        for i in range(len(intervals)):\n            if i not in visited:\n                comp = []\n                stack = [i]\n                visited.add(i)\n                while stack:\n                    node = stack.pop()\n                    comp.append(intervals[node])\n                    for nei in adj[node]:\n                        if nei not in visited:\n                            visited.add(nei)\n                            stack.append(nei)\n                res.append([min(x[0] for x in comp), max(x[1] for x in comp)])\n        return res",
+        "steps": [
+          {
+            "label": "Define overlap check",
+            "note": "Helper function to determine if two intervals overlap",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "Build adjacency graph",
+            "note": "Construct graph edges between overlapping interval pairs O(N^2)",
+            "from": 6,
+            "to": 11
+          },
+          {
+            "label": "Traverse graph components",
+            "note": "Use DFS/BFS to group connected overlapping intervals",
+            "from": 13,
+            "to": 24
+          },
+          {
+            "label": "Merge connected component",
+            "note": "Combine each component into [min_start, max_end] and add to result",
+            "from": 25,
+            "to": 25
+          },
+          {
+            "label": "Return merged intervals",
+            "note": "Return list of merged interval components",
+            "from": 26,
+            "to": 26
+          }
+        ]
+      },
+      {
+        "name": "Sort and Merge (Optimal)",
+        "time": "O(N log N)",
+        "space": "O(N)",
+        "idea": "Sort intervals by start time. Iterate through intervals, comparing each with the last merged interval to determine if it should be merged or added as new.",
+        "code": "class Solution:\n    def merge(self, intervals: List[List[int]]) -> List[List[int]]:\n        intervals.sort(key=lambda x: x[0])\n        merged = []\n        for interval in intervals:\n            if not merged or merged[-1][1] < interval[0]:\n                merged.append(interval)\n            else:\n                merged[-1][1] = max(merged[-1][1], interval[1])\n        return merged",
+        "steps": [
+          {
+            "label": "Sort intervals",
+            "note": "Sort all intervals in ascending order based on start time",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "Initialize result list",
+            "note": "Create merged array to store finalized intervals",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "Iterate intervals",
+            "note": "Loop through each interval in sorted list",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "Check overlap condition",
+            "note": "If merged is empty or current start > last end, append current interval",
+            "from": 6,
+            "to": 7,
+            "yes": "No overlap with last interval"
+          },
+          {
+            "label": "Merge intervals",
+            "note": "If overlap exists, update last interval's end to max end time",
+            "from": 8,
+            "to": 9,
+            "no": "Overlap detected"
+          },
+          {
+            "label": "Return result",
+            "note": "Return completed list of merged non-overlapping intervals",
+            "from": 10,
+            "to": 10
+          }
+        ]
+      }
+    ]
+  },
+  "non-overlapping-intervals": {
+    "statement": "Given an array of intervals `intervals` where `intervals[i] = [start_i, end_i]`, return the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.",
+    "given": "an array of intervals `intervals`",
+    "ret": "minimum number of removals required to eliminate all overlaps",
+    "summary": "Sort intervals by end times and greedily select non-overlapping intervals, counting how many overlapping intervals are discarded.",
+    "starter": "class Solution:\n    def eraseOverlapIntervals(self, intervals: List[List[int]]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "intervals = [[1,2],[2,3],[3,4],[1,3]]",
+        "inputStr": "{\"intervals\": [[1,2],[2,3],[3,4],[1,3]]}",
+        "expectedStr": "1"
+      },
+      {
+        "label": "intervals = [[1,2],[1,2],[1,2]]",
+        "inputStr": "{\"intervals\": [[1,2],[1,2],[1,2]]}",
+        "expectedStr": "2"
+      },
+      {
+        "label": "intervals = [[1,2],[2,3]]",
+        "inputStr": "{\"intervals\": [[1,2],[2,3]]}",
+        "expectedStr": "0"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Recursive Backtracking (Brute Force)",
+        "time": "O(2^N)",
+        "space": "O(N)",
+        "idea": "Sort intervals by start time. Recursively decide whether to keep or remove each interval, keeping track of the end time of the last kept interval.",
+        "code": "class Solution:\n    def eraseOverlapIntervals(self, intervals: List[List[int]]) -> int:\n        intervals.sort(key=lambda x: x[0])\n        def solve(i, prev_end):\n            if i == len(intervals):\n                return 0\n            remove = 1 + solve(i + 1, prev_end)\n            keep = float('inf')\n            if intervals[i][0] >= prev_end:\n                keep = solve(i + 1, intervals[i][1])\n            return min(remove, keep)\n        return solve(0, float('-inf'))",
+        "steps": [
+          {
+            "label": "Sort intervals",
+            "note": "Sort intervals by start time",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "Base case check",
+            "note": "If index i reaches end of intervals, return 0",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "Option 1: Remove interval",
+            "note": "Count 1 removal and solve for remaining intervals",
+            "from": 7,
+            "to": 7
+          },
+          {
+            "label": "Option 2: Keep interval",
+            "note": "If current interval does not overlap with prev_end, compute cost of keeping it",
+            "from": 8,
+            "to": 10,
+            "yes": "intervals[i].start >= prev_end"
+          },
+          {
+            "label": "Return minimum removals",
+            "note": "Return minimum between remove and keep decisions",
+            "from": 11,
+            "to": 11
+          }
+        ]
+      },
+      {
+        "name": "Greedy Choice by End Time (Optimal)",
+        "time": "O(N log N)",
+        "space": "O(1)",
+        "idea": "Sort intervals by end time. Always pick the interval that finishes earliest to leave max room for subsequent intervals, incrementing removal count when overlap occurs.",
+        "code": "class Solution:\n    def eraseOverlapIntervals(self, intervals: List[List[int]]) -> int:\n        intervals.sort(key=lambda x: x[1])\n        removals = 0\n        prev_end = float('-inf')\n        for interval in intervals:\n            if interval[0] >= prev_end:\n                prev_end = interval[1]\n            else:\n                removals += 1\n        return removals",
+        "steps": [
+          {
+            "label": "Sort intervals by end time",
+            "note": "Greedy strategy works best by sorting based on interval finish times",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "Initialize variables",
+            "note": "Set removals counter to 0 and prev_end to negative infinity",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Iterate intervals",
+            "note": "Check each interval against prev_end",
+            "from": 6,
+            "to": 6
+          },
+          {
+            "label": "Keep interval",
+            "note": "If interval starts at or after prev_end, update prev_end to current interval's end",
+            "from": 7,
+            "to": 8,
+            "yes": "interval.start >= prev_end"
+          },
+          {
+            "label": "Remove interval",
+            "note": "If interval overlaps with prev_end, increment removals count",
+            "from": 9,
+            "to": 10,
+            "no": "Interval overlaps with prev_end"
+          },
+          {
+            "label": "Return result",
+            "note": "Return total count of removed intervals",
+            "from": 11,
+            "to": 11
+          }
+        ]
+      }
+    ]
+  },
+  "meeting-rooms": {
+    "statement": "Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), determine if a person could attend all meetings.",
+    "given": "an array of meeting time intervals intervals",
+    "ret": "a boolean indicating whether a person could attend all meetings without overlap",
+    "summary": "Sort the intervals by their start times and check if any meeting starts before the previous meeting ends.",
+    "starter": "class Solution:\n    def canAttendMeetings(self, intervals: List[List[int]]) -> bool:\n        pass",
+    "tests": [
+      {
+        "label": "intervals = [[0,30],[5,10],[15,20]]",
+        "inputStr": "{\"intervals\": [[0,30],[5,10],[15,20]]}",
+        "expectedStr": "false"
+      },
+      {
+        "label": "intervals = [[7,10],[2,4]]",
+        "inputStr": "{\"intervals\": [[7,10],[2,4]]}",
+        "expectedStr": "true"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force",
+        "time": "O(n^2)",
+        "space": "O(1)",
+        "idea": "Compare every pair of intervals to check if they overlap with each other. Two intervals overlap if max(start1, start2) < min(end1, end2).",
+        "code": "class Solution:\n    def canAttendMeetings(self, intervals: List[List[int]]) -> bool:\n        n = len(intervals)\n        for i in range(n):\n            for j in range(i + 1, n):\n                i1, i2 = intervals[i], intervals[j]\n                if max(i1[0], i2[0]) < min(i1[1], i2[1]):\n                    return False\n        return True",
+        "steps": [
+          {
+            "label": "outer loop",
+            "note": "Iterate through each meeting interval as the first meeting to compare.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "inner loop",
+            "note": "Iterate through subsequent meeting intervals to check against the first.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "check overlap",
+            "note": "Determine if interval i and interval j overlap in time.",
+            "from": 3,
+            "to": 4,
+            "yes": "Conflict detected, return False.",
+            "no": "Continue checking remaining pairs."
+          },
+          {
+            "label": "return result",
+            "note": "If no pairs overlap after checking all combinations, return True.",
+            "from": 4,
+            "to": 5
+          }
+        ]
+      },
+      {
+        "name": "sorting (optimal)",
+        "time": "O(n log n)",
+        "space": "O(1)",
+        "idea": "Sort the intervals by start time. Once sorted, adjacent intervals are the only ones that could potentially overlap. Iterate through and check if interval[i][0] < interval[i-1][1].",
+        "code": "class Solution:\n    def canAttendMeetings(self, intervals: List[List[int]]) -> bool:\n        intervals.sort(key=lambda x: x[0])\n        for i in range(1, len(intervals)):\n            if intervals[i][0] < intervals[i - 1][1]:\n                return False\n        return True",
+        "steps": [
+          {
+            "label": "sort intervals",
+            "note": "Sort all intervals in ascending order based on start time.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "iterate intervals",
+            "note": "Loop through the sorted list starting from the second meeting (index 1).",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "check adjacent overlap",
+            "note": "Compare current start time with previous end time.",
+            "from": 3,
+            "to": 4,
+            "yes": "Current starts before previous ends, return False.",
+            "no": "No overlap, continue to next interval."
+          },
+          {
+            "label": "return valid",
+            "note": "If no adjacent overlaps are found, return True.",
+            "from": 4,
+            "to": 5
+          }
+        ]
+      }
+    ]
+  },
+  "meeting-rooms-ii": {
+    "statement": "Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), find the minimum number of conference rooms required.",
+    "given": "an array of meeting time intervals intervals",
+    "ret": "an integer representing the minimum number of conference rooms required",
+    "summary": "Sort meetings by start time and use a min-heap to track the end times of ongoing meetings, allocating new rooms when overlaps occur.",
+    "starter": "class Solution:\n    def minMeetingRooms(self, intervals: List[List[int]]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "intervals = [[0,30],[5,10],[15,20]]",
+        "inputStr": "{\"intervals\": [[0,30],[5,10],[15,20]]}",
+        "expectedStr": "2"
+      },
+      {
+        "label": "intervals = [[7,10],[2,4]]",
+        "inputStr": "{\"intervals\": [[7,10],[2,4]]}",
+        "expectedStr": "1"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "min-heap (optimal)",
+        "time": "O(n log n)",
+        "space": "O(n)",
+        "idea": "Sort intervals by start time. Maintain a min-heap storing end times of active meetings. If the earliest ending meeting finishes before the current meeting starts, reuse that room (pop heap). Otherwise, allocate a new room. The size of the heap at the end is the minimum rooms required.",
+        "code": "import heapq\n\nclass Solution:\n    def minMeetingRooms(self, intervals: List[List[int]]) -> int:\n        if not intervals:\n            return 0\n        \n        intervals.sort(key=lambda x: x[0])\n        free_rooms = []\n        heapq.heappush(free_rooms, intervals[0][1])\n        \n        for interval in intervals[1:]:\n            if free_rooms[0] <= interval[0]:\n                heapq.heappop(free_rooms)\n            heapq.heappush(free_rooms, interval[1])\n            \n        return len(free_rooms)",
+        "steps": [
+          {
+            "label": "handle empty",
+            "note": "Return 0 if there are no intervals.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "sort intervals",
+            "note": "Sort meetings chronological by start time.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "initialize heap",
+            "note": "Push the end time of the first meeting into the min-heap.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "process meetings",
+            "note": "Iterate through remaining intervals.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "check room availability",
+            "note": "Compare earliest end time in heap against current meeting's start time.",
+            "from": 5,
+            "to": 6,
+            "yes": "Earliest meeting ended; pop it from heap (reuse room).",
+            "no": "No room free; keep heap element (allocate new room)."
+          },
+          {
+            "label": "push current end time",
+            "note": "Push current meeting's end time to min-heap.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "return result",
+            "note": "Return total size of heap representing active rooms needed.",
+            "from": 7,
+            "to": 8
+          }
+        ]
+      },
+      {
+        "name": "chronological ordering / two pointers",
+        "time": "O(n log n)",
+        "space": "O(n)",
+        "idea": "Extract and sort start times and end times independently into two separate arrays. Use two pointers to simulate timeline: increment room count when a meeting starts before the earliest ending meeting finishes; advance end pointer when a meeting finishes.",
+        "code": "class Solution:\n    def minMeetingRooms(self, intervals: List[List[int]]) -> int:\n        if not intervals:\n            return 0\n        \n        starts = sorted([i[0] for i in intervals])\n        ends = sorted([i[1] for i in intervals])\n        \n        s_ptr = e_ptr = 0\n        used_rooms = 0\n        \n        while s_ptr < len(intervals):\n            if starts[s_ptr] >= ends[e_ptr]:\n                used_rooms -= 1\n                e_ptr += 1\n            used_rooms += 1\n            s_ptr += 1\n            \n        return used_rooms",
+        "steps": [
+          {
+            "label": "extract and sort",
+            "note": "Separate start times and end times, then sort both arrays independently.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "init pointers",
+            "note": "Initialize start pointer (s_ptr), end pointer (e_ptr), and room counter.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "traverse starts",
+            "note": "Loop through each meeting's start time.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "check meeting finish",
+            "note": "If start time >= earliest end time, a room has freed up.",
+            "from": 4,
+            "to": 5,
+            "yes": "Decrement room count and increment end pointer.",
+            "no": "Do not decrement room count."
+          },
+          {
+            "label": "allocate room",
+            "note": "Increment room count and move start pointer to next meeting.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "return rooms",
+            "note": "Return maximum room count reached during traversal.",
+            "from": 6,
+            "to": 7
+          }
+        ]
+      }
+    ]
+  },
+  "maximum-subarray": {
+    "statement": "Given an integer array nums, find the subarray with the largest sum, and return its sum.",
+    "given": "an array of integers nums",
+    "ret": "an integer representing the maximum sum of a contiguous subarray",
+    "summary": "Iterate through the array while maintaining a running current sum; reset the running sum to the current element if it becomes negative.",
+    "starter": "class Solution:\n    def maxSubArray(self, nums: List[int]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "nums = [-2,1,-3,4,-1,2,1,-5,4]",
+        "inputStr": "{\"nums\": [-2,1,-3,4,-1,2,1,-5,4]}",
+        "expectedStr": "6"
+      },
+      {
+        "label": "nums = [1]",
+        "inputStr": "{\"nums\": [1]}",
+        "expectedStr": "1"
+      },
+      {
+        "label": "nums = [5,4,-1,7,8]",
+        "inputStr": "{\"nums\": [5,4,-1,7,8]}",
+        "expectedStr": "23"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force",
+        "time": "O(n^2)",
+        "space": "O(1)",
+        "idea": "Compute the sum of all possible contiguous subarrays starting from index i to index j, tracking the maximum sum found.",
+        "code": "class Solution:\n    def maxSubArray(self, nums: List[int]) -> int:\n        max_sum = float('-inf')\n        for i in range(len(nums)):\n            current_sum = 0\n            for j in range(i, len(nums)):\n                current_sum += nums[j]\n                max_sum = max(max_sum, current_sum)\n        return max_sum",
+        "steps": [
+          {
+            "label": "initialize max",
+            "note": "Set max_sum to negative infinity.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "outer loop",
+            "note": "Select subarray start index i.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "inner loop",
+            "note": "Extend subarray end index j from i to end of array.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "accumulate sum",
+            "note": "Add nums[j] to running current_sum and update max_sum if current_sum is larger.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "return result",
+            "note": "Return max_sum after evaluating all subarrays.",
+            "from": 5,
+            "to": 6
+          }
+        ]
+      },
+      {
+        "name": "Kadane's Algorithm (optimal)",
+        "time": "O(n)",
+        "space": "O(1)",
+        "idea": "At each element, decide whether to add it to the existing subarray sum or start a new subarray starting at the current element. Track the global maximum across all steps.",
+        "code": "class Solution:\n    def maxSubArray(self, nums: List[int]) -> int:\n        max_sum = current_sum = nums[0]\n        for num in nums[1:]:\n            current_sum = max(num, current_sum + num)\n            max_sum = max(max_sum, current_sum)\n        return max_sum",
+        "steps": [
+          {
+            "label": "initialize tracking variables",
+            "note": "Set max_sum and current_sum to first element nums[0].",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "iterate remaining elements",
+            "note": "Loop through nums starting from index 1.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "update current sum",
+            "note": "Determine whether joining previous subarray (current_sum + num) is better than starting fresh (num).",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "update global max",
+            "note": "Update max_sum if current_sum exceeds max_sum.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "return max sum",
+            "note": "Return global maximum subarray sum found.",
+            "from": 5,
+            "to": 6
+          }
+        ]
+      }
+    ]
   }
 };
