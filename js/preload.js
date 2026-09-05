@@ -6760,5 +6760,300 @@ window.PRELOADED_PROBLEMS = {
         ]
       }
     ]
+  },
+  "jump-game": {
+    "statement": "Given an array of non-negative integers nums, you are initially positioned at the first index of the array. Each element in the array represents your maximum jump length at that position. Return true if you can reach the last index, or false otherwise.",
+    "given": "an array of non-negative integers nums",
+    "ret": "a boolean indicating if you can reach the last index",
+    "summary": "Track the maximum index reachable at each step; if the current position ever exceeds this maximum reach, return false. Otherwise, if the maximum reach touches or exceeds the end, return true.",
+    "starter": "class Solution:\n    def canJump(self, nums: List[int]) -> bool:\n        pass",
+    "tests": [
+      {
+        "label": "nums = [2, 3, 1, 1, 4]",
+        "inputStr": "{\"nums\": [2, 3, 1, 1, 4]}",
+        "expectedStr": "true"
+      },
+      {
+        "label": "nums = [3, 2, 1, 0, 4]",
+        "inputStr": "{\"nums\": [3, 2, 1, 0, 4]}",
+        "expectedStr": "false"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "backtracking",
+        "time": "O(2^n)",
+        "space": "O(n)",
+        "idea": "Recursively explore all possible jump distances from the current position to check if any path leads to the final index.",
+        "code": "class Solution:\n    def canJump(self, nums: List[int]) -> bool:\n        def can_reach_from_position(position):\n            if position == len(nums) - 1:\n                return True\n            furthest_jump = min(position + nums[position], len(nums) - 1)\n            for next_pos in range(position + 1, furthest_jump + 1):\n                if can_reach_from_position(next_pos):\n                    return True\n            return False\n        return can_reach_from_position(0)",
+        "steps": [
+          {
+            "label": "check end condition",
+            "note": "If position reaches the last index, return True.",
+            "from": 3,
+            "to": 4,
+            "yes": " reached final destination",
+            "no": "continue exploring possibilities"
+          },
+          {
+            "label": "calculate reachable range",
+            "note": "Determine maximum valid index that can be reached from current position.",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "loop next positions",
+            "note": "Iterate through every available next step in the range.",
+            "from": 6,
+            "to": 6
+          },
+          {
+            "label": "recursive exploration",
+            "note": "Recursively check if any of the target positions can reach the last index.",
+            "from": 7,
+            "to": 8,
+            "yes": "found valid path to end"
+          },
+          {
+            "label": "return fail",
+            "note": "Return False if no branches starting from current position lead to the end.",
+            "from": 9,
+            "to": 9
+          }
+        ]
+      },
+      {
+        "name": "greedy reach tracking",
+        "time": "O(n)",
+        "space": "O(1)",
+        "idea": "Iterate through the array maintaining the furthest reach boundary. If at any index i, i > max_reachable, we cannot move forward.",
+        "code": "class Solution:\n    def canJump(self, nums: List[int]) -> bool:\n        max_reachable = 0\n        for i in range(len(nums)):\n            if i > max_reachable:\n                return False\n            max_reachable = max(max_reachable, i + nums[i])\n            if max_reachable >= len(nums) - 1:\n                return True\n        return True",
+        "steps": [
+          {
+            "label": "initialize max boundary",
+            "note": "Set `max_reachable` starting at index 0.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "iterate array",
+            "note": "Traverse each position i in `nums`.",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "check reachability limit",
+            "note": "Check if current index i is greater than max reach.",
+            "from": 5,
+            "to": 6,
+            "yes": "stuck at unreachable index",
+            "no": "continue updating reach"
+          },
+          {
+            "label": "update max reach",
+            "note": "Update reach boundary with `i + nums[i]` if larger.",
+            "from": 7,
+            "to": 7
+          },
+          {
+            "label": "early return check",
+            "note": "If max reach is equal or past last index, return True immediately.",
+            "from": 8,
+            "to": 9,
+            "yes": "end is guaranteed reachable"
+          }
+        ]
+      }
+    ]
+  },
+  "rotate-image": {
+    "statement": "You are given an n x n 2D matrix representing an image, rotate the image by 90 degrees (clockwise). You have to rotate the image in-place, which means you have to modify the input 2D matrix directly.",
+    "given": "an n x n 2D matrix representing an image",
+    "ret": "None (modify matrix in-place)",
+    "summary": "Transpose the matrix by swapping elements across the main diagonal, then reverse each row to complete a 90-degree clockwise rotation.",
+    "starter": "class Solution:\n    def rotate(self, matrix: List[List[int]]) -> None:\n        \"\"\"\n        Do not return anything, modify matrix in-place instead.\n        \"\"\"\n        pass",
+    "tests": [
+      {
+        "label": "matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]",
+        "inputStr": "{\"matrix\": [[1, 2, 3], [4, 5, 6], [7, 8, 9]]}",
+        "expectedStr": "[[7, 4, 1], [8, 5, 2], [9, 6, 3]]"
+      },
+      {
+        "label": "matrix = [[5, 1, 9, 11], [2, 4, 8, 10], [13, 3, 6, 7], [15, 14, 12, 16]]",
+        "inputStr": "{\"matrix\": [[5, 1, 9, 11], [2, 4, 8, 10], [13, 3, 6, 7], [15, 14, 12, 16]]}",
+        "expectedStr": "[[15, 13, 2, 5], [14, 3, 4, 1], [12, 6, 8, 9], [16, 7, 10, 11]]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "auxiliary matrix copy",
+        "time": "O(n^2)",
+        "space": "O(n^2)",
+        "idea": "Allocate a separate 2D array, copy each element from matrix[r][c] to target location res[c][n-1-r], then copy back.",
+        "code": "class Solution:\n    def rotate(self, matrix: List[List[int]]) -> None:\n        n = len(matrix)\n        res = [[0] * n for _ in range(n)]\n        for r in range(n):\n            for c in range(n):\n                res[c][n - 1 - r] = matrix[r][c]\n        for r in range(n):\n            for c in range(n):\n                matrix[r][c] = res[r][c]",
+        "steps": [
+          {
+            "label": "create secondary grid",
+            "note": "Initialize empty n x n helper matrix.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "map rotated cells",
+            "note": "Place element at matrix[r][c] into rotated coordinate res[c][n-1-r].",
+            "from": 5,
+            "to": 7
+          },
+          {
+            "label": "overwrite original matrix",
+            "note": "Copy elements back into input matrix to satisfy signature.",
+            "from": 8,
+            "to": 10
+          }
+        ]
+      },
+      {
+        "name": "transpose and reverse",
+        "time": "O(n^2)",
+        "space": "O(1)",
+        "idea": "Transpose the matrix by swapping matrix[i][j] with matrix[j][i], then reverse each row in place.",
+        "code": "class Solution:\n    def rotate(self, matrix: List[List[int]]) -> None:\n        n = len(matrix)\n        for i in range(n):\n            for j in range(i + 1, n):\n                matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]\n        for i in range(n):\n            matrix[i].reverse()",
+        "steps": [
+          {
+            "label": "get matrix dimension",
+            "note": "Store matrix length n.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "transpose matrix",
+            "note": "Swap elements across upper right triangle and lower left triangle.",
+            "from": 4,
+            "to": 6
+          },
+          {
+            "label": "reverse rows",
+            "note": "Reverse elements in each row horizontally to reflect clockwise shift.",
+            "from": 7,
+            "to": 8
+          }
+        ]
+      }
+    ]
+  },
+  "spiral-matrix": {
+    "statement": "Given an m x n matrix, return all elements of the matrix in spiral order.",
+    "given": "an m x n matrix",
+    "ret": "a list of integers representing all elements in spiral order",
+    "summary": "Maintain boundaries (top, bottom, left, right) and loop clockwise around the matrix perimeter while shrinking the boundaries inwards.",
+    "starter": "class Solution:\n    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:\n        pass",
+    "tests": [
+      {
+        "label": "matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]",
+        "inputStr": "{\"matrix\": [[1, 2, 3], [4, 5, 6], [7, 8, 9]]}",
+        "expectedStr": "[1, 2, 3, 6, 9, 8, 7, 4, 5]"
+      },
+      {
+        "label": "matrix = [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]",
+        "inputStr": "{\"matrix\": [[1, 2, 3, 4], [5, 6, 7, 8], [9, 10, 11, 12]]}",
+        "expectedStr": "[1, 2, 3, 4, 8, 12, 11, 10, 9, 5, 6, 7]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "simulation with visited array",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "idea": "Simulate moving right, down, left, up using direction vectors, turning clockwise whenever out of bounds or encountering an already visited cell.",
+        "code": "class Solution:\n    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:\n        if not matrix: return []\n        m, n = len(matrix), len(matrix[0])\n        seen = [[False] * n for _ in range(m)]\n        ans = []\n        dr = [0, 1, 0, -1]\n        dc = [1, 0, -1, 0]\n        r = c = di = 0\n        for _ in range(m * n):\n            ans.append(matrix[r][c])\n            seen[r][c] = True\n            cr, cc = r + dr[di], c + dc[di]\n            if 0 <= cr < m and 0 <= cc < n and not seen[cr][cc]:\n                r, c = cr, cc\n            else:\n                di = (di + 1) % 4\n                r, c = r + dr[di], c + dc[di]\n        return ans",
+        "steps": [
+          {
+            "label": "setup grid pointers and matrix dimensions",
+            "note": "Initialize variables for tracking visited positions and movements.",
+            "from": 3,
+            "to": 9
+          },
+          {
+            "label": "loop matrix size times",
+            "note": "Iterate total number of elements m * n.",
+            "from": 10,
+            "to": 10
+          },
+          {
+            "label": "record current coordinate",
+            "note": "Add matrix[r][c] to output list and set seen flag.",
+            "from": 11,
+            "to": 12
+          },
+          {
+            "label": "calculate next position",
+            "note": "Attempt moving in current direction vector `di`.",
+            "from": 13,
+            "to": 13
+          },
+          {
+            "label": "check next step or change direction",
+            "note": "If valid step move forward; if invalid, increment direction `di = (di + 1) % 4` and move.",
+            "from": 14,
+            "to": 18
+          },
+          {
+            "label": "return spiral values",
+            "note": "Return completed order list.",
+            "from": 19,
+            "to": 19
+          }
+        ]
+      },
+      {
+        "name": "boundary shrinking",
+        "time": "O(m * n)",
+        "space": "O(1)",
+        "idea": "Define boundaries top, bottom, left, right. Traversal loops top row, right column, bottom row, and left column, contracting boundaries inward.",
+        "code": "class Solution:\n    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:\n        res = []\n        top, bottom = 0, len(matrix) - 1\n        left, right = 0, len(matrix[0]) - 1\n        while top <= bottom and left <= right:\n            for col in range(left, right + 1):\n                res.append(matrix[top][col])\n            top += 1\n            for row in range(top, bottom + 1):\n                res.append(matrix[row][right])\n            right -= 1\n            if top <= bottom:\n                for col in range(right, left - 1, -1):\n                    res.append(matrix[bottom][col])\n                bottom -= 1\n            if left <= right:\n                for row in range(bottom, top - 1, -1):\n                    res.append(matrix[row][left])\n                left += 1\n        return res",
+        "steps": [
+          {
+            "label": "initialize boundaries",
+            "note": "Set `top`, `bottom`, `left`, `right` boundaries.",
+            "from": 3,
+            "to": 5
+          },
+          {
+            "label": "traverse top edge",
+            "note": "Iterate from left to right along top boundary, then increment top pointer.",
+            "from": 7,
+            "to": 9
+          },
+          {
+            "label": "traverse right edge",
+            "note": "Iterate from top to bottom along right boundary, then decrement right pointer.",
+            "from": 10,
+            "to": 12
+          },
+          {
+            "label": "traverse bottom edge",
+            "note": "If `top <= bottom`, traverse right to left along bottom, then decrement bottom pointer.",
+            "from": 13,
+            "to": 16,
+            "yes": "valid row remaining to traverse",
+            "no": "skip bottom side traversal"
+          },
+          {
+            "label": "traverse left edge",
+            "note": "If `left <= right`, traverse bottom to top along left, then increment left pointer.",
+            "from": 17,
+            "to": 20,
+            "yes": "valid column remaining to traverse",
+            "no": "skip left side traversal"
+          },
+          {
+            "label": "return result array",
+            "note": "Return accumulated values in spiral order.",
+            "from": 21,
+            "to": 21
+          }
+        ]
+      }
+    ]
   }
 };
