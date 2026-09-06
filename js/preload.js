@@ -11768,5 +11768,594 @@ window.PRELOADED_PROBLEMS = {
         ]
       }
     ]
+  },
+  "course-schedule-ii": {
+    "statement": "There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [a_i, b_i] indicates that you must take course b_i first if you want to take course a_i. Return the ordering of courses you should take to finish all courses. If it is impossible to finish all courses, return an empty array. If there are multiple valid answers, return any of them.",
+    "given": "an integer numCourses and a list of directed prerequisite pairs prerequisites",
+    "ret": "a list of integers representing a valid course order, or an empty list if impossible",
+    "summary": "Use Kahn's Algorithm (BFS with in-degree tracking) or Topological Sort via DFS to find a valid ordering or detect cycles.",
+    "starter": "class Solution:\n    def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:\n        pass",
+    "tests": [
+      {
+        "label": "numCourses = 2, prerequisites = [[1,0]]",
+        "inputStr": "{\"numCourses\": 2, \"prerequisites\": [[1,0]]}",
+        "expectedStr": "[0, 1]"
+      },
+      {
+        "label": "numCourses = 4, prerequisites = [[1,0],[2,0],[3,1],[3,2]]",
+        "inputStr": "{\"numCourses\": 4, \"prerequisites\": [[1,0],[2,0],[3,1],[3,2]]}",
+        "expectedStr": "[0, 1, 2, 3]"
+      },
+      {
+        "label": "numCourses = 1, prerequisites = []",
+        "inputStr": "{\"numCourses\": 1, \"prerequisites\": []}",
+        "expectedStr": "[0]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "DFS Topological Sort with Cycle Detection",
+        "time": "O(V + E)",
+        "space": "O(V + E)",
+        "idea": "Build an adjacency list and perform DFS on each node. Maintain three states (unvisited, visiting, visited) to detect cycles. If a cycle is detected, return an empty list. Otherwise, append completed nodes to the output list.",
+        "code": "def findOrder(numCourses, prerequisites):\n    adj = {i: [] for i in range(numCourses)}\n    for crs, pre in prerequisites:\n        adj[crs].append(pre)\n    output = []\n    visit, cycle = set(), set()\n    def dfs(crs):\n        if crs in cycle:\n            return False\n        if crs in visit:\n            return True\n        cycle.add(crs)\n        for pre in adj[crs]:\n            if not dfs(pre):\n                return False\n        cycle.remove(crs)\n        visit.add(crs)\n        output.append(crs)\n        return True\n    for c in range(numCourses):\n        if not dfs(c):\n            return []\n    return output",
+        "steps": [
+          {
+            "label": "Build adjacency list",
+            "note": "Map each course to its prerequisites",
+            "from": 2,
+            "to": 4
+          },
+          {
+            "label": "Check current cycle status",
+            "note": "If course is in active recursive stack, a cycle exists",
+            "from": 8,
+            "to": 9,
+            "yes": "Cycle detected, return False",
+            "no": "Proceed to check if already visited"
+          },
+          {
+            "label": "Check visited status",
+            "note": "If course is already fully processed, skip duplicate work",
+            "from": 10,
+            "to": 11,
+            "yes": "Already processed, return True"
+          },
+          {
+            "label": "Recurse on prerequisites",
+            "note": "Mark current as visiting and recursively visit all dependencies",
+            "from": 12,
+            "to": 15
+          },
+          {
+            "label": "Finalize node",
+            "note": "Remove course from cycle set, mark visited, and append to topological output",
+            "from": 16,
+            "to": 19
+          },
+          {
+            "label": "Run DFS for all courses",
+            "note": "Loop through all course IDs 0 to numCourses - 1",
+            "from": 20,
+            "to": 22
+          }
+        ]
+      },
+      {
+        "name": "Kahn's Algorithm (BFS In-Degree)",
+        "time": "O(V + E)",
+        "space": "O(V + E)",
+        "idea": "Calculate the in-degree of every node. Add nodes with 0 in-degree to a BFS queue. Process nodes from the queue, reducing the in-degree of their neighbors, and queue any neighbor whose in-degree reaches 0.",
+        "code": "from collections import deque\ndef findOrder(numCourses, prerequisites):\n    adj = {i: [] for i in range(numCourses)}\n    in_degree = [0] * numCourses\n    for dest, src in prerequisites:\n        adj[src].append(dest)\n        in_degree[dest] += 1\n    queue = deque([i for i in range(numCourses) if in_degree[i] == 0])\n    order = []\n    while queue:\n        curr = queue.popleft()\n        order.append(curr)\n        for neighbor in adj[curr]:\n            in_degree[neighbor] -= 1\n            if in_degree[neighbor] == 0:\n                queue.append(neighbor)\n    return order if len(order) == numCourses else []",
+        "steps": [
+          {
+            "label": "Build graph and in-degrees",
+            "note": "Construct directed graph src -> dest and record incoming edge counts for each course",
+            "from": 3,
+            "to": 7
+          },
+          {
+            "label": "Initialize queue",
+            "note": "Collect all courses that have 0 prerequisites (in-degree == 0)",
+            "from": 8,
+            "to": 8
+          },
+          {
+            "label": "Process queue",
+            "note": "Pop course from queue and add it to the execution order",
+            "from": 10,
+            "to": 12
+          },
+          {
+            "label": "Decrement neighbor in-degrees",
+            "note": "Reduce in-degree of dependent courses; if 0, push to queue",
+            "from": 13,
+            "to": 16
+          },
+          {
+            "label": "Verify result validity",
+            "note": "Return order if all courses were visited, otherwise return [] due to cycle",
+            "from": 17,
+            "to": 17
+          }
+        ]
+      }
+    ]
+  },
+  "redundant-connection": {
+    "statement": "In this problem, a tree is an undirected graph that is connected and has no cycles. You are given a graph that started as a tree with n nodes labeled from 1 to n, with one additional edge added. Return an edge that can be removed so that the resulting graph is a tree of n nodes. If there are multiple answers, return the answer that appears last in the input.",
+    "given": "a 2D list of integers edges representing an undirected graph with one extra edge",
+    "ret": "a list of two integers representing the redundant edge",
+    "summary": "Use Disjoint Set Union (Union-Find) to process edges sequentially. The first edge connecting two nodes already in the same set forms a cycle.",
+    "starter": "class Solution:\n    def findRedundantConnection(self, edges: List[List[int]]) -> List[int]:\n        pass",
+    "tests": [
+      {
+        "label": "edges = [[1,2],[1,3],[2,3]]",
+        "inputStr": "{\"edges\": [[1,2],[1,3],[2,3]]}",
+        "expectedStr": "[2, 3]"
+      },
+      {
+        "label": "edges = [[1,2],[2,3],[3,4],[1,4],[1,5]]",
+        "inputStr": "{\"edges\": [[1,2],[2,3],[3,4],[1,4],[1,5]]}",
+        "expectedStr": "[1, 4]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "DFS Cycle Search per Edge",
+        "time": "O(N^2)",
+        "space": "O(N)",
+        "idea": "For each edge (u, v), perform a DFS starting from u to check if v is already reachable through the existing graph. If reachable, (u, v) is redundant. Otherwise, add (u, v) to the graph.",
+        "code": "def findRedundantConnection(edges):\n    adj = {}\n    def dfs(src, target, visited):\n        if src == target: return True\n        visited.add(src)\n        for neighbor in adj.get(src, []):\n            if neighbor not in visited:\n                if dfs(neighbor, target, visited): return True\n        return False\n    for u, v in edges:\n        if u in adj and v in adj and dfs(u, v, set()):\n            return [u, v]\n        adj.setdefault(u, []).append(v)\n        adj.setdefault(v, []).append(u)\n    return []",
+        "steps": [
+          {
+            "label": "Iterate through edges",
+            "note": "Inspect each edge sequentially",
+            "from": 10,
+            "to": 10
+          },
+          {
+            "label": "Check reachability",
+            "note": "If both endpoints exist in adjacency list, run DFS to see if a path exists between u and v",
+            "from": 11,
+            "to": 12,
+            "yes": "Path exists; this edge creates a cycle and is returned immediately"
+          },
+          {
+            "label": "Execute DFS traversal",
+            "note": "Traverse graph depth-first starting from src looking for target node",
+            "from": 3,
+            "to": 9
+          },
+          {
+            "label": "Add edge to graph",
+            "note": "If no path exists, insert edge into the adjacency list bidirectionally",
+            "from": 13,
+            "to": 14
+          }
+        ]
+      },
+      {
+        "name": "Union-Find (Disjoint Set Union)",
+        "time": "O(N * alpha(N))",
+        "space": "O(N)",
+        "idea": "Maintain parent array. For each edge, find roots of both nodes. If roots match, they belong to the same component and this edge is redundant. Otherwise, union the sets.",
+        "code": "def findRedundantConnection(edges):\n    parent = [i for i in range(len(edges) + 1)]\n    def find(n):\n        if parent[n] != n:\n            parent[n] = find(parent[n])\n        return parent[n]\n    def union(n1, n2):\n        p1, p2 = find(n1), find(n2)\n        if p1 == p2:\n            return False\n        parent[p2] = p1\n        return True\n    for u, v in edges:\n        if not union(u, v):\n            return [u, v]\n    return []",
+        "steps": [
+          {
+            "label": "Initialize Union-Find",
+            "note": "Set parent of each node to itself",
+            "from": 2,
+            "to": 2
+          },
+          {
+            "label": "Process edge",
+            "note": "Attempt to union the components containing node u and node v",
+            "from": 12,
+            "to": 13
+          },
+          {
+            "label": "Find root with path compression",
+            "note": "Recursively find representative root and compress path",
+            "from": 3,
+            "to": 6
+          },
+          {
+            "label": "Check component roots in union",
+            "note": "Compare roots p1 and p2 of both endpoints",
+            "from": 7,
+            "to": 11,
+            "yes": "p1 == p2 means nodes already connected; return False to flag redundant edge",
+            "no": "Set parent[p2] = p1 and return True"
+          },
+          {
+            "label": "Return redundant edge",
+            "note": "Return the first edge where union returns False",
+            "from": 14,
+            "to": 14
+          }
+        ]
+      }
+    ]
+  },
+  "word-ladder": {
+    "statement": "A transformation sequence from word beginWord to word endWord using a dictionary wordList is a sequence of words beginWord -> s1 -> s2 -> ... -> sk such that every adjacent pair differs by a single letter, every si is in wordList, and sk == endWord. Given beginWord, endWord, and wordList, return the number of words in the shortest transformation sequence from beginWord to endWord, or 0 if no such sequence exists.",
+    "given": "strings beginWord and endWord, and a list of valid words wordList",
+    "ret": "an integer representing the minimum length of the transformation sequence",
+    "summary": "Model words as nodes and single-letter transformations as edges, then perform Breadth-First Search (BFS) to find the shortest path.",
+    "starter": "class Solution:\n    def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "beginWord = \"hit\", endWord = \"cog\", wordList = [\"hot\",\"dot\",\"dog\",\"lot\",\"log\",\"cog\"]",
+        "inputStr": "{\"beginWord\": \"hit\", \"endWord\": \"cog\", \"wordList\": [\"hot\",\"dot\",\"dog\",\"lot\",\"log\",\"cog\"]}",
+        "expectedStr": "5"
+      },
+      {
+        "label": "beginWord = \"hit\", endWord = \"cog\", wordList = [\"hot\",\"dot\",\"dog\",\"lot\",\"log\"]",
+        "inputStr": "{\"beginWord\": \"hit\", \"endWord\": \"cog\", \"wordList\": [\"hot\",\"dot\",\"dog\",\"lot\",\"log\"]}",
+        "expectedStr": "0"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Standard BFS with Wildcard Pattern Preprocessing",
+        "time": "O(M^2 * N)",
+        "space": "O(M^2 * N)",
+        "idea": "Precompute generic word patterns (e.g., 'h*t') to quickly find 1-letter transformation neighbors during BFS exploration.",
+        "code": "from collections import deque, defaultdict\ndef ladderLength(beginWord, endWord, wordList):\n    if endWord not in wordList: return 0\n    patterns = defaultdict(list)\n    for word in wordList:\n        for j in range(len(word)):\n            patterns[word[:j] + \"*\" + word[j+1:]].append(word)\n    queue = deque([(beginWord, 1)])\n    visited = {beginWord}\n    while queue:\n        word, level = queue.popleft()\n        if word == endWord: return level\n        for j in range(len(word)):\n            pattern = word[:j] + \"*\" + word[j+1:]\n            for nei in patterns[pattern]:\n                if nei not in visited:\n                    visited.add(nei)\n                    queue.append((nei, level + 1))\n            patterns[pattern] = []\n    return 0",
+        "steps": [
+          {
+            "label": "Check endWord existence",
+            "note": "If endWord is not in wordList, transformation is impossible",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "Preprocess patterns",
+            "note": "Group words by wildcard patterns (e.g. *ot -> hot, dot, lot)",
+            "from": 4,
+            "to": 7
+          },
+          {
+            "label": "Initialize queue",
+            "note": "Push beginWord with path length 1 into BFS queue and mark visited",
+            "from": 8,
+            "to": 9
+          },
+          {
+            "label": "Process BFS node",
+            "note": "Pop current word and length; return length if endWord is reached",
+            "from": 10,
+            "to": 12
+          },
+          {
+            "label": "Explore neighbors via patterns",
+            "note": "Generate patterns for current word, add unvisited neighbor words to queue, and clear pattern list to prevent duplicate traversal",
+            "from": 13,
+            "to": 19
+          }
+        ]
+      },
+      {
+        "name": "Bidirectional BFS",
+        "time": "O(M^2 * N)",
+        "space": "O(M * N)",
+        "idea": "Search simultaneously from beginWord and endWord, always expanding the smaller frontier set to drastically reduce search space.",
+        "code": "def ladderLength(beginWord, endWord, wordList):\n    wordSet = set(wordList)\n    if endWord not in wordSet: return 0\n    front, back = {beginWord}, {endWord}\n    length = 1\n    while front and back:\n        if len(front) > len(back):\n            front, back = back, front\n        next_front = set()\n        for word in front:\n            for i in range(len(word)):\n                for c in 'abcdefghijklmnopqrstuvwxyz':\n                    nxt = word[:i] + c + word[i+1:]\n                    if nxt in back: return length + 1\n                    if nxt in wordSet:\n                        wordSet.remove(nxt)\n                        next_front.add(nxt)\n        front = next_front\n        length += 1\n    return 0",
+        "steps": [
+          {
+            "label": "Initialize sets",
+            "note": "Convert wordList to set; initialize front set with beginWord and back set with endWord",
+            "from": 2,
+            "to": 5
+          },
+          {
+            "label": "Swap frontiers",
+            "note": "Always expand from the smaller frontier set to minimize branching factor",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "Generate candidate transformations",
+            "note": "Try changing each character of word to all 26 lowercase alphabet letters",
+            "from": 10,
+            "to": 13
+          },
+          {
+            "label": "Check intersection",
+            "note": "If candidate word is in back frontier, return length + 1",
+            "from": 14,
+            "to": 14,
+            "yes": "Both frontiers met; return shortest total transformation steps"
+          },
+          {
+            "label": "Advance frontier",
+            "note": "Add valid words from wordSet to next_front set and remove from wordSet to mark visited",
+            "from": 15,
+            "to": 17
+          },
+          {
+            "label": "Update level",
+            "note": "Set front to next_front and increment path length counter",
+            "from": 18,
+            "to": 19
+          }
+        ]
+      }
+    ]
+  },
+  "network-delay-time": {
+    "statement": "You are given a network of n nodes, labeled from 1 to n. You are also given times, a list of travel times as directed edges times[i] = (ui, vi, wi), where ui is the source node, vi is the target node, and wi is the time it takes for a signal to travel from source to target. We will send a signal from a given node k. Return the minimum time it takes for all the n nodes to receive the signal. If it is impossible for all the n nodes to receive the signal, return -1.",
+    "given": "a list of directed edges times, total nodes n, and start node k",
+    "ret": "the minimum time for all nodes to receive the signal, or -1 if unreachable",
+    "summary": "This is a single-source shortest path problem on a weighted directed graph. We can use Dijkstra's algorithm with a min-heap to greedily find the shortest travel time to all nodes.",
+    "starter": "def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:\n    pass",
+    "tests": [
+      {
+        "label": "times = [[2,1,1],[2,3,1],[3,4,1]], n = 4, k = 2",
+        "inputStr": "{\"times\": [[2,1,1],[2,3,1],[3,4,1]], \"n\": 4, \"k\": 2}",
+        "expectedStr": "2"
+      },
+      {
+        "label": "times = [[1,2,1]], n = 2, k = 1",
+        "inputStr": "{\"times\": [[1,2,1]], \"n\": 2, \"k\": 1}",
+        "expectedStr": "1"
+      },
+      {
+        "label": "times = [[1,2,1]], n = 2, k = 2",
+        "inputStr": "{\"times\": [[1,2,1]], \"n\": 2, \"k\": 2}",
+        "expectedStr": "-1"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Bellman-Ford Algorithm",
+        "time": "O(V * E)",
+        "space": "O(V)",
+        "idea": "Initialize all node distances to infinity except the source node k which is set to 0. Relax all edges n - 1 times.",
+        "code": "def networkDelayTime(times: list[list[int]], n: int, k: int) -> int:\n    dist = [float('inf')] * (n + 1)\n    dist[k] = 0\n    for _ in range(n - 1):\n        for u, v, w in times:\n            if dist[u] != float('inf') and dist[u] + w < dist[v]:\n                dist[v] = dist[u] + w\n    max_dist = max(dist[1:])\n    return max_dist if max_dist != float('inf') else -1",
+        "steps": [
+          {
+            "label": "Initialize distances",
+            "note": "Set dist array size to n+1 filled with infinity, and dist[k] = 0.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Relax edges",
+            "note": "Loop n - 1 times over all edges (u, v, w) to relax distances.",
+            "from": 4,
+            "to": 7,
+            "yes": "Updated dist[v] if shorter path via dist[u] + w was found."
+          },
+          {
+            "label": "Compute answer",
+            "note": "Find the maximum distance among nodes 1 to n. Return -1 if any node remains unreachable.",
+            "from": 8,
+            "to": 9
+          }
+        ]
+      },
+      {
+        "name": "Dijkstra's Algorithm (Min-Heap)",
+        "time": "O((E + V) log V)",
+        "space": "O(V + E)",
+        "idea": "Build an adjacency list and use a min-heap priority queue to greedily process the unvisited node with the smallest distance.",
+        "code": "import collections\nimport heapq\n\ndef networkDelayTime(times: list[list[int]], n: int, k: int) -> int:\n    graph = collections.defaultdict(list)\n    for u, v, w in times:\n        graph[u].append((v, w))\n    \n    pq = [(0, k)]\n    visited = {}\n    \n    while pq:\n        time, node = heapq.heappop(pq)\n        if node in visited:\n            continue\n        visited[node] = time\n        for neighbor, weight in graph[node]:\n            if neighbor not in visited:\n                heapq.heappush(pq, (time + weight, neighbor))\n                \n    return max(visited.values()) if len(visited) == n else -1",
+        "steps": [
+          {
+            "label": "Build graph",
+            "note": "Construct adjacency list mapping node u to list of (v, weight).",
+            "from": 5,
+            "to": 7
+          },
+          {
+            "label": "Initialize heap and visited",
+            "note": "Push initial pair (0, k) into min-heap and set up empty visited map.",
+            "from": 9,
+            "to": 10
+          },
+          {
+            "label": "Pop node from heap",
+            "note": "Extract smallest distance node from pq. Skip if already visited.",
+            "from": 12,
+            "to": 15
+          },
+          {
+            "label": "Traverse neighbors",
+            "note": "For each neighbor, push cumulative travel time to min-heap if not visited.",
+            "from": 16,
+            "to": 18
+          },
+          {
+            "label": "Return result",
+            "note": "If visited count equals n, return maximum time recorded; otherwise return -1.",
+            "from": 20,
+            "to": 20
+          }
+        ]
+      }
+    ]
+  },
+  "min-cost-to-connect-all-points": {
+    "statement": "You are given an array points representing integer coordinates of some points on a 2D-plane, where points[i] = [xi, yi]. The cost of connecting two points [xi, yi] and [xj, yj] is the Manhattan distance between them: |xi - xj| + |yi - yj|. Return the minimum cost to make all points connected. All points are connected if there is exactly one simple path between any two points.",
+    "given": "an array of 2D coordinates points",
+    "ret": "the minimum cost to connect all points into a single connected component",
+    "summary": "This is a Minimum Spanning Tree (MST) problem on a complete graph. We can use Prim's algorithm with a min-heap or Kruskal's algorithm with Union-Find.",
+    "starter": "def minCostConnectPoints(points: list[list[int]]) -> int:\n    pass",
+    "tests": [
+      {
+        "label": "points = [[0,0],[2,2],[3,10],[5,2],[7,0]]",
+        "inputStr": "{\"points\": [[0,0],[2,2],[3,10],[5,2],[7,0]]}",
+        "expectedStr": "20"
+      },
+      {
+        "label": "points = [[3,12],[-2,5],[-4,1]]",
+        "inputStr": "{\"points\": [[3,12],[-2,5],[-4,1]]}",
+        "expectedStr": "18"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Kruskal's Algorithm (Union-Find)",
+        "time": "O(N^2 log N)",
+        "space": "O(N^2)",
+        "idea": "Generate all N*(N-1)/2 edges, sort them by distance, and add edges to the MST using Union-Find to avoid cycles.",
+        "code": "def minCostConnectPoints(points: list[list[int]]) -> int:\n    n = len(points)\n    edges = []\n    for i in range(n):\n        for j in range(i + 1, n):\n            dist = abs(points[i][0] - points[j][0]) + abs(points[i][1] - points[j][1])\n            edges.append((dist, i, j))\n    edges.sort()\n    \n    parent = list(range(n))\n    def find(i):\n        if parent[i] == i:\n            return i\n        parent[i] = find(parent[i])\n        return parent[i]\n        \n    total_cost, edges_used = 0, 0\n    for cost, u, v in edges:\n        root_u, root_v = find(u), find(v)\n        if root_u != root_v:\n            parent[root_u] = root_v\n            total_cost += cost\n            edges_used += 1\n            if edges_used == n - 1:\n                break\n    return total_cost",
+        "steps": [
+          {
+            "label": "Generate and sort edges",
+            "note": "Calculate Manhattan distance for all point pairs and sort edges by weight.",
+            "from": 2,
+            "to": 8
+          },
+          {
+            "label": "Initialize Union-Find structure",
+            "note": "Set parent array where each element points to itself.",
+            "from": 10,
+            "to": 15
+          },
+          {
+            "label": "Iterate edges and union components",
+            "note": "Process edges sequentially; if endpoints are not connected, union them and add cost.",
+            "from": 17,
+            "to": 24
+          },
+          {
+            "label": "Return total cost",
+            "note": "Return total cost after n - 1 edges are added.",
+            "from": 25,
+            "to": 25
+          }
+        ]
+      },
+      {
+        "name": "Prim's Algorithm (Min-Heap)",
+        "time": "O(N^2 log N)",
+        "space": "O(N^2)",
+        "idea": "Start from point 0 and greedily pick the minimum weight edge that connects an unvisited point to the current MST using a min-heap.",
+        "code": "import heapq\n\ndef minCostConnectPoints(points: list[list[int]]) -> int:\n    n = len(points)\n    visited = set()\n    min_heap = [(0, 0)]  # (cost, point_index)\n    total_cost = 0\n    \n    while len(visited) < n:\n        cost, u = heapq.heappop(min_heap)\n        if u in visited:\n            continue\n        visited.add(u)\n        total_cost += cost\n        \n        for v in range(n):\n            if v not in visited:\n                dist = abs(points[u][0] - points[v][0]) + abs(points[u][1] - points[v][1])\n                heapq.heappush(min_heap, (dist, v))\n                \n    return total_cost",
+        "steps": [
+          {
+            "label": "Initialize Prim's state",
+            "note": "Create min_heap containing initial tuple (0, 0) and empty visited set.",
+            "from": 4,
+            "to": 7
+          },
+          {
+            "label": "Pop smallest distance node",
+            "note": "Extract element from min-heap, skip if point is already in MST.",
+            "from": 9,
+            "to": 12
+          },
+          {
+            "label": "Add point to MST",
+            "note": "Add point to visited set and accumulate cost.",
+            "from": 13,
+            "to": 14
+          },
+          {
+            "label": "Push adjacent edges",
+            "note": "Calculate distance to all unvisited nodes and push into min-heap.",
+            "from": 16,
+            "to": 19
+          },
+          {
+            "label": "Return result",
+            "note": "Return accumulated total cost when all points are visited.",
+            "from": 21,
+            "to": 21
+          }
+        ]
+      }
+    ]
+  },
+  "reconstruct-itinerary": {
+    "statement": "You are given a list of airline tickets where tickets[i] = [from_i, to_i] represent the departure and the arrival airports of one flight. Reconstruct the itinerary in order and return it. All of the tickets belong to a man who departs from 'JFK', thus, the itinerary must begin with 'JFK'. If there are multiple valid itineraries, you should return the itinerary that has the smallest lexical order when read as a single string. You must use all the tickets once and only once.",
+    "given": "a list of flight tickets [from_airport, to_airport]",
+    "ret": "a list of airport codes representing the lexicographically smallest complete itinerary",
+    "summary": "This problem asks for an Eulerian Path in a directed graph starting at 'JFK'. We sort destination lists lexicographically and perform a DFS with Hierholzer's algorithm.",
+    "starter": "def findItinerary(tickets: list[list[str]]) -> list[str]:\n    pass",
+    "tests": [
+      {
+        "label": "tickets = [[\"MUC\",\"LHR\"],[\"JFK\",\"MUC\"],[\"SFO\",\"SJC\"],[\"LHR\",\"SFO\"]]",
+        "inputStr": "{\"tickets\": [[\"MUC\",\"LHR\"],[\"JFK\",\"MUC\"],[\"SFO\",\"SJC\"],[\"LHR\",\"SFO\"]]}",
+        "expectedStr": "[\"JFK\",\"MUC\",\"LHR\",\"SFO\",\"SJC\"]"
+      },
+      {
+        "label": "tickets = [[\"JFK\",\"SFO\"],[\"JFK\",\"ATL\"],[\"SFO\",\"ATL\"],[\"ATL\",\"JFK\"],[\"ATL\",\"SFO\"]]",
+        "inputStr": "{\"tickets\": [[\"JFK\",\"SFO\"],[\"JFK\",\"ATL\"],[\"SFO\",\"ATL\"],[\"ATL\",\"JFK\"],[\"ATL\",\"SFO\"]]}",
+        "expectedStr": "[\"JFK\",\"ATL\",\"JFK\",\"SFO\",\"ATL\",\"SFO\"]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Backtracking DFS",
+        "time": "O(E^d)",
+        "space": "O(V + E)",
+        "idea": "Build an adjacency list sorted lexicographically. Perform a standard backtracking DFS to find a path that consumes all tickets.",
+        "code": "import collections\n\ndef findItinerary(tickets: list[list[str]]) -> list[str]:\n    adj = collections.defaultdict(list)\n    for src, dst in sorted(tickets):\n        adj[src].append(dst)\n        \n    route = [\"JFK\"]\n    total_tickets = len(tickets)\n    \n    def dfs(curr):\n        if len(route) == total_tickets + 1:\n            return True\n        if curr not in adj:\n            return False\n            \n        destinations = list(adj[curr])\n        for i, next_dest in enumerate(destinations):\n            adj[curr].pop(i)\n            route.append(next_dest)\n            if dfs(next_dest):\n                return True\n            route.pop()\n            adj[curr].insert(i, next_dest)\n        return False\n        \n    dfs(\"JFK\")\n    return route",
+        "steps": [
+          {
+            "label": "Construct sorted graph",
+            "note": "Sort tickets first to ensure destinations are processed in lexicographical order.",
+            "from": 4,
+            "to": 6
+          },
+          {
+            "label": "Check base case",
+            "note": "If route contains total_tickets + 1 elements, valid path found.",
+            "from": 11,
+            "to": 12,
+            "yes": "Return True to signal completion."
+          },
+          {
+            "label": "Backtrack choices",
+            "note": "Try each available flight edge, pop from adjacency list, and recurse.",
+            "from": 16,
+            "to": 22
+          },
+          {
+            "label": "Return path",
+            "note": "Execute DFS starting from JFK and return reconstructed route.",
+            "from": 24,
+            "to": 25
+          }
+        ]
+      },
+      {
+        "name": "Hierholzer's Algorithm (Hierholzer DFS)",
+        "time": "O(E log E)",
+        "space": "O(V + E)",
+        "idea": "Sort target destinations in reverse lexicographical order to pop from the end in O(1). Traverse nodes via DFS until stuck, then post-order append nodes to result list and reverse.",
+        "code": "import collections\n\ndef findItinerary(tickets: list[list[str]]) -> list[str]:\n    adj = collections.defaultdict(list)\n    for u, v in sorted(tickets, reverse=True):\n        adj[u].append(v)\n        \n    route = []\n    def dfs(airport):\n        while adj[airport]:\n            next_dest = adj[airport].pop()\n            dfs(next_dest)\n        route.append(airport)\n        \n    dfs(\"JFK\")\n    return route[::-1]",
+        "steps": [
+          {
+            "label": "Build adjacency lists",
+            "note": "Sort tickets in reverse order so the smallest string is at the end of the list for fast pop().",
+            "from": 4,
+            "to": 6
+          },
+          {
+            "label": "Eulerian path DFS traversal",
+            "note": "Greedily pop available destinations from current node and recursively call DFS.",
+            "from": 9,
+            "to": 12
+          },
+          {
+            "label": "Post-order append",
+            "note": "When a node has no outgoing edges left, append it to route.",
+            "from": 13,
+            "to": 13
+          },
+          {
+            "label": "Reverse and return",
+            "note": "The post-order traversal yields the Eulerian path in reverse order; reverse it before returning.",
+            "from": 15,
+            "to": 16
+          }
+        ]
+      }
+    ]
   }
 };
