@@ -13608,5 +13608,597 @@ window.PRELOADED_PROBLEMS = {
         ]
       }
     ]
+  },
+  "regular-expression-matching": {
+    "statement": "Given an input string s and a pattern p, implement regular expression matching with support for '.' and '*' where '.' matches any single character and '*' matches zero or more of the preceding element. The matching should cover the entire input string (not partial).",
+    "given": "a string s and a pattern p",
+    "ret": "true if the pattern matches the entire string s, false otherwise",
+    "summary": "Use recursion with memoization or dynamic programming. Handle '*' by choosing either to ignore the preceding element or consume one matching character from s.",
+    "starter": "class Solution:\n    def isMatch(self, s: str, p: str) -> bool:\n        pass",
+    "tests": [
+      {
+        "label": "s = \"aa\", p = \"a\"",
+        "inputStr": "{\"s\": \"aa\", \"p\": \"a\"}",
+        "expectedStr": "false"
+      },
+      {
+        "label": "s = \"aa\", p = \"a*\"",
+        "inputStr": "{\"s\": \"aa\", \"p\": \"a*\"}",
+        "expectedStr": "true"
+      },
+      {
+        "label": "s = \"ab\", p = \".*\"",
+        "inputStr": "{\"s\": \"ab\", \"p\": \".*\"}",
+        "expectedStr": "true"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force recursive",
+        "time": "O(2^(m+n))",
+        "space": "O(m+n)",
+        "idea": "Recursively check matching character by character. When encountering a '*' at the next pattern position, branch into two choices: skipping the wildcard or consuming a matching character in s.",
+        "code": "class Solution:\n    def isMatch(self, s: str, p: str) -> bool:\n        if not p:\n            return not s\n        first_match = bool(s) and p[0] in {s[0], '.'}\n        if len(p) >= 2 and p[1] == '*':\n            return (self.isMatch(s, p[2:]) or\n                    (first_match and self.isMatch(s[1:], p)))\n        else:\n            return first_match and self.isMatch(s[1:], p[1:])",
+        "steps": [
+          {
+            "label": "check pattern empty",
+            "note": "If p is empty, return true only if s is also empty.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "check first char match",
+            "note": "Verify if the first character of s matches p[0] or p[0] is '.'.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "check star wildcard",
+            "note": "If p[1] is '*', branch into 0 occurrences or >= 1 occurrence of p[0].",
+            "from": 6,
+            "to": 7,
+            "yes": "p[1] is '*'",
+            "no": "p[1] is not '*'"
+          },
+          {
+            "label": "advance single match",
+            "note": "If no '*', require first character match and recursively match remaining substrings.",
+            "from": 9,
+            "to": 9
+          }
+        ]
+      },
+      {
+        "name": "top-down dynamic programming (memoization)",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "idea": "Store computed results for index pairs (i, j) where i is the position in s and j is the position in p. This eliminates redundant exponential evaluation of matching paths.",
+        "code": "class Solution:\n    def isMatch(self, s: str, p: str) -> bool:\n        memo = {}\n        def dp(i: int, j: int) -> bool:\n            if (i, j) in memo:\n                return memo[(i, j)]\n            if j == len(p):\n                return i == len(s)\n            first_match = i < len(s) and (p[j] == s[i] or p[j] == '.')\n            if j + 1 < len(p) and p[j + 1] == '*':\n                ans = dp(i, j + 2) or (first_match and dp(i + 1, j))\n            else:\n                ans = first_match and dp(i + 1, j + 1)\n            memo[(i, j)] = ans\n            return ans\n        return dp(0, 0)",
+        "steps": [
+          {
+            "label": "check memo",
+            "note": "If tuple (i, j) was already evaluated, return cached boolean result.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "base case pattern end",
+            "note": "If j reaches end of pattern, string s must also be fully matched (i == len(s)).",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "evaluate character match",
+            "note": "Check if current character at s[i] matches p[j] or if p[j] is '.'.",
+            "from": 9,
+            "to": 10
+          },
+          {
+            "label": "branch on star wildcard",
+            "note": "If p[j+1] is '*', evaluate zero occurrences dp(i, j+2) or one occurrence dp(i+1, j).",
+            "from": 10,
+            "to": 11,
+            "yes": "p[j+1] == '*'",
+            "no": "p[j+1] != '*'"
+          },
+          {
+            "label": "cache and return",
+            "note": "Store result into memo dictionary before returning.",
+            "from": 14,
+            "to": 15
+          }
+        ]
+      }
+    ]
+  },
+  "jump-game-ii": {
+    "statement": "You are given a 0-indexed array of integers nums of length n. You are initially positioned at nums[0]. Each element nums[i] represents the maximum length of a forward jump from index i. Return the minimum number of jumps to reach nums[n - 1].",
+    "given": "a 0-indexed array of integers nums",
+    "ret": "the minimum number of jumps required to reach the last index",
+    "summary": "Greedily track the maximum index reachable at the current step; increment jump count whenever reaching the current step's maximum reach.",
+    "starter": "class Solution:\n    def jump(self, nums: List[int]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "nums = [2,3,1,1,4]",
+        "inputStr": "{\"nums\": [2,3,1,1,4]}",
+        "expectedStr": "2"
+      },
+      {
+        "label": "nums = [2,3,0,1,4]",
+        "inputStr": "{\"nums\": [2,3,0,1,4]}",
+        "expectedStr": "2"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "dynamic programming",
+        "time": "O(n^2)",
+        "space": "O(n)",
+        "idea": "Build a minimum jumps array dp where dp[i] represents the minimum jumps to reach index i from index 0.",
+        "code": "class Solution:\n    def jump(self, nums: List[int]) -> int:\n        n = len(nums)\n        dp = [float('inf')] * n\n        dp[0] = 0\n        for i in range(n):\n            for j in range(1, nums[i] + 1):\n                if i + j < n:\n                    dp[i + j] = min(dp[i + j], dp[i] + 1)\n        return dp[-1]",
+        "steps": [
+          {
+            "label": "initialize dp table",
+            "note": "Set infinity for all positions, except index 0 which takes 0 jumps.",
+            "from": 3,
+            "to": 5
+          },
+          {
+            "label": "outer loop indices",
+            "note": "Iterate through each position i in nums.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "inner loop jump options",
+            "note": "Update reachable future positions i + j with min(dp[i + j], dp[i] + 1).",
+            "from": 7,
+            "to": 9
+          },
+          {
+            "label": "return last element",
+            "note": "dp[-1] holds min jumps to reach the last index.",
+            "from": 10,
+            "to": 10
+          }
+        ]
+      },
+      {
+        "name": "greedy (implicit BFS)",
+        "time": "O(n)",
+        "space": "O(1)",
+        "idea": "Maintain current range reach boundary (current_end) and farthest reachable index overall. When reaching current_end, increment jump count and update current_end.",
+        "code": "class Solution:\n    def jump(self, nums: List[int]) -> int:\n        jumps = 0\n        current_end = 0\n        farthest = 0\n        for i in range(len(nums) - 1):\n            farthest = max(farthest, i + nums[i])\n            if i == current_end:\n                jumps += 1\n                current_end = farthest\n        return jumps",
+        "steps": [
+          {
+            "label": "init tracking variables",
+            "note": "Set jumps, current_end, and farthest boundaries to 0.",
+            "from": 3,
+            "to": 5
+          },
+          {
+            "label": "loop excluding last element",
+            "note": "Iterate up to index n-2 because once we reach/pass n-1, no extra jump needed.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "update farthest reach",
+            "note": "Calculate max reachable position from current index i.",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "check jump boundary",
+            "note": "If index matches current_end, increment jump and expand current_end to farthest.",
+            "from": 8,
+            "to": 10,
+            "yes": "i == current_end",
+            "no": "i < current_end"
+          },
+          {
+            "label": "return jump count",
+            "note": "Return total accumulated jumps.",
+            "from": 11,
+            "to": 11
+          }
+        ]
+      }
+    ]
+  },
+  "gas-station": {
+    "statement": "There are n gas stations along a circular route, where the amount of gas at the ith station is gas[i]. You have a car with an unlimited gas tank and it costs cost[i] of gas to travel from the ith station to its next (i + 1)th station. Return the starting gas station's index if you can travel around the circuit once in the clockwise direction, otherwise return -1.",
+    "given": "two integer arrays gas and cost",
+    "ret": "the starting station index if valid, or -1 if complete circuit is impossible",
+    "summary": "If sum(gas) < sum(cost), completion is impossible. Otherwise, greedily update start index to i + 1 whenever running tank drops below zero.",
+    "starter": "class Solution:\n    def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "gas = [1,2,3,4,5], cost = [3,4,5,1,2]",
+        "inputStr": "{\"gas\": [1,2,3,4,5], \"cost\": [3,4,5,1,2]}",
+        "expectedStr": "3"
+      },
+      {
+        "label": "gas = [2,3,4], cost = [3,4,3]",
+        "inputStr": "{\"gas\": [2,3,4], \"cost\": [3,4,3]}",
+        "expectedStr": "-1"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force simulation",
+        "time": "O(n^2)",
+        "space": "O(1)",
+        "idea": "Try starting at every station i and simulate completing the circle of n stations.",
+        "code": "class Solution:\n    def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:\n        n = len(gas)\n        for start in range(n):\n            tank = 0\n            possible = True\n            for count in range(n):\n                i = (start + count) % n\n                tank += gas[i] - cost[i]\n                if tank < 0:\n                    possible = False\n                    break\n            if possible:\n                return start\n        return -1",
+        "steps": [
+          {
+            "label": "outer loop starting station",
+            "note": "Iterate each index start from 0 to n-1.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "inner loop circuit simulation",
+            "note": "Simulate travel through n stations in circular order using modulo arithmetic.",
+            "from": 7,
+            "to": 9
+          },
+          {
+            "label": "check tank depletion",
+            "note": "If tank drops below 0, break inner loop early.",
+            "from": 10,
+            "to": 12,
+            "yes": "tank < 0",
+            "no": "tank >= 0"
+          },
+          {
+            "label": "return valid start",
+            "note": "If full loop completed without tank < 0, return start index.",
+            "from": 13,
+            "to": 14
+          }
+        ]
+      },
+      {
+        "name": "one-pass greedy",
+        "time": "O(n)",
+        "space": "O(1)",
+        "idea": "First verify if sum(gas) >= sum(cost). If so, iterate through array maintaining running gas tank; reset starting index to i + 1 whenever running tank drops below zero.",
+        "code": "class Solution:\n    def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:\n        if sum(gas) < sum(cost):\n            return -1\n        total_tank = 0\n        start_index = 0\n        for i in range(len(gas)):\n            total_tank += gas[i] - cost[i]\n            if total_tank < 0:\n                start_index = i + 1\n                total_tank = 0\n        return start_index",
+        "steps": [
+          {
+            "label": "global feasibility check",
+            "note": "If total gas is less than total cost, completing circuit is mathematically impossible.",
+            "from": 3,
+            "to": 4,
+            "yes": "sum(gas) < sum(cost)",
+            "no": "sum(gas) >= sum(cost)"
+          },
+          {
+            "label": "initialize tracking",
+            "note": "Initialize running tank total and prospective start_index to 0.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "accumulate net fuel",
+            "note": "Add gas[i] - cost[i] to current running tank balance.",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "reset starting candidate",
+            "note": "If total_tank < 0, no station from previous start to i can be valid; set start_index = i + 1 and reset tank.",
+            "from": 8,
+            "to": 10,
+            "yes": "total_tank < 0",
+            "no": "total_tank >= 0"
+          },
+          {
+            "label": "return candidate start",
+            "note": "Return start_index which is guaranteed to be valid due to global check.",
+            "from": 11,
+            "to": 11
+          }
+        ]
+      }
+    ]
+  },
+  "hand-of-straights": {
+    "statement": "Alice has some number of cards and she wants to rearrange the cards into groups so that each group is of size groupSize, and consists of groupSize consecutive cards.\n\nGiven an integer array hand where hand[i] is the value written on the i-th card and an integer groupSize, return true if she can rearrange the cards, or false otherwise.",
+    "given": "an integer array hand and an integer groupSize",
+    "ret": "true if hand can be rearranged into groups of groupSize consecutive cards, false otherwise",
+    "summary": "Count occurrences of each card, then greedily form groups starting from the smallest available card value.",
+    "starter": "class Solution:\n    def isNStraightHand(self, hand: list[int], groupSize: int) -> bool:",
+    "tests": [
+      {
+        "label": "hand = [1,2,3,6,2,3,4,7,8], groupSize = 3",
+        "inputStr": "{\"hand\": [1,2,3,6,2,3,4,7,8], \"groupSize\": 3}",
+        "expectedStr": "true"
+      },
+      {
+        "label": "hand = [1,2,3,4,5], groupSize = 4",
+        "inputStr": "{\"hand\": [1,2,3,4,5], \"groupSize\": 4}",
+        "expectedStr": "false"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Brute Force Sorting and Deletion",
+        "time": "O(N^2)",
+        "space": "O(1)",
+        "idea": "Sort the hand. Iterate through the hand and for each available card, search forward linearly to find and remove the next groupSize - 1 consecutive cards.",
+        "code": "class Solution:\n    def isNStraightHand(self, hand: list[int], groupSize: int) -> bool:\n        if len(hand) % groupSize != 0:\n            return False\n        hand.sort()\n        for i in range(len(hand)):\n            if hand[i] == -1:\n                continue\n            val = hand[i]\n            hand[i] = -1\n            count = 1\n            for j in range(i + 1, len(hand)):\n                if hand[j] == val + 1:\n                    val = hand[j]\n                    hand[j] = -1\n                    count += 1\n                    if count == groupSize:\n                        break\n            if count != groupSize:\n                return False\n        return True",
+        "steps": [
+          {
+            "label": "check divisibility",
+            "note": "If total cards is not divisible by groupSize, split is impossible.",
+            "from": 3,
+            "to": 4,
+            "yes": "return False",
+            "no": "continue to sort"
+          },
+          {
+            "label": "sort hand",
+            "note": "Sort cards in ascending order to always pick smallest card first.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "find next start card",
+            "note": "Skip already used cards (marked as -1).",
+            "from": 7,
+            "to": 8,
+            "yes": "skip index",
+            "no": "start group from hand[i]"
+          },
+          {
+            "label": "linear search for consecutive cards",
+            "note": "Search rightward to match consecutive card values and mark them as used.",
+            "from": 12,
+            "to": 13
+          },
+          {
+            "label": "validate group formation",
+            "note": "If group of size groupSize could not be filled, return False.",
+            "from": 19,
+            "to": 20,
+            "yes": "return False",
+            "no": "continue to next group"
+          }
+        ]
+      },
+      {
+        "name": "Greedy Hash Map & Sorted Keys",
+        "time": "O(N log N)",
+        "space": "O(N)",
+        "idea": "Count frequency of each card using a hash map. Iterate over sorted unique cards and greedily attempt to build required groups of consecutive cards.",
+        "code": "from collections import Counter\n\nclass Solution:\n    def isNStraightHand(self, hand: list[int], groupSize: int) -> bool:\n        if len(hand) % groupSize != 0:\n            return False\n        count = Counter(hand)\n        for card in sorted(count):\n            if count[card] > 0:\n                start_count = count[card]\n                for i in range(card, card + groupSize):\n                    if count[i] < start_count:\n                        return False\n                    count[i] -= start_count\n        return True",
+        "steps": [
+          {
+            "label": "check divisibility",
+            "note": "Return False early if length of hand is not divisible by groupSize.",
+            "from": 5,
+            "to": 6,
+            "yes": "return False",
+            "no": "build frequency count"
+          },
+          {
+            "label": "build counter",
+            "note": "Create hash map of element frequencies.",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "iterate sorted keys",
+            "note": "Iterate through unique cards in ascending order.",
+            "from": 8,
+            "to": 9
+          },
+          {
+            "label": "check consecutive sequence",
+            "note": "Verify that all cards in range [card, card + groupSize) have at least start_count frequency.",
+            "from": 11,
+            "to": 12,
+            "yes": "return False",
+            "no": "decrement frequency counts"
+          },
+          {
+            "label": "subtract counts",
+            "note": "Reduce count of each card in group by start_count.",
+            "from": 14,
+            "to": 8
+          }
+        ]
+      }
+    ]
+  },
+  "merge-triplets-to-form-target-triplet": {
+    "statement": "A triplet is an array of three integers. You are given a 2D integer array triplets, where triplets[i] = [ai, bi, ci] describes the i-th triplet. You are also given an integer array target = [x, y, z] that describes the triplet you want to obtain.\n\nTo obtain target, you may apply the following operation on triplets any number of times: choose two indices i and j and update triplets[j] to [max(ai, aj), max(bi, bj), max(ci, cj)].\n\nReturn true if it is possible to obtain target as an element of triplets, or false otherwise.",
+    "given": "a 2D integer array triplets and a target integer array target of size 3",
+    "ret": "true if target can be formed using valid max operations, false otherwise",
+    "summary": "Filter out any triplet that contains elements exceeding target values, then check if remaining valid triplets cover all target components.",
+    "starter": "class Solution:\n    def mergeTriplets(self, triplets: list[list[int]], target: list[int]) -> bool:",
+    "tests": [
+      {
+        "label": "triplets = [[2,5,3],[1,8,4],[1,7,5]], target = [2,7,5]",
+        "inputStr": "{\"triplets\": [[2,5,3],[1,8,4],[1,7,5]], \"target\": [2,7,5]}",
+        "expectedStr": "true"
+      },
+      {
+        "label": "triplets = [[3,4,5],[4,5,6]], target = [3,2,5]",
+        "inputStr": "{\"triplets\": [[3,4,5],[4,5,6]], \"target\": [3,2,5]}",
+        "expectedStr": "false"
+      },
+      {
+        "label": "triplets = [[2,5,3],[2,3,4],[1,2,5],[5,2,3]], target = [5,5,5]",
+        "inputStr": "{\"triplets\": [[2,5,3],[2,3,4],[1,2,5],[5,2,3]], \"target\": [5,5,5]}",
+        "expectedStr": "true"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Subset Generation / Brute Force",
+        "time": "O(2^N)",
+        "space": "O(N)",
+        "idea": "Recursively check all possible combinations of triplets, merging them together and checking if any combination equals target.",
+        "code": "class Solution:\n    def mergeTriplets(self, triplets: list[list[int]], target: list[int]) -> bool:\n        def backtrack(idx, cur):\n            if cur == target:\n                return True\n            if idx == len(triplets):\n                return False\n            if cur[0] > target[0] or cur[1] > target[1] or cur[2] > target[2]:\n                return False\n            \n            # Choice 1: skip current triplet\n            if backtrack(idx + 1, cur):\n                return True\n            \n            # Choice 2: include current triplet\n            t = triplets[idx]\n            next_cur = [max(cur[0], t[0]), max(cur[1], t[1]), max(cur[2], t[2])]\n            return backtrack(idx + 1, next_cur)\n            \n        return backtrack(0, [0, 0, 0])",
+        "steps": [
+          {
+            "label": "check target equality",
+            "note": "If current merged triplet matches target, return True.",
+            "from": 4,
+            "to": 5,
+            "yes": "return True",
+            "no": "continue recursion"
+          },
+          {
+            "label": "prune invalid state",
+            "note": "If any value exceeds target, this path cannot produce target.",
+            "from": 8,
+            "to": 9,
+            "yes": "return False",
+            "no": "try options"
+          },
+          {
+            "label": "recurse skip",
+            "note": "Try skipping triplets[idx].",
+            "from": 12,
+            "to": 13
+          },
+          {
+            "label": "recurse include",
+            "note": "Combine triplets[idx] using element-wise max and recurse.",
+            "from": 17,
+            "to": 18
+          }
+        ]
+      },
+      {
+        "name": "Greedy Single-Pass Filtering",
+        "time": "O(N)",
+        "space": "O(1)",
+        "idea": "Any triplet with an element greater than its corresponding target component can never be used. Combine all remaining valid triplets and check if target is formed.",
+        "code": "class Solution:\n    def mergeTriplets(self, triplets: list[list[int]], target: list[int]) -> bool:\n        good = set()\n        for t in triplets:\n            if t[0] > target[0] or t[1] > target[1] or t[2] > target[2]:\n                continue\n            for i in range(3):\n                if t[i] == target[i]:\n                    good.add(i)\n        return len(good) == 3",
+        "steps": [
+          {
+            "label": "initialize tracking set",
+            "note": "Use a set 'good' to track indices 0, 1, and 2 where a valid match is found.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "filter invalid triplets",
+            "note": "If triplet has any component larger than target, skip it.",
+            "from": 5,
+            "to": 6,
+            "yes": "continue loop",
+            "no": "process valid triplet"
+          },
+          {
+            "label": "match target components",
+            "note": "Check which indices equal target values and add index to good.",
+            "from": 7,
+            "to": 9
+          },
+          {
+            "label": "verify coverage",
+            "note": "Return true if all 3 indices (0, 1, 2) were matched by valid triplets.",
+            "from": 10,
+            "to": 10
+          }
+        ]
+      }
+    ]
+  },
+  "partition-labels": {
+    "statement": "You are given a string s. We want to partition the string into as many parts as possible so that each letter appears in at most one part.\n\nNote that the partition is done so that after concatenating all the parts in order, the resultant string should be s.\n\nReturn a list of integers representing the size of these parts.",
+    "given": "a string s",
+    "ret": "a list of integers representing the size of each partition",
+    "summary": "Record the last occurrence of each character, then iterate through the string, dynamically expanding partition boundaries until reaching the furthest last occurrence.",
+    "starter": "class Solution:\n    def partitionLabels(self, s: str) -> list[int]:",
+    "tests": [
+      {
+        "label": "s = \"ababcbacadefegdehijhklij\"",
+        "inputStr": "{\"s\": \"ababcbacadefegdehijhklij\"}",
+        "expectedStr": "[9, 7, 8]"
+      },
+      {
+        "label": "s = \"eccbbbbdec\"",
+        "inputStr": "{\"s\": \"eccbbbbdec\"}",
+        "expectedStr": "[10]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Interval Merging",
+        "time": "O(N + K log K)",
+        "space": "O(K)",
+        "idea": "Find [first_index, last_index] interval for each unique character. Sort intervals by start index and merge overlapping intervals.",
+        "code": "class Solution:\n    def partitionLabels(self, s: str) -> list[int]:\n        first = {}\n        last = {}\n        for i, c in enumerate(s):\n            if c not in first:\n                first[c] = i\n            last[c] = i\n        \n        intervals = sorted([[first[c], last[c]] for c in first], key=lambda x: x[0])\n        merged = []\n        for interval in intervals:\n            if not merged or merged[-1][1] < interval[0]:\n                merged.append(interval)\n            else:\n                merged[-1][1] = max(merged[-1][1], interval[1])\n        \n        return [end - start + 1 for start, end in merged]",
+        "steps": [
+          {
+            "label": "build intervals",
+            "note": "Record first and last occurrences of each character.",
+            "from": 5,
+            "to": 9
+          },
+          {
+            "label": "sort intervals",
+            "note": "Sort character intervals by start position.",
+            "from": 10,
+            "to": 10
+          },
+          {
+            "label": "merge overlapping intervals",
+            "note": "Combine overlapping intervals into partition boundaries.",
+            "from": 12,
+            "to": 16
+          },
+          {
+            "label": "calculate lengths",
+            "note": "Convert merged intervals to length of each partition.",
+            "from": 18,
+            "to": 18
+          }
+        ]
+      },
+      {
+        "name": "Greedy Two Pointers",
+        "time": "O(N)",
+        "space": "O(1)",
+        "idea": "Map each character to its last index in s. Scan s, tracking the max last index seen so far. Split partition whenever current index reaches max last index.",
+        "code": "class Solution:\n    def partitionLabels(self, s: str) -> list[int]:\n        last = {c: i for i, c in enumerate(s)}\n        res = []\n        size = 0\n        end = 0\n        for i, c in enumerate(s):\n            size += 1\n            end = max(end, last[c])\n            if i == end:\n                res.append(size)\n                size = 0\n        return res",
+        "steps": [
+          {
+            "label": "store last indices",
+            "note": "Create hash map storing the last index for each character in s.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "initialize counters",
+            "note": "Set size = 0 and end boundary = 0.",
+            "from": 4,
+            "to": 6
+          },
+          {
+            "label": "expand end boundary",
+            "note": "Update partition end boundary to max(end, last[c]).",
+            "from": 8,
+            "to": 9
+          },
+          {
+            "label": "check end of partition",
+            "note": "If current index i equals end, partition is complete.",
+            "from": 10,
+            "to": 11,
+            "yes": "append size to res and reset size",
+            "no": "continue loop"
+          }
+        ]
+      }
+    ]
   }
 };
