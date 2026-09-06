@@ -7613,5 +7613,4160 @@ window.PRELOADED_PROBLEMS = {
         ]
       }
     ]
+  },
+  "valid-sudoku": {
+    "statement": "Determine if a 9x9 Sudoku board is valid. Only the filled cells need to be validated according to the following rules:\n1. Each row must contain the digits 1-9 without repetition.\n2. Each column must contain the digits 1-9 without repetition.\n3. Each of the nine 3x3 sub-boxes of the grid must contain the digits 1-9 without repetition.\n\nNote:\n- A Sudoku board (partially filled) could be valid but is not necessarily solvable.\n- Only the filled cells need to be validated according to the mentioned rules.",
+    "given": "a 9x9 2D array board of character strings",
+    "ret": "a boolean indicating whether the current board configuration is valid",
+    "summary": "Iterate over every cell while maintaining sets or bitmasks for each row, column, and 3x3 sub-box to ensure no digit appears twice.",
+    "starter": "def isValidSudoku(board: list[list[str]]) -> bool:\n    pass",
+    "tests": [
+      {
+        "label": "board = [['5','3','.','.','7','.','.','.','.'],['6','.','.','1','9','5','.','.','.'],['.','9','8','.','.','.','.','6','.'],['8','.','.','.','6','.','.','.','3'],['4','.','.','8','.','3','.','.','1'],['7','.','.','.','2','.','.','.','6'],['.','6','.','.','.','.','2','8','.'],['.','.','.','4','1','9','.','.','5'],['.','.','.','.','8','.','.','7','9']]",
+        "inputStr": "{\"board\": [[\"5\",\"3\",\".\",\".\",\"7\",\".\",\".\",\".\",\".\"],[\"6\",\".\",\".\",\"1\",\"9\",\"5\",\".\",\".\",\".\"],[\".\",\"9\",\"8\",\".\",\".\",\".\",\".\",\"6\",\".\"],[\"8\",\".\",\".\",\".\",\"6\",\".\",\".\",\".\",\"3\"],[\"4\",\".\",\".\",\"8\",\".\",\"3\",\".\",\".\",\"1\"],[\"7\",\".\",\".\",\".\",\"2\",\".\",\".\",\".\",\"6\"],[\".\",\"6\",\".\",\".\",\".\",\".\",\"2\",\"8\",\".\"],[\".\",\".\",\".\",\"4\",\"1\",\"9\",\".\",\".\",\"5\"],[\".\",\".\",\".\",\".\",\"8\",\".\",\".\",\"7\",\"9\"]]}",
+        "expectedStr": "true"
+      },
+      {
+        "label": "board = [['8','3','.','.','7','.','.','.','.'],['6','.','.','1','9','5','.','.','.'],['.','9','8','.','.','.','.','6','.'],['8','.','.','.','6','.','.','.','3'],['4','.','.','8','.','3','.','.','1'],['7','.','.','.','2','.','.','.','6'],['.','6','.','.','.','.','2','8','.'],['.','.','.','4','1','9','.','.','5'],['.','.','.','.','8','.','.','7','9']]",
+        "inputStr": "{\"board\": [[\"8\",\"3\",\".\",\".\",\"7\",\".\",\".\",\".\",\".\"],[\"6\",\".\",\".\",\"1\",\"9\",\"5\",\".\",\".\",\".\"],[\".\",\"9\",\"8\",\".\",\".\",\".\",\".\",\"6\",\".\"],[\"8\",\".\",\".\",\".\",\"6\",\".\",\".\",\".\",\"3\"],[\"4\",\".\",\".\",\"8\",\".\",\"3\",\".\",\".\",\"1\"],[\"7\",\".\",\".\",\".\",\"2\",\".\",\".\",\".\",\"6\"],[\".\",\"6\",\".\",\".\",\".\",\".\",\"2\",\"8\",\".\"],[\".\",\".\",\".\",\"4\",\"1\",\"9\",\".\",\".\",\"5\"],[\".\",\".\",\".\",\".\",\"8\",\".\",\".\",\"7\",\"9\"]]}",
+        "expectedStr": "false"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force / distinct checks",
+        "time": "O(1)",
+        "space": "O(1)",
+        "idea": "Perform three separate iterations: check each row for duplicates, check each column for duplicates, and finally check each of the nine 3x3 sub-boxes.",
+        "code": "def isValidSudoku(board: list[list[str]]) -> bool:\n    for r in range(9):\n        seen = set()\n        for c in range(9):\n            val = board[r][c]\n            if val != '.':\n                if val in seen:\n                    return False\n                seen.add(val)\n    for c in range(9):\n        seen = set()\n        for r in range(9):\n            val = board[r][c]\n            if val != '.':\n                if val in seen:\n                    return False\n                seen.add(val)\n    for box in range(9):\n        seen = set()\n        for i in range(3):\n            for j in range(3):\n                r = (box // 3) * 3 + i\n                c = (box % 3) * 3 + j\n                val = board[r][c]\n                if val != '.':\n                    if val in seen:\n                        return False\n                    seen.add(val)\n    return True",
+        "steps": [
+          {
+            "label": "validate rows",
+            "note": "Iterate row by row and collect filled digits in a hash set to detect duplicates.",
+            "from": 2,
+            "to": 8
+          },
+          {
+            "label": "validate columns",
+            "note": "Iterate column by column and collect filled digits in a hash set.",
+            "from": 10,
+            "to": 16
+          },
+          {
+            "label": "validate 3x3 boxes",
+            "note": "Map index 0..8 to box top-left corners and iterate inside 3x3 blocks.",
+            "from": 18,
+            "to": 27
+          },
+          {
+            "label": "check duplicates",
+            "note": "If a digit is already in 'seen', return False immediately.",
+            "from": 24,
+            "to": 26,
+            "yes": "Duplicate found, board is invalid",
+            "no": "Add digit to set and continue"
+          },
+          {
+            "label": "return valid",
+            "note": "If all rows, columns, and boxes pass without conflict, return True.",
+            "from": 28,
+            "to": 28
+          }
+        ]
+      },
+      {
+        "name": "single pass hash sets",
+        "time": "O(1)",
+        "space": "O(1)",
+        "idea": "Traverse each cell once, keeping track of seen numbers for rows, columns, and 3x3 boxes using array of sets.",
+        "code": "def isValidSudoku(board: list[list[str]]) -> bool:\n    rows = [set() for _ in range(9)]\n    cols = [set() for _ in range(9)]\n    boxes = [set() for _ in range(9)]\n    for r in range(9):\n        for c in range(9):\n            val = board[r][c]\n            if val == '.':\n                continue\n            box_idx = (r // 3) * 3 + (c // 3)\n            if val in rows[r] or val in cols[c] or val in boxes[box_idx]:\n                return False\n            rows[r].add(val)\n            cols[c].add(val)\n            boxes[box_idx].add(val)\n    return True",
+        "steps": [
+          {
+            "label": "initialize tracking sets",
+            "note": "Create lists containing 9 sets each for rows, columns, and sub-boxes.",
+            "from": 2,
+            "to": 4
+          },
+          {
+            "label": "loop through cells",
+            "note": "Iterate over all cells (r, c) from (0,0) to (8,8).",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "skip empty cells",
+            "note": "Ignore dot characters.",
+            "from": 8,
+            "to": 9,
+            "yes": "Cell is empty, skip to next cell"
+          },
+          {
+            "label": "compute box index",
+            "note": "Calculate sub-box index as (r // 3) * 3 + (c // 3).",
+            "from": 10,
+            "to": 10
+          },
+          {
+            "label": "check validity",
+            "note": "Check if value exists in corresponding row, column, or box set.",
+            "from": 11,
+            "to": 12,
+            "yes": "Duplicate found, return False",
+            "no": "Value is unique so far"
+          },
+          {
+            "label": "record value",
+            "note": "Add value to row, column, and box sets.",
+            "from": 13,
+            "to": 15
+          },
+          {
+            "label": "return True",
+            "note": "If loop finishes without invalid placement, return True.",
+            "from": 16,
+            "to": 16
+          }
+        ]
+      }
+    ]
+  },
+  "two-sum-ii-input-array-is-sorted": {
+    "statement": "Given a 1-indexed array of integers numbers that is already sorted in non-decreasing order, find two numbers such that they add up to a specific target number. Let these two numbers be numbers[index1] and numbers[index2] where 1 <= index1 < index2 <= numbers.length.\n\nReturn the indices of the two numbers, index1 and index2, added by one as an integer array [index1, index2] of length 2.\n\nThe tests are generated such that there is exactly one solution. You may not use the same element twice.\n\nYour solution must use only constant extra space.",
+    "given": "a 1-indexed sorted array of integers numbers and an integer target",
+    "ret": "an array of length 2 containing the 1-based indices of the two numbers",
+    "summary": "Use two pointers starting at opposite ends; shrink the window from left or right based on whether the current sum is smaller or larger than the target.",
+    "starter": "def twoSum(numbers: list[int], target: int) -> list[int]:\n    pass",
+    "tests": [
+      {
+        "label": "numbers = [2,7,11,15], target = 9",
+        "inputStr": "{\"numbers\": [2, 7, 11, 15], \"target\": 9}",
+        "expectedStr": "[1, 2]"
+      },
+      {
+        "label": "numbers = [2,3,4], target = 6",
+        "inputStr": "{\"numbers\": [2, 3, 4], \"target\": 6}",
+        "expectedStr": "[1, 3]"
+      },
+      {
+        "label": "numbers = [-1,0], target = -1",
+        "inputStr": "{\"numbers\": [-1, 0], \"target\": -1}",
+        "expectedStr": "[1, 2]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "binary search",
+        "time": "O(n log n)",
+        "space": "O(1)",
+        "idea": "For each element in the array, use binary search to locate its complement (target - numbers[i]) in the rest of the array.",
+        "code": "def twoSum(numbers: list[int], target: int) -> list[int]:\n    for i in range(len(numbers)):\n        complement = target - numbers[i]\n        low, high = i + 1, len(numbers) - 1\n        while low <= high:\n            mid = (low + high) // 2\n            if numbers[mid] == complement:\n                return [i + 1, mid + 1]\n            elif numbers[mid] < complement:\n                low = mid + 1\n            else:\n                high = mid - 1\n    return []",
+        "steps": [
+          {
+            "label": "outer loop",
+            "note": "Iterate through each element as the first candidate.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "binary search setup",
+            "note": "Initialize binary search range from i + 1 to end of array.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "check middle element",
+            "note": "Compare numbers[mid] to complement.",
+            "from": 7,
+            "to": 8,
+            "yes": "Complement found, return 1-based indices",
+            "no": "Adjust search bounds"
+          },
+          {
+            "label": "adjust search space",
+            "note": "If mid value is too small, increase low pointer; else decrease high pointer.",
+            "from": 9,
+            "to": 12
+          }
+        ]
+      },
+      {
+        "name": "two pointers (optimal)",
+        "time": "O(n)",
+        "space": "O(1)",
+        "idea": "Place one pointer at the beginning and one at the end. Since the array is sorted, increment the left pointer if sum < target, and decrement the right pointer if sum > target.",
+        "code": "def twoSum(numbers: list[int], target: int) -> list[int]:\n    left, right = 0, len(numbers) - 1\n    while left < right:\n        cur_sum = numbers[left] + numbers[right]\n        if cur_sum == target:\n            return [left + 1, right + 1]\n        elif cur_sum < target:\n            left += 1\n        else:\n            right -= 1\n    return []",
+        "steps": [
+          {
+            "label": "init pointers",
+            "note": "Set left pointer to 0 and right pointer to end of array.",
+            "from": 2,
+            "to": 2
+          },
+          {
+            "label": "check termination",
+            "note": "Loop while left < right.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "calculate sum",
+            "note": "Compute current pair sum.",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "check target match",
+            "note": "Check if current sum equals target.",
+            "from": 5,
+            "to": 6,
+            "yes": "Found target sum! Return 1-based indices [left + 1, right + 1]"
+          },
+          {
+            "label": "adjust pointers",
+            "note": "If sum is too small, advance left pointer. Otherwise decrement right pointer.",
+            "from": 7,
+            "to": 10,
+            "yes": "cur_sum < target: left += 1",
+            "no": "cur_sum > target: right -= 1"
+          }
+        ]
+      }
+    ]
+  },
+  "trapping-rain-water": {
+    "statement": "Given n non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it can trap after raining.",
+    "given": "an array of non-negative integers height",
+    "ret": "an integer representing total units of trapped water",
+    "summary": "Water trapped above any bar is min(max_left, max_right) - height[i]; track maximum left/right heights dynamically with two pointers to solve in one pass with constant memory.",
+    "starter": "def trap(height: list[int]) -> int:\n    pass",
+    "tests": [
+      {
+        "label": "height = [0,1,0,2,1,0,1,3,2,1,2,1]",
+        "inputStr": "{\"height\": [0, 1, 0, 2, 1, 0, 1, 3, 2, 1, 2, 1]}",
+        "expectedStr": "6"
+      },
+      {
+        "label": "height = [4,2,0,3,2,5]",
+        "inputStr": "{\"height\": [4, 2, 0, 3, 2, 5]}",
+        "expectedStr": "9"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "dynamic programming / prefix suffix max",
+        "time": "O(n)",
+        "space": "O(n)",
+        "idea": "Precompute prefix maximums and suffix maximums for each position, then calculate trapped water per bar as min(left_max[i], right_max[i]) - height[i].",
+        "code": "def trap(height: list[int]) -> int:\n    if not height:\n        return 0\n    n = len(height)\n    left_max = [0] * n\n    right_max = [0] * n\n    left_max[0] = height[0]\n    for i in range(1, n):\n        left_max[i] = max(left_max[i - 1], height[i])\n    right_max[-1] = height[-1]\n    for i in range(n - 2, -1, -1):\n        right_max[i] = max(right_max[i + 1], height[i])\n    total_water = 0\n    for i in range(n):\n        total_water += min(left_max[i], right_max[i]) - height[i]\n    return total_water",
+        "steps": [
+          {
+            "label": "check edge case",
+            "note": "Return 0 if height array is empty.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "compute left max array",
+            "note": "Build array where left_max[i] holds maximum height from 0 to i.",
+            "from": 7,
+            "to": 9
+          },
+          {
+            "label": "compute right max array",
+            "note": "Build array where right_max[i] holds maximum height from i to n-1.",
+            "from": 10,
+            "to": 12
+          },
+          {
+            "label": "accumulate water",
+            "note": "For each index, add min(left_max[i], right_max[i]) - height[i] to total_water.",
+            "from": 13,
+            "to": 15
+          },
+          {
+            "label": "return result",
+            "note": "Return calculated total water.",
+            "from": 16,
+            "to": 16
+          }
+        ]
+      },
+      {
+        "name": "two pointers (optimal)",
+        "time": "O(n)",
+        "space": "O(1)",
+        "idea": "Use left and right pointers. Track left_max and right_max. Move the pointer on the smaller max side inward since the trapped water bound is determined by the shorter wall.",
+        "code": "def trap(height: list[int]) -> int:\n    if not height:\n        return 0\n    left, right = 0, len(height) - 1\n    left_max, right_max = 0, 0\n    total_water = 0\n    while left < right:\n        if height[left] < height[right]:\n            if height[left] >= left_max:\n                left_max = height[left]\n            else:\n                total_water += left_max - height[left]\n            left += 1\n        else:\n            if height[right] >= right_max:\n                right_max = height[right]\n            else:\n                total_water += right_max - height[right]\n            right -= 1\n    return total_water",
+        "steps": [
+          {
+            "label": "init pointers & maximums",
+            "note": "Initialize left = 0, right = end, left_max = 0, right_max = 0.",
+            "from": 4,
+            "to": 6
+          },
+          {
+            "label": "compare height pointers",
+            "note": "Check whether height[left] < height[right].",
+            "from": 7,
+            "to": 8,
+            "yes": "Process left side",
+            "no": "Process right side"
+          },
+          {
+            "label": "process left side",
+            "note": "Update left_max if current height is greater, else add trapped water (left_max - height[left]). Advance left pointer.",
+            "from": 9,
+            "to": 13
+          },
+          {
+            "label": "process right side",
+            "note": "Update right_max if current height is greater, else add trapped water (right_max - height[right]). Decrement right pointer.",
+            "from": 14,
+            "to": 19
+          },
+          {
+            "label": "return total",
+            "note": "Return accumulated total_water when pointers meet.",
+            "from": 20,
+            "to": 20
+          }
+        ]
+      }
+    ]
+  },
+  "permutation-in-string": {
+    "statement": "Given two strings s1 and s2, return true if s2 contains a permutation of s1, or false otherwise. In other words, return true if one of s1's permutations is the substring of s2.",
+    "given": "two strings s1 and s2",
+    "ret": "a boolean indicating whether a permutation of s1 exists in s2",
+    "summary": "Use a fixed-size sliding window of length len(s1) across s2 while maintaining character frequency counts.",
+    "starter": "class Solution:\n    def checkInclusion(self, s1: str, s2: str) -> bool:\n        pass",
+    "tests": [
+      {
+        "label": "s1 = \"ab\", s2 = \"eidbaooo\"",
+        "inputStr": "{\"s1\": \"ab\", \"s2\": \"eidbaooo\"}",
+        "expectedStr": "true"
+      },
+      {
+        "label": "s1 = \"ab\", s2 = \"eidboaoo\"",
+        "inputStr": "{\"s1\": \"ab\", \"s2\": \"eidboaoo\"}",
+        "expectedStr": "false"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force",
+        "time": "O(N * M log M)",
+        "space": "O(M)",
+        "idea": "Check every substring of s2 with length equal to s1. Sort both the substring and s1, then compare if they match.",
+        "code": "class Solution:\n    def checkInclusion(self, s1: str, s2: str) -> bool:\n        n1, n2 = len(s1), len(s2)\n        if n1 > n2:\n            return False\n        target = sorted(s1)\n        for i in range(n2 - n1 + 1):\n            if sorted(s2[i:i+n1]) == target:\n                return True\n        return False",
+        "steps": [
+          {
+            "label": "length check",
+            "note": "If s1 is longer than s2, s2 cannot contain any permutation of s1.",
+            "from": 3,
+            "to": 5,
+            "yes": "Return False early.",
+            "no": "Continue to target sorting."
+          },
+          {
+            "label": "sort target string",
+            "note": "Sort s1 to use as a canonized baseline for comparison.",
+            "from": 6,
+            "to": 6
+          },
+          {
+            "label": "iterate substrings",
+            "note": "Slide through s2 in slices of size len(s1).",
+            "from": 7,
+            "to": 7
+          },
+          {
+            "label": "check window match",
+            "note": "Sort the window slice and compare with target.",
+            "from": 8,
+            "to": 9,
+            "yes": "Match found, return True.",
+            "no": "Continue iteration to next slice."
+          },
+          {
+            "label": "exhausted search",
+            "note": "No window matched target permutation.",
+            "from": 10,
+            "to": 10
+          }
+        ]
+      },
+      {
+        "name": "optimal sliding window",
+        "time": "O(N)",
+        "space": "O(1)",
+        "idea": "Maintain dynamic character frequency counts for a sliding window of length len(s1) in s2 using fixed 26-element array comparisons.",
+        "code": "class Solution:\n    def checkInclusion(self, s1: str, s2: str) -> bool:\n        n1, n2 = len(s1), len(s2)\n        if n1 > n2:\n            return False\n        c1, c2 = [0] * 26, [0] * 26\n        for i in range(n1):\n            c1[ord(s1[i]) - 97] += 1\n            c2[ord(s2[i]) - 97] += 1\n        if c1 == c2:\n            return True\n        for i in range(n1, n2):\n            c2[ord(s2[i]) - 97] += 1\n            c2[ord(s2[i - n1]) - 97] -= 1\n            if c1 == c2:\n                return True\n        return False",
+        "steps": [
+          {
+            "label": "init frequency tables",
+            "note": "Create frequency count arrays for lowercase English letters (26 elements).",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "populate initial window",
+            "note": "Fill frequency arrays for all of s1 and the first window of s2 of length len(s1).",
+            "from": 6,
+            "to": 8
+          },
+          {
+            "label": "initial match check",
+            "note": "If initial window counts match s1 counts, return True.",
+            "from": 9,
+            "to": 10,
+            "yes": "Permutation found at index 0.",
+            "no": "Slide window forward."
+          },
+          {
+            "label": "slide window",
+            "note": "Add character coming into window at right, remove character leaving from left.",
+            "from": 11,
+            "to": 13
+          },
+          {
+            "label": "window match check",
+            "note": "Check if updated window count matches s1 count array.",
+            "from": 14,
+            "to": 15,
+            "yes": "Permutation found, return True.",
+            "no": "Continue loop."
+          }
+        ]
+      }
+    ]
+  },
+  "sliding-window-maximum": {
+    "statement": "You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. You can only see the k numbers in the window. Each time the sliding window moves right by one position. Return the max sliding window.",
+    "given": "an array of integers nums and an integer k",
+    "ret": "an array containing the maximum element of each sliding window",
+    "summary": "Use a monotonic double-ended queue (deque) storing indices to track candidates for maximum elements in O(1) amortized per step.",
+    "starter": "class Solution:\n    def maxSlidingWindow(self, nums: list[int], k: int) -> list[int]:\n        pass",
+    "tests": [
+      {
+        "label": "nums = [1,3,-1,-3,5,3,6,7], k = 3",
+        "inputStr": "{\"nums\": [1,3,-1,-3,5,3,6,7], \"k\": 3}",
+        "expectedStr": "[3,3,5,5,6,7]"
+      },
+      {
+        "label": "nums = [1], k = 1",
+        "inputStr": "{\"nums\": [1], \"k\": 1}",
+        "expectedStr": "[1]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force",
+        "time": "O(N * K)",
+        "space": "O(1)",
+        "idea": "For every possible sliding window position, compute max element by scanning the k items.",
+        "code": "class Solution:\n    def maxSlidingWindow(self, nums: list[int], k: int) -> list[int]:\n        res = []\n        n = len(nums)\n        for i in range(n - k + 1):\n            max_val = max(nums[i:i+k])\n            res.append(max_val)\n        return res",
+        "steps": [
+          {
+            "label": "initialize result list",
+            "note": "Create output list to store window maximums.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "iterate window start",
+            "note": "Loop through all starting indices i from 0 to n - k.",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "find current window max",
+            "note": "Scan subsegment of length k to find maximum value.",
+            "from": 6,
+            "to": 6
+          },
+          {
+            "label": "append result",
+            "note": "Append computed maximum to output array.",
+            "from": 7,
+            "to": 7
+          }
+        ]
+      },
+      {
+        "name": "optimal monotonic deque",
+        "time": "O(N)",
+        "space": "O(K)",
+        "idea": "Maintain a deque of indices in strictly decreasing order of values. Pop smaller elements from the back and out-of-bounds indices from the front.",
+        "code": "from collections import deque\n\nclass Solution:\n    def maxSlidingWindow(self, nums: list[int], k: int) -> list[int]:\n        q = deque()\n        res = []\n        for i, val in enumerate(nums):\n            while q and nums[q[-1]] <= val:\n                q.pop()\n            q.append(i)\n            if q[0] <= i - k:\n                q.popleft()\n            if i >= k - 1:\n                res.append(nums[q[0]])\n        return res",
+        "steps": [
+          {
+            "label": "initialize deque",
+            "note": "Initialize empty deque to hold indices of potential maximum elements.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "maintain monotonicity",
+            "note": "Remove indices from back whose values are <= incoming element val.",
+            "from": 8,
+            "to": 9
+          },
+          {
+            "label": "push current index",
+            "note": "Append current index i to back of deque.",
+            "from": 10,
+            "to": 10
+          },
+          {
+            "label": "remove stale elements",
+            "note": "If queue front index is out of current window bounds (<= i - k), pop from front.",
+            "from": 11,
+            "to": 12
+          },
+          {
+            "label": "record maximum",
+            "note": "Once window size reaches k, max value is at front of deque; append it to res.",
+            "from": 13,
+            "to": 14
+          }
+        ]
+      }
+    ]
+  },
+  "min-stack": {
+    "statement": "Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.\n\nImplement the MinStack class:\n- MinStack() initializes the stack object.\n- void push(int val) pushes the element val onto the stack.\n- void pop() removes the element on the top of the stack.\n- int top() gets the top element of the stack.\n- int getMin() retrieves the minimum element in the stack.",
+    "given": "series of stack operations and integer values",
+    "ret": "outputs of top and getMin calls",
+    "summary": "Maintain a secondary auxiliary stack (or store pairs) to keep track of the minimum value at each depth of the stack.",
+    "starter": "class MinStack:\n    def __init__(self):\n        pass\n    def push(self, val: int) -> None:\n        pass\n    def pop(self) -> None:\n        pass\n    def top(self) -> int:\n        pass\n    def getMin(self) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "ops = [\"MinStack\",\"push\",\"push\",\"push\",\"getMin\",\"pop\",\"top\",\"getMin\"], vals = [[],[-2],[0],[-3],[],[],[],[]]",
+        "inputStr": "{\"ops\": [\"MinStack\",\"push\",\"push\",\"push\",\"getMin\",\"pop\",\"top\",\"getMin\"], \"vals\": [[],[-2],[0],[-3],[],[],[],[]]}",
+        "expectedStr": "[null,null,null,null,-3,null,0,-2]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force",
+        "time": "O(1) push/pop/top, O(N) getMin",
+        "space": "O(N)",
+        "idea": "Use a standard list as a stack. Iteratively search through the whole stack to find the minimum element during getMin operations.",
+        "code": "class MinStack:\n    def __init__(self):\n        self.stack = []\n\n    def push(self, val: int) -> None:\n        self.stack.append(val)\n\n    def pop(self) -> None:\n        self.stack.pop()\n\n    def top(self) -> int:\n        return self.stack[-1]\n\n    def getMin(self) -> int:\n        return min(self.stack)",
+        "steps": [
+          {
+            "label": "initialize stack",
+            "note": "Initialize internal array storage.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "push / pop / top",
+            "note": "Perform standard O(1) array end operations.",
+            "from": 6,
+            "to": 12
+          },
+          {
+            "label": "getMin scan",
+            "note": "Scan entire list using min() function in O(N) time.",
+            "from": 14,
+            "to": 15
+          }
+        ]
+      },
+      {
+        "name": "optimal two stacks",
+        "time": "O(1) all operations",
+        "space": "O(N)",
+        "idea": "Keep an auxiliary stack min_stack where min_stack[-1] represents the minimum element present in the main stack up to that level.",
+        "code": "class MinStack:\n    def __init__(self):\n        self.stack = []\n        self.min_stack = []\n\n    def push(self, val: int) -> None:\n        self.stack.append(val)\n        current_min = self.min_stack[-1] if self.min_stack else val\n        self.min_stack.append(min(val, current_min))\n\n    def pop(self) -> None:\n        self.stack.pop()\n        self.min_stack.pop()\n\n    def top(self) -> int:\n        return self.stack[-1]\n\n    def getMin(self) -> int:\n        return self.min_stack[-1]",
+        "steps": [
+          {
+            "label": "initialize stacks",
+            "note": "Maintain stack for data and parallel min_stack for minimum values.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "push logic",
+            "note": "Push element to data stack and compute dynamic minimum to push onto min_stack.",
+            "from": 7,
+            "to": 9
+          },
+          {
+            "label": "pop logic",
+            "note": "Pop simultaneously from both stack and min_stack to maintain sync.",
+            "from": 12,
+            "to": 13
+          },
+          {
+            "label": "top logic",
+            "note": "Return last element in main data stack.",
+            "from": 16,
+            "to": 16
+          },
+          {
+            "label": "getMin logic",
+            "note": "Return top element of min_stack in O(1) time.",
+            "from": 19,
+            "to": 19
+          }
+        ]
+      }
+    ]
+  },
+  "evaluate-reverse-polish-notation": {
+    "statement": "You are given an array of strings tokens that represents an arithmetic expression in a Reverse Polish Notation. Evaluate the expression. Return an integer that represents the value of the expression. Note that: The valid operators are '+', '-', '*', and '/'. Each operand may be an integer or another expression. The division between two integers always truncates toward zero. There will not be any division by zero. The input represents a valid arithmetic expression in reverse polish notation.",
+    "given": "an array of strings tokens representing an arithmetic expression in Reverse Polish Notation",
+    "ret": "an integer that represents the value of the expression",
+    "summary": "Use a stack to store operands; when an operator is encountered, pop the top two operands, evaluate the operation, and push the result back onto the stack.",
+    "starter": "class Solution:\n    def evalRPN(self, tokens: list[str]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "tokens = [\"2\",\"1\",\"+\",\"3\",\"*\"]",
+        "inputStr": "{\"tokens\": [\"2\", \"1\", \"+\", \"3\", \"*\"]}",
+        "expectedStr": "9"
+      },
+      {
+        "label": "tokens = [\"4\",\"13\",\"5\",\"/\",\"+\"]",
+        "inputStr": "{\"tokens\": [\"4\", \"13\", \"5\", \"/\", \"+\"]}",
+        "expectedStr": "6"
+      },
+      {
+        "label": "tokens = [\"10\",\"6\",\"9\",\"3\",\"+\",\"-11\",\"*\",\"/\",\"*\",\"17\",\"+\",\"5\",\"+\"]",
+        "inputStr": "{\"tokens\": [\"10\", \"6\", \"9\", \"3\", \"+\", \"-11\", \"*\", \"/\", \"*\", \"17\", \"+\", \"5\", \"+\"]}",
+        "expectedStr": "22"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "array modification (naive)",
+        "time": "O(n^2)",
+        "space": "O(1)",
+        "idea": "Repeatedly search for the first operator, replace the operator and its two preceding operands with the result in-place, and repeat until one element remains.",
+        "code": "class Solution:\n    def evalRPN(self, tokens: list[str]) -> int:\n        i = 0\n        while len(tokens) > 1:\n            if tokens[i] in \"+-*/\":\n                a = int(tokens[i - 2])\n                b = int(tokens[i - 1])\n                op = tokens[i]\n                if op == '+': res = a + b\n                elif op == '-': res = a - b\n                elif op == '*': res = a * b\n                else: res = int(a / b)\n                tokens[i - 2] = str(res)\n                tokens.pop(i)\n                tokens.pop(i - 1)\n                i -= 2\n            i += 1\n        return int(tokens[0])",
+        "steps": [
+          {
+            "label": "init index",
+            "note": "Initialize index pointer to scan tokens sequentially.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "check operator",
+            "note": "Check if current token is an operator.",
+            "from": 5,
+            "to": 6,
+            "yes": "Token is operator; evaluate previous two tokens",
+            "no": "Token is number; advance index"
+          },
+          {
+            "label": "evaluate sub-expression",
+            "note": "Perform operation using integer truncation toward zero.",
+            "from": 7,
+            "to": 12
+          },
+          {
+            "label": "splice array",
+            "note": "Replace evaluated slice with result and shift pointer backward.",
+            "from": 13,
+            "to": 16
+          },
+          {
+            "label": "return answer",
+            "note": "Return the final remaining value in tokens list.",
+            "from": 18,
+            "to": 18
+          }
+        ]
+      },
+      {
+        "name": "stack optimal evaluation",
+        "time": "O(n)",
+        "space": "O(n)",
+        "idea": "Iterate through tokens; push numbers to a stack, and on encountering an operator, pop two numbers, apply the operation, and push the outcome back.",
+        "code": "class Solution:\n    def evalRPN(self, tokens: list[str]) -> int:\n        stack = []\n        for token in tokens:\n            if token in \"+-*/\":\n                b = stack.pop()\n                a = stack.pop()\n                if token == '+':\n                    stack.append(a + b)\n                elif token == '-':\n                    stack.append(a - b)\n                elif token == '*':\n                    stack.append(a * b)\n                else:\n                    stack.append(int(a / b))\n            else:\n                stack.append(int(token))\n        return stack[0]",
+        "steps": [
+          {
+            "label": "init stack",
+            "note": "Initialize empty stack to track intermediate numbers.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "process token",
+            "note": "Determine if token is operator or integer operand.",
+            "from": 5,
+            "to": 5,
+            "yes": "Pop top two values to execute operation",
+            "no": "Push parsed integer onto stack"
+          },
+          {
+            "label": "pop operands",
+            "note": "Pop operand b first (right operand), then operand a (left operand).",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "apply operator",
+            "note": "Perform arithmetic operation with integer truncation toward zero for division.",
+            "from": 8,
+            "to": 15
+          },
+          {
+            "label": "push operand",
+            "note": "Convert string number to integer and push onto stack.",
+            "from": 17,
+            "to": 17
+          },
+          {
+            "label": "return result",
+            "note": "Return the remaining integer at stack top.",
+            "from": 18,
+            "to": 18
+          }
+        ]
+      }
+    ]
+  },
+  "generate-parentheses": {
+    "statement": "Given n pairs of parentheses, write a function to generate all combinations of well-formed parentheses.",
+    "given": "an integer n representing the number of pairs of parentheses",
+    "ret": "a list of all combinations of well-formed parentheses",
+    "summary": "Use recursive backtracking to add opening parentheses when open_count < n and closing parentheses when close_count < open_count.",
+    "starter": "class Solution:\n    def generateParenthesis(self, n: int) -> list[str]:\n        pass",
+    "tests": [
+      {
+        "label": "n = 3",
+        "inputStr": "{\"n\": 3}",
+        "expectedStr": "[\"((()))\", \"(()())\", \"(())()\", \"()(())\", \"()()()\"]"
+      },
+      {
+        "label": "n = 1",
+        "inputStr": "{\"n\": 1}",
+        "expectedStr": "[\"()\"]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force (generate all)",
+        "time": "O(2^(2n) * n)",
+        "space": "O(2^(2n) * n)",
+        "idea": "Generate all possible strings of length 2*n containing '(' and ')', then filter out strings that are not valid well-formed parentheses.",
+        "code": "class Solution:\n    def generateParenthesis(self, n: int) -> list[str]:\n        res = []\n        def isValid(s):\n            bal = 0\n            for c in s:\n                bal += 1 if c == '(' else -1\n                if bal < 0: return False\n            return bal == 0\n        def generate(curr):\n            if len(curr) == 2 * n:\n                if isValid(curr):\n                    res.append(\"\".join(curr))\n                return\n            curr.append('(')\n            generate(curr)\n            curr.pop()\n            curr.append(')')\n            generate(curr)\n            curr.pop()\n        generate([])\n        return res",
+        "steps": [
+          {
+            "label": "init result list",
+            "note": "Create container for valid combinations.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "check base case",
+            "note": "When string length reaches 2*n, validate parenthesization.",
+            "from": 11,
+            "to": 14,
+            "yes": "If valid, append copy to results and return",
+            "no": "If not complete length, continue recursion"
+          },
+          {
+            "label": "recurse with '('",
+            "note": "Append '(' and make recursive call.",
+            "from": 15,
+            "to": 17
+          },
+          {
+            "label": "recurse with ')'",
+            "note": "Append ')' and make recursive call.",
+            "from": 18,
+            "to": 20
+          },
+          {
+            "label": "return results",
+            "note": "Return full list of validated combinations.",
+            "from": 22,
+            "to": 22
+          }
+        ]
+      },
+      {
+        "name": "backtracking (guided)",
+        "time": "O(4^n / sqrt(n))",
+        "space": "O(n)",
+        "idea": "Build strings recursively, adding '(' if open_count < n and ')' if close_count < open_count to ensure only valid prefixes are generated.",
+        "code": "class Solution:\n    def generateParenthesis(self, n: int) -> list[str]:\n        res = []\n        def backtrack(open_c, close_c, path):\n            if len(path) == 2 * n:\n                res.append(\"\".join(path))\n                return\n            if open_c < n:\n                path.append(\"(\")\n                backtrack(open_c + 1, close_c, path)\n                path.pop()\n            if close_c < open_c:\n                path.append(\")\")\n                backtrack(open_c, close_c + 1, path)\n                path.pop()\n        backtrack(0, 0, [])\n        return res",
+        "steps": [
+          {
+            "label": "init recursion",
+            "note": "Start helper backtrack function with 0 open and 0 closed parentheses.",
+            "from": 3,
+            "to": 16
+          },
+          {
+            "label": "check full combination",
+            "note": "Check if current path has reached target length 2 * n.",
+            "from": 5,
+            "to": 7,
+            "yes": "Add string to results and backtrack",
+            "no": "Continue exploring valid extensions"
+          },
+          {
+            "label": "try open parenthesis",
+            "note": "Can add '(' if total open parentheses used is less than n.",
+            "from": 8,
+            "to": 11,
+            "yes": "Append '(' and recursively call backtrack(open_c + 1, close_c)",
+            "no": "Skip adding '('"
+          },
+          {
+            "label": "try close parenthesis",
+            "note": "Can add ')' if count of close parentheses is less than open parentheses.",
+            "from": 12,
+            "to": 15,
+            "yes": "Append ')' and recursively call backtrack(open_c, close_c + 1)",
+            "no": "Skip adding ')'"
+          },
+          {
+            "label": "return output list",
+            "note": "Return collected valid combinations array.",
+            "from": 17,
+            "to": 17
+          }
+        ]
+      }
+    ]
+  },
+  "daily-temperatures": {
+    "statement": "Given an array of integers temperatures represents the daily temperatures, return an array answer such that answer[i] is the number of days you have to wait after the i-th day to get a warmer temperature. If there is no future day for which this is possible, keep answer[i] == 0 instead.",
+    "given": "an array of integers temperatures representing daily temperatures",
+    "ret": "an array of integers where answer[i] is the number of days to wait for a warmer temperature",
+    "summary": "Use a monotonic decreasing stack storing indices; for each temperature, pop colder days from the stack and compute day differences.",
+    "starter": "class Solution:\n    def dailyTemperatures(self, temperatures: list[int]) -> list[int]:\n        pass",
+    "tests": [
+      {
+        "label": "temperatures = [73,74,75,71,69,72,76,73]",
+        "inputStr": "{\"temperatures\": [73, 74, 75, 71, 69, 72, 76, 73]}",
+        "expectedStr": "[1, 1, 4, 2, 1, 1, 0, 0]"
+      },
+      {
+        "label": "temperatures = [30,40,50,60]",
+        "inputStr": "{\"temperatures\": [30, 40, 50, 60]}",
+        "expectedStr": "[1, 1, 1, 0]"
+      },
+      {
+        "label": "temperatures = [30,60,90]",
+        "inputStr": "{\"temperatures\": [30, 60, 90]}",
+        "expectedStr": "[1, 1, 0]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force (nested loops)",
+        "time": "O(n^2)",
+        "space": "O(1)",
+        "idea": "For each day, iterate through all future days to find the first day with a strictly higher temperature.",
+        "code": "class Solution:\n    def dailyTemperatures(self, temperatures: list[int]) -> list[int]:\n        n = len(temperatures)\n        res = [0] * n\n        for i in range(n):\n            for j in range(i + 1, n):\n                if temperatures[j] > temperatures[i]:\n                    res[i] = j - i\n                    break\n        return res",
+        "steps": [
+          {
+            "label": "init result array",
+            "note": "Initialize result array with zeros of same length.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "outer loop",
+            "note": "Pick target day index i.",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "inner loop scan",
+            "note": "Scan subsequent days j > i for a warmer temperature.",
+            "from": 6,
+            "to": 7,
+            "yes": "Found warmer day; compute distance and break inner loop",
+            "no": "Continue checking next future day"
+          },
+          {
+            "label": "save wait distance",
+            "note": "Assign j - i to res[i].",
+            "from": 8,
+            "to": 9
+          },
+          {
+            "label": "return results",
+            "note": "Return complete array of waiting days.",
+            "from": 10,
+            "to": 10
+          }
+        ]
+      },
+      {
+        "name": "monotonic stack",
+        "time": "O(n)",
+        "space": "O(n)",
+        "idea": "Maintain a stack of indices with decreasing temperatures. When a warmer temperature is encountered, pop indices and set their answer as the difference between current index and popped index.",
+        "code": "class Solution:\n    def dailyTemperatures(self, temperatures: list[int]) -> list[int]:\n        res = [0] * len(temperatures)\n        stack = []\n        for i, temp in enumerate(temperatures):\n            while stack and temperatures[stack[-1]] < temp:\n                prev_i = stack.pop()\n                res[prev_i] = i - prev_i\n            stack.append(i)\n        return res",
+        "steps": [
+          {
+            "label": "init stack and result",
+            "note": "Initialize zero-filled result list and empty stack for indices.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "iterate temperatures",
+            "note": "Iterate through temperatures array with index i and value temp.",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "check stack top",
+            "note": "Compare current temperature with temperature at top index of stack.",
+            "from": 6,
+            "to": 6,
+            "yes": "Current temp is warmer; pop colder index",
+            "no": "Stack empty or top is warmer/equal; proceed to append"
+          },
+          {
+            "label": "resolve waiting day",
+            "note": "Pop stack index and calculate day difference i - prev_i.",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "push current index",
+            "note": "Push current index i onto stack to await future warmer day.",
+            "from": 9,
+            "to": 9
+          },
+          {
+            "label": "return distances",
+            "note": "Return final list of wait days.",
+            "from": 10,
+            "to": 10
+          }
+        ]
+      }
+    ]
+  },
+  "car-fleet": {
+    "statement": "There are n cars at given miles away from the starting mile 0, traveling to a target mile. You are given two integer arrays position and speed, both of length n, where position[i] is the starting position of the ith car and speed[i] is the speed of the ith car in miles per hour. A car can never pass another car ahead of it, but it can catch up to it and drive bumper to bumper at the same speed. A car fleet is some non-empty set of cars driving at the same position and speed. Return the number of car fleets that will arrive at the destination.",
+    "given": "an integer target, an integer array position, and an integer array speed",
+    "ret": "the number of car fleets that will arrive at the destination",
+    "summary": "Sort cars by starting position in descending order and calculate arrival times. Iterate from closest to farthest from the target, forming a new fleet whenever a car's arrival time strictly exceeds the fleet time ahead of it.",
+    "starter": "class Solution:\n    def carFleet(self, target: int, position: list[int], speed: list[int]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "target = 12, position = [10,8,0,5,3], speed = [2,4,1,1,3]",
+        "inputStr": "{\"target\": 12, \"position\": [10,8,0,5,3], \"speed\": [2,4,1,1,3]}",
+        "expectedStr": "3"
+      },
+      {
+        "label": "target = 10, position = [3], speed = [3]",
+        "inputStr": "{\"target\": 10, \"position\": [3], \"speed\": [3]}",
+        "expectedStr": "1"
+      },
+      {
+        "label": "target = 100, position = [0,2,4], speed = [4,2,1]",
+        "inputStr": "{\"target\": 100, \"position\": [0,2,4], \"speed\": [4,2,1]}",
+        "expectedStr": "1"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "sorting and linear scan",
+        "time": "O(n log n)",
+        "space": "O(n)",
+        "idea": "Pair positions and speeds, then sort descending by position. Iterate through the cars to compute reaching time. If a car takes longer than the fleet ahead, it starts a new fleet.",
+        "code": "class Solution:\n    def carFleet(self, target: int, position: list[int], speed: list[int]) -> int:\n        cars = sorted(zip(position, speed), reverse=True)\n        fleets = 0\n        max_time = 0.0\n        for pos, spd in cars:\n            time = (target - pos) / spd\n            if time > max_time:\n                fleets += 1\n                max_time = time\n        return fleets",
+        "steps": [
+          {
+            "label": "Sort cars",
+            "note": "Combine position and speed, then sort in descending order of position so we process cars closest to the target first.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Initialize counters",
+            "note": "Set fleet count to 0 and max_time to 0.0 to track the bottleneck arrival time of the current leading fleet.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Calculate arrival time",
+            "note": "Compute time taken for current car to reach target: (target - pos) / spd.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "Check fleet condition",
+            "note": "Determine if current car arrives later than the fleet ahead of it.",
+            "from": 8,
+            "to": 8,
+            "yes": "Car takes longer, meaning it cannot catch up. Increment fleets and update max_time.",
+            "no": "Car catches up to fleet ahead, so it joins the existing fleet."
+          },
+          {
+            "label": "Update fleet count and max_time",
+            "note": "Increment fleet counter and assign max_time = current time.",
+            "from": 9,
+            "to": 10
+          },
+          {
+            "label": "Return result",
+            "note": "Return total number of distinct car fleets counted.",
+            "from": 11,
+            "to": 11
+          }
+        ]
+      },
+      {
+        "name": "monotonic stack",
+        "time": "O(n log n)",
+        "space": "O(n)",
+        "idea": "Sort cars by position descending, convert to arrival times, and push onto a stack. If top of stack takes less time or equal to previous element, pop it because it catches up.",
+        "code": "class Solution:\n    def carFleet(self, target: int, position: list[int], speed: list[int]) -> int:\n        cars = sorted(zip(position, speed), reverse=True)\n        stack = []\n        for pos, spd in cars:\n            stack.append((target - pos) / spd)\n            if len(stack) >= 2 and stack[-1] <= stack[-2]:\n                stack.pop()\n        return len(stack)",
+        "steps": [
+          {
+            "label": "Sort cars descending",
+            "note": "Sort cars from closest to destination to furthest away.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Push arrival time",
+            "note": "Calculate arrival time for current car and push to stack.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "Check fleet merge",
+            "note": "Compare current car's time with the time of the car ahead.",
+            "from": 7,
+            "to": 7,
+            "yes": "Current car is faster or equal, so it joins the fleet ahead. Pop top element.",
+            "no": "Current car is slower, forming a distinct fleet behind."
+          },
+          {
+            "label": "Pop from stack",
+            "note": "Remove current car from stack as it merges into preceding fleet.",
+            "from": 8,
+            "to": 8
+          },
+          {
+            "label": "Return stack length",
+            "note": "The final size of stack equals total number of distinct fleets.",
+            "from": 9,
+            "to": 9
+          }
+        ]
+      }
+    ]
+  },
+  "largest-rectangle-in-histogram": {
+    "statement": "Given an array of integers heights representing the histogram's bar height where the width of each bar is 1, return the area of the largest rectangle in the histogram.",
+    "given": "an array of integers heights representing bar heights",
+    "ret": "the area of the largest rectangle in the histogram",
+    "summary": "Use a monotonic increasing stack storing indices. When encountering a height smaller than the top of the stack, pop bars and compute maximum areas using the popped bar height as the minimum boundary height.",
+    "starter": "class Solution:\n    def largestRectangleArea(self, heights: list[int]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "heights = [2,1,5,6,2,3]",
+        "inputStr": "{\"heights\": [2,1,5,6,2,3]}",
+        "expectedStr": "10"
+      },
+      {
+        "label": "heights = [2,4]",
+        "inputStr": "{\"heights\": [2,4]}",
+        "expectedStr": "4"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force",
+        "time": "O(n^2)",
+        "space": "O(1)",
+        "idea": "For every bar, expand left and right as far as possible to find the maximum width where all bars are at least as tall as the current bar.",
+        "code": "class Solution:\n    def largestRectangleArea(self, heights: list[int]) -> int:\n        max_area = 0\n        n = len(heights)\n        for i in range(n):\n            min_h = heights[i]\n            for j in range(i, n):\n                min_h = min(min_h, heights[j])\n                area = min_h * (j - i + 1)\n                max_area = max(max_area, area)\n        return max_area",
+        "steps": [
+          {
+            "label": "Initialize max_area",
+            "note": "Set max_area to 0.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Outer loop left bound",
+            "note": "Iterate left endpoint i from 0 to n-1.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Inner loop right bound",
+            "note": "Iterate right endpoint j from i to n-1.",
+            "from": 6,
+            "to": 6
+          },
+          {
+            "label": "Track min height",
+            "note": "Maintain minimum height in range [i, j].",
+            "from": 7,
+            "to": 7
+          },
+          {
+            "label": "Compute area",
+            "note": "Area is min height multiplied by width (j - i + 1). Update max_area.",
+            "from": 8,
+            "to": 9
+          },
+          {
+            "label": "Return result",
+            "note": "Return global maximum area calculated across all pairs.",
+            "from": 10,
+            "to": 10
+          }
+        ]
+      },
+      {
+        "name": "monotonic stack",
+        "time": "O(n)",
+        "space": "O(n)",
+        "idea": "Maintain a stack of (index, height) pairs in strictly increasing order. When a smaller bar is encountered, pop elements to calculate rectangle areas, extending the current bar's starting index leftward.",
+        "code": "class Solution:\n    def largestRectangleArea(self, heights: list[int]) -> int:\n        max_area = 0\n        stack = []  # pairs: (index, height)\n        for i, h in enumerate(heights):\n            start = i\n            while stack and stack[-1][1] > h:\n                idx, height = stack.pop()\n                max_area = max(max_area, height * (i - idx))\n                start = idx\n            stack.append((start, h))\n        for idx, height in stack:\n            max_area = max(max_area, height * (len(heights) - idx))\n        return max_area",
+        "steps": [
+          {
+            "label": "Init stack and max_area",
+            "note": "Create an empty stack to track pairs of (start index, height). Set max_area = 0.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Iterate histogram bars",
+            "note": "Loop through indices and heights of array.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Check monotonic stack condition",
+            "note": "Check if top bar of stack is taller than current height h.",
+            "from": 6,
+            "to": 6,
+            "yes": "Top height > current height. Pop top bar and calculate max rectangle area with top height.",
+            "no": "Stack height <= current height. Push current (start, h) to stack."
+          },
+          {
+            "label": "Pop stack and update max_area",
+            "note": "Calculate area using popped height and width (current index - popped index). Shift start index left.",
+            "from": 7,
+            "to": 9
+          },
+          {
+            "label": "Push current bar",
+            "note": "Push (start, h) onto stack.",
+            "from": 10,
+            "to": 10
+          },
+          {
+            "label": "Process remaining stack bars",
+            "note": "For any remaining items in stack, compute potential area extending to the far right end of the histogram.",
+            "from": 11,
+            "to": 12
+          },
+          {
+            "label": "Return result",
+            "note": "Return max_area.",
+            "from": 13,
+            "to": 13
+          }
+        ]
+      }
+    ]
+  },
+  "binary-search": {
+    "statement": "Given an array of integers nums which is sorted in ascending order, and an integer target, write a function to search target in nums. If target exists, then return its index. Otherwise, return -1. You must write an algorithm with O(log n) runtime complexity.",
+    "given": "a sorted array of integers nums and an integer target",
+    "ret": "the index of target if found, otherwise -1",
+    "summary": "Maintain left and right pointers. Calculate mid index; if target equals nums[mid], return mid. Adjust pointers based on comparison to eliminate half of the remaining search space at each step.",
+    "starter": "class Solution:\n    def search(self, nums: list[int], target: int) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "nums = [-1,0,3,5,9,12], target = 9",
+        "inputStr": "{\"nums\": [-1,0,3,5,9,12], \"target\": 9}",
+        "expectedStr": "4"
+      },
+      {
+        "label": "nums = [-1,0,3,5,9,12], target = 2",
+        "inputStr": "{\"nums\": [-1,0,3,5,9,12], \"target\": 2}",
+        "expectedStr": "-1"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "linear search",
+        "time": "O(n)",
+        "space": "O(1)",
+        "idea": "Iterate through each element sequentially from left to right and compare it with target.",
+        "code": "class Solution:\n    def search(self, nums: list[int], target: int) -> int:\n        for i in range(len(nums)):\n            if nums[i] == target:\n                return i\n        return -1",
+        "steps": [
+          {
+            "label": "Iterate elements",
+            "note": "Loop through indices from 0 to len(nums) - 1.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Check match",
+            "note": "Check if element at index i equals target.",
+            "from": 4,
+            "to": 4,
+            "yes": "Found target, return index i.",
+            "no": "Continue to next iteration."
+          },
+          {
+            "label": "Return -1",
+            "note": "Target not present in array after checking all elements.",
+            "from": 6,
+            "to": 6
+          }
+        ]
+      },
+      {
+        "name": "binary search",
+        "time": "O(log n)",
+        "space": "O(1)",
+        "idea": "Use two pointers left and right to define search range. Halve search range in each iteration based on comparison with middle element.",
+        "code": "class Solution:\n    def search(self, nums: list[int], target: int) -> int:\n        left, right = 0, len(nums) - 1\n        while left <= right:\n            mid = (left + right) // 2\n            if nums[mid] == target:\n                return mid\n            elif nums[mid] < target:\n                left = mid + 1\n            else:\n                right = mid - 1\n        return -1",
+        "steps": [
+          {
+            "label": "Init pointers",
+            "note": "Set left pointer to index 0 and right pointer to len(nums) - 1.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Loop search condition",
+            "note": "Continue loop while search space is valid (left <= right).",
+            "from": 4,
+            "to": 4,
+            "yes": "Valid search space exists, compute mid index.",
+            "no": "Search space exhausted without finding target, return -1."
+          },
+          {
+            "label": "Calculate middle index",
+            "note": "mid = (left + right) // 2.",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "Check match at mid",
+            "note": "Compare nums[mid] with target.",
+            "from": 6,
+            "to": 7,
+            "yes": "nums[mid] == target, return index mid.",
+            "no": "Check whether target lies in left or right half."
+          },
+          {
+            "label": "Adjust pointers",
+            "note": "If nums[mid] < target, shift left = mid + 1. Otherwise shift right = mid - 1.",
+            "from": 8,
+            "to": 11
+          },
+          {
+            "label": "Return -1",
+            "note": "Target not found in array.",
+            "from": 12,
+            "to": 12
+          }
+        ]
+      }
+    ]
+  },
+  "search-a-2d-matrix": {
+    "statement": "You are given an m x n integer matrix matrix with the following two properties:\n- Each row is sorted in non-decreasing order.\n- The first integer of each row is greater than the last integer of the previous row.\n\nGiven an integer target, return true if target is in matrix or false otherwise.\n\nYou must write a solution in O(log(m * n)) time complexity.",
+    "given": "an m x n integer matrix matrix and an integer target",
+    "ret": "true if target is in matrix, false otherwise",
+    "summary": "Treat the m x n matrix as a flattened 1D sorted array of size m * n and perform standard binary search using index mapping.",
+    "starter": "class Solution:\n    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:\n        pass",
+    "tests": [
+      {
+        "label": "matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 3",
+        "inputStr": "{\"matrix\": [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], \"target\": 3}",
+        "expectedStr": "true"
+      },
+      {
+        "label": "matrix = [[1,3,5,7],[10,11,16,20],[23,30,34,60]], target = 13",
+        "inputStr": "{\"matrix\": [[1, 3, 5, 7], [10, 11, 16, 20], [23, 30, 34, 60]], \"target\": 13}",
+        "expectedStr": "false"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force",
+        "time": "O(m * n)",
+        "space": "O(1)",
+        "idea": "Traverse through every element in the matrix row by row and column by column to check if it equals the target.",
+        "code": "class Solution:\n    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:\n        for row in matrix:\n            for val in row:\n                if val == target:\n                    return True\n        return False",
+        "steps": [
+          {
+            "label": "Iterate rows",
+            "note": "Loop through each row in the 2D matrix",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "Iterate columns",
+            "note": "Loop through each value in the current row",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Check match",
+            "note": "Compare current element with target value",
+            "from": 5,
+            "to": 6,
+            "yes": "Target found, return True immediately",
+            "no": "Target not equal, move to next element"
+          },
+          {
+            "label": "Return default",
+            "note": "All elements checked without finding target",
+            "from": 7,
+            "to": 7
+          }
+        ]
+      },
+      {
+        "name": "optimal binary search",
+        "time": "O(log(m * n))",
+        "space": "O(1)",
+        "idea": "Since matrix elements strictly increase from left-to-right and top-to-bottom, map 1D indices from 0 to (m*n - 1) into 2D coordinates via row = idx // n and col = idx % n, performing binary search.",
+        "code": "class Solution:\n    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:\n        m, n = len(matrix), len(matrix[0])\n        left, right = 0, m * n - 1\n        while left <= right:\n            mid = (left + right) // 2\n            val = matrix[mid // n][mid % n]\n            if val == target:\n                return True\n            elif val < target:\n                left = mid + 1\n            else:\n                right = mid - 1\n        return False",
+        "steps": [
+          {
+            "label": "Initialize bounds",
+            "note": "Set left=0 and right=m*n-1 for 1D search space",
+            "from": 3,
+            "to": 5
+          },
+          {
+            "label": "Compute middle element",
+            "note": "Find mid index and convert to matrix coordinates [mid // n][mid % n]",
+            "from": 5,
+            "to": 7
+          },
+          {
+            "label": "Check equality",
+            "note": "If matrix[row][col] == target, return True",
+            "from": 7,
+            "to": 8,
+            "yes": "Found target, return True",
+            "no": "Not equal, check if target is larger or smaller"
+          },
+          {
+            "label": "Adjust pointers",
+            "note": "If val < target move left pointer to mid + 1, else move right pointer to mid - 1",
+            "from": 9,
+            "to": 12
+          },
+          {
+            "label": "Exhausted search space",
+            "note": "Loop finishes without match, return False",
+            "from": 13,
+            "to": 13
+          }
+        ]
+      }
+    ]
+  },
+  "koko-eating-bananas": {
+    "statement": "Koko loves to eat bananas. There are n piles of bananas, the i-th pile has piles[i] bananas. The guards have gone and will come back in h hours.\n\nKoko can decide her banana-eating speed of k per hour. Each hour, she chooses some pile of bananas and eats k bananas from that pile. If the pile has less than k bananas, she eats all of them instead and will not eat any more bananas during this hour.\n\nKoko wants to finish eating all the bananas before the guards return.\n\nReturn the minimum integer k such that she can eat all the bananas within h hours.",
+    "given": "an array of integers piles and an integer h representing available hours",
+    "ret": "the minimum integer eating speed k",
+    "summary": "Binary search for minimum valid speed k in range [1, max(piles)], checking if total hours ceil(p / k) sum to <= h.",
+    "starter": "class Solution:\n    def minEatingSpeed(self, piles: List[int], h: int) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "piles = [3,6,7,11], h = 8",
+        "inputStr": "{\"piles\": [3, 6, 7, 11], \"h\": 8}",
+        "expectedStr": "4"
+      },
+      {
+        "label": "piles = [30,11,23,4,20], h = 5",
+        "inputStr": "{\"piles\": [30, 11, 23, 4, 20], \"h\": 5}",
+        "expectedStr": "30"
+      },
+      {
+        "label": "piles = [30,11,23,4,20], h = 6",
+        "inputStr": "{\"piles\": [30, 11, 23, 4, 20], \"h\": 6}",
+        "expectedStr": "23"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force",
+        "time": "O(n * max(piles))",
+        "space": "O(1)",
+        "idea": "Try every speed k starting from 1 up to max(piles). Compute total hours needed for each k, and return the first k where total hours <= h.",
+        "code": "import math\n\nclass Solution:\n    def minEatingSpeed(self, piles: List[int], h: int) -> int:\n        for k in range(1, max(piles) + 1):\n            hours = sum(math.ceil(p / k) for p in piles)\n            if hours <= h:\n                return k\n        return max(piles)",
+        "steps": [
+          {
+            "label": "Iterate speeds",
+            "note": "Try candidates for k from 1 up to max(piles)",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "Calculate required hours",
+            "note": "Sum ceiling division of each pile by speed k",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "Check feasibility",
+            "note": "If total hours <= h, return k as the minimum speed",
+            "from": 7,
+            "to": 8,
+            "yes": "Return current k",
+            "no": "Try next larger k"
+          }
+        ]
+      },
+      {
+        "name": "optimal binary search on answer",
+        "time": "O(n * log(max(piles)))",
+        "space": "O(1)",
+        "idea": "The total hours required is monotonically decreasing with speed k. Use binary search in range [1, max(piles)] to find the smallest k that satisfies hours <= h.",
+        "code": "import math\n\nclass Solution:\n    def minEatingSpeed(self, piles: List[int], h: int) -> int:\n        left, right = 1, max(piles)\n        res = right\n        while left <= right:\n            k = (left + right) // 2\n            hours = sum(math.ceil(p / k) for p in piles)\n            if hours <= h:\n                res = k\n                right = k - 1\n            else:\n                left = k + 1\n        return res",
+        "steps": [
+          {
+            "label": "Initialize range",
+            "note": "Set search range left=1 and right=max(piles)",
+            "from": 5,
+            "to": 7
+          },
+          {
+            "label": "Compute middle speed",
+            "note": "Calculate mid candidate speed k",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "Compute total hours",
+            "note": "Sum math.ceil(p / k) for all piles",
+            "from": 8,
+            "to": 9
+          },
+          {
+            "label": "Check condition and shrink range",
+            "note": "If hours <= h, store k in res and search left half (right = k - 1); else search right half (left = k + 1)",
+            "from": 9,
+            "to": 13,
+            "yes": "Speed k is valid, attempt finding smaller k",
+            "no": "Speed k is too slow, increase left bound"
+          },
+          {
+            "label": "Return answer",
+            "note": "Return the minimum valid speed saved in res",
+            "from": 14,
+            "to": 14
+          }
+        ]
+      }
+    ]
+  },
+  "time-based-key-value-store": {
+    "statement": "Design a time-based key-value data structure that can store multiple values for the same key at different time stamps and retrieve the key's value at a certain timestamp.\n\nImplement the TimeMap class:\n- TimeMap() Initializes the object of the data structure.\n- void set(String key, String value, int timestamp) Stores the key key with the value value at the given time timestamp.\n- String get(String key, int timestamp) Returns a value such that set was called previously, with timestamp_prev <= timestamp. If there are multiple such values, it returns the value associated with the largest timestamp_prev. If there are no values, it returns \"\".",
+    "given": "calls to set(key, value, timestamp) and get(key, timestamp)",
+    "ret": "retrieved string value for get requests matching timestamp constraints",
+    "summary": "Map keys to lists of (timestamp, value) pairs; since timestamps strictly increase in set calls, binary search each list for the maximum timestamp <= query timestamp.",
+    "starter": "class TimeMap:\n    def __init__(self):\n        pass\n\n    def set(self, key: str, value: str, timestamp: int) -> None:\n        pass\n\n    def get(self, key: str, timestamp: int) -> str:\n        pass",
+    "tests": [
+      {
+        "label": "key = \"foo\", timestamp = 1",
+        "inputStr": "{\"actions\": [\"TimeMap\", \"set\", \"get\", \"get\"], \"values\": [[], [\"foo\", \"bar\", 1], [\"foo\", 1], [\"foo\", 3]]}",
+        "expectedStr": "[null, null, \"bar\", \"bar\"]"
+      },
+      {
+        "label": "key = \"foo\", timestamp = 5",
+        "inputStr": "{\"actions\": [\"TimeMap\", \"set\", \"set\", \"get\", \"get\"], \"values\": [[], [\"foo\", \"bar\", 1], [\"foo\", \"bar2\", 4], [\"foo\", 4], [\"foo\", 5]]}",
+        "expectedStr": "[null, null, null, \"bar2\", \"bar2\"]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force linear search",
+        "time": "O(1) for set, O(n) for get",
+        "space": "O(N) total stored items",
+        "idea": "Store timestamp-value pairs in a list for each key. For get calls, iterate backward through the list to find the first entry with timestamp <= query timestamp.",
+        "code": "from collections import defaultdict\n\nclass TimeMap:\n    def __init__(self):\n        self.store = defaultdict(list)\n\n    def set(self, key: str, value: str, timestamp: int) -> None:\n        self.store[key].append((timestamp, value))\n\n    def get(self, key: str, timestamp: int) -> str:\n        values = self.store[key]\n        for t, val in reversed(values):\n            if t <= timestamp:\n                return val\n        return \"\"",
+        "steps": [
+          {
+            "label": "Retrieve list",
+            "note": "Get list of (timestamp, value) pairs for key",
+            "from": 10,
+            "to": 11
+          },
+          {
+            "label": "Iterate backwards",
+            "note": "Scan list from right to left (newest to oldest)",
+            "from": 11,
+            "to": 12
+          },
+          {
+            "label": "Check timestamp",
+            "note": "If element timestamp <= target timestamp, return value",
+            "from": 12,
+            "to": 13,
+            "yes": "Return matching value immediately",
+            "no": "Continue checking older entries"
+          },
+          {
+            "label": "Return default",
+            "note": "No valid entry found, return empty string",
+            "from": 14,
+            "to": 14
+          }
+        ]
+      },
+      {
+        "name": "optimal binary search",
+        "time": "O(1) for set, O(log N) for get",
+        "space": "O(N) total stored items",
+        "idea": "Since set calls append strictly increasing timestamps, run binary search on the array of (timestamp, value) pairs to find the largest timestamp <= query timestamp.",
+        "code": "from collections import defaultdict\n\nclass TimeMap:\n    def __init__(self):\n        self.store = defaultdict(list)\n\n    def set(self, key: str, value: str, timestamp: int) -> None:\n        self.store[key].append((timestamp, value))\n\n    def get(self, key: str, timestamp: int) -> str:\n        values = self.store.get(key, [])\n        res = \"\"\n        left, right = 0, len(values) - 1\n        while left <= right:\n            mid = (left + right) // 2\n            if values[mid][0] <= timestamp:\n                res = values[mid][1]\n                left = mid + 1\n            else:\n                right = mid - 1\n        return res",
+        "steps": [
+          {
+            "label": "Fetch history",
+            "note": "Retrieve array of pairs for key, initialize res=\"\"",
+            "from": 10,
+            "to": 12
+          },
+          {
+            "label": "Initialize pointers",
+            "note": "Set binary search bounds left=0, right=len(values)-1",
+            "from": 12,
+            "to": 13
+          },
+          {
+            "label": "Compute mid",
+            "note": "Calculate middle index mid",
+            "from": 13,
+            "to": 14
+          },
+          {
+            "label": "Evaluate mid timestamp",
+            "note": "If values[mid][0] <= timestamp, save values[mid][1] in res and shift left = mid + 1",
+            "from": 15,
+            "to": 17,
+            "yes": "Candidate found, search right for potentially closer timestamp",
+            "no": "Timestamp too high, move right pointer to mid - 1"
+          },
+          {
+            "label": "Return best answer",
+            "note": "Return latest valid value recorded in res",
+            "from": 19,
+            "to": 19
+          }
+        ]
+      }
+    ]
+  },
+  "median-of-two-sorted-arrays": {
+    "statement": "Given two sorted arrays nums1 and nums2 of size m and n respectively, return the median of the two sorted arrays. The overall run time complexity should be O(log (m+n)).",
+    "given": "two sorted integer arrays nums1 and nums2",
+    "ret": "the median of the two combined sorted arrays as a float",
+    "summary": "Binary search on the smaller array to partition both arrays into two halves such that all elements on the left side are less than or equal to all elements on the right side.",
+    "starter": "class Solution:\n    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:\n        pass",
+    "tests": [
+      {
+        "label": "nums1 = [1,3], nums2 = [2]",
+        "inputStr": "{\"nums1\": [1,3], \"nums2\": [2]}",
+        "expectedStr": "2.0"
+      },
+      {
+        "label": "nums1 = [1,2], nums2 = [3,4]",
+        "inputStr": "{\"nums1\": [1,2], \"nums2\": [3,4]}",
+        "expectedStr": "2.5"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "merge and sort",
+        "time": "O((m+n) log(m+n))",
+        "space": "O(m+n)",
+        "idea": "Concatenate both arrays, sort the combined array, and compute the median based on whether total length is odd or even.",
+        "code": "class Solution:\n    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:\n        merged = sorted(nums1 + nums2)\n        total = len(merged)\n        if total % 2 == 1:\n            return float(merged[total // 2])\n        return (merged[total // 2 - 1] + merged[total // 2]) / 2.0",
+        "steps": [
+          {
+            "label": "combine arrays",
+            "note": "Concatenate nums1 and nums2 into a single list.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "sort combined list",
+            "note": "Sort all merged elements in ascending order.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "check length parity",
+            "note": "Determine if total element count is odd or even.",
+            "from": 3,
+            "to": 4,
+            "yes": "Return middle element if length is odd",
+            "no": "Average middle two elements if length is even"
+          }
+        ]
+      },
+      {
+        "name": "binary search partition",
+        "time": "O(log(min(m, n)))",
+        "space": "O(1)",
+        "idea": "Partition the smaller array using binary search to split both arrays into equal left and right halves where max(left) <= min(right).",
+        "code": "class Solution:\n    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:\n        A, B = nums1, nums2\n        if len(A) > len(B):\n            A, B = B, A\n        total = len(A) + len(B)\n        half = total // 2\n        l, r = 0, len(A) - 1\n        while True:\n            i = (l + r) // 2\n            j = half - i - 2\n            Aleft = A[i] if i >= 0 else float('-inf')\n            Aright = A[i + 1] if (i + 1) < len(A) else float('inf')\n            Bleft = B[j] if j >= 0 else float('-inf')\n            Bright = B[j + 1] if (j + 1) < len(B) else float('inf')\n            if Aleft <= Bright and Bleft <= Aright:\n                if total % 2:\n                    return float(min(Aright, Bright))\n                return (max(Aleft, Bleft) + min(Aright, Bright)) / 2.0\n            elif Aleft > Bright:\n                r = i - 1\n            else:\n                l = i + 1",
+        "steps": [
+          {
+            "label": "ensure smaller array first",
+            "note": "Swap arrays if A is larger than B so binary search runs on the smaller array.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "binary search loop",
+            "note": "Compute partition index i for A and corresponding partition index j for B.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "extract boundary values",
+            "note": "Get boundary elements left/right of partitions with infinity guards for out-of-bounds.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "check partition validity",
+            "note": "Check if Aleft <= Bright and Bleft <= Aright.",
+            "from": 4,
+            "to": 5,
+            "yes": "Valid partition found; calculate median",
+            "no": "Adjust search range using binary search logic"
+          }
+        ]
+      }
+    ]
+  },
+  "copy-list-with-random-pointer": {
+    "statement": "A linked list of length n is given such that each node contains an additional random pointer, which could point to any node in the list, or null. Construct a deep copy of the list.",
+    "given": "the head of a linked list where nodes have val, next, and random pointers",
+    "ret": "the head of the newly created deep-copied linked list",
+    "summary": "Use a hash map to map original nodes to cloned nodes, then assign next and random pointers in a second pass.",
+    "starter": "class Solution:\n    def copyRandomList(self, head: 'Optional[Node]') -> 'Optional[Node]':\n        pass",
+    "tests": [
+      {
+        "label": "head = [[7,null],[13,0],[11,4],[10,2],[1,0]]",
+        "inputStr": "{\"head\": [[7,null],[13,0],[11,4],[10,2],[1,0]]}",
+        "expectedStr": "[[7,null],[13,0],[11,4],[10,2],[1,0]]"
+      },
+      {
+        "label": "head = [[1,1],[2,1]]",
+        "inputStr": "{\"head\": [[1,1],[2,1]]}",
+        "expectedStr": "[[1,1],[2,1]]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "hash map two pass",
+        "time": "O(n)",
+        "space": "O(n)",
+        "idea": "Pass 1 creates new node copies and stores old->new mapping in a hash map. Pass 2 connects next and random pointers using the map.",
+        "code": "class Solution:\n    def copyRandomList(self, head: 'Optional[Node]') -> 'Optional[Node]':\n        if not head:\n            return None\n        old_to_new = {}\n        curr = head\n        while curr:\n            old_to_new[curr] = Node(curr.val)\n            curr = curr.next\n        curr = head\n        while curr:\n            old_to_new[curr].next = old_to_new.get(curr.next)\n            old_to_new[curr].random = old_to_new.get(curr.random)\n            curr = curr.next\n        return old_to_new[head]",
+        "steps": [
+          {
+            "label": "null check",
+            "note": "Return None immediately if list is empty.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "first pass - node creation",
+            "note": "Traverse original list and create copy nodes without pointers in hash map.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "second pass - pointer assignment",
+            "note": "Traverse original list again and link copy nodes' next and random pointers.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "return copy head",
+            "note": "Return mapped copy corresponding to original head node.",
+            "from": 4,
+            "to": 5
+          }
+        ]
+      },
+      {
+        "name": "interleaved nodes O(1) space",
+        "time": "O(n)",
+        "space": "O(1)",
+        "idea": "Interleave copied nodes directly inside the original list (A -> A' -> B -> B'), set random pointers, then separate the lists.",
+        "code": "class Solution:\n    def copyRandomList(self, head: 'Optional[Node]') -> 'Optional[Node]':\n        if not head:\n            return None\n        curr = head\n        while curr:\n            nxt = curr.next\n            copy = Node(curr.val)\n            curr.next = copy\n            copy.next = nxt\n            curr = nxt\n        curr = head\n        while curr:\n            if curr.random:\n                curr.next.random = curr.random.next\n            curr = curr.next.next\n        curr = head\n        copy_head = head.next\n        while curr:\n            copy = curr.next\n            curr.next = copy.next\n            copy.next = copy.next.next if copy.next else None\n            curr = curr.next\n        return copy_head",
+        "steps": [
+          {
+            "label": "interleave nodes",
+            "note": "Insert new duplicate node after each original node in the list.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "copy random pointers",
+            "note": "Assign copy.random = orig.random.next for each interleaved copy.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "separate lists",
+            "note": "Restore original next pointers and isolate copied nodes into standalone list.",
+            "from": 3,
+            "to": 4
+          }
+        ]
+      }
+    ]
+  },
+  "add-two-numbers": {
+    "statement": "You are given two non-empty linked lists representing two non-negative integers. The digits are stored in reverse order, and each of their nodes contains a single digit. Add the two numbers and return the sum as a linked list.",
+    "given": "two non-empty linked lists l1 and l2 representing reverse-digit integers",
+    "ret": "the head of a linked list representing the sum in reverse order",
+    "summary": "Simultaneously traverse both linked lists, adding values node-by-node along with a carry variable, building a new list.",
+    "starter": "class Solution:\n    def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:\n        pass",
+    "tests": [
+      {
+        "label": "l1 = [2,4,3], l2 = [5,6,4]",
+        "inputStr": "{\"l1\": [2,4,3], \"l2\": [5,6,4]}",
+        "expectedStr": "[7,0,8]"
+      },
+      {
+        "label": "l1 = [0], l2 = [0]",
+        "inputStr": "{\"l1\": [0], \"l2\": [0]}",
+        "expectedStr": "[0]"
+      },
+      {
+        "label": "l1 = [9,9,9,9,9,9,9], l2 = [9,9,9,9]",
+        "inputStr": "{\"l1\": [9,9,9,9,9,9,9], \"l2\": [9,9,9,9]}",
+        "expectedStr": "[8,9,9,9,0,0,0,1]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "elementary addition with carry",
+        "time": "O(max(m, n))",
+        "space": "O(max(m, n))",
+        "idea": "Iterate through both lists digit by digit, add values with carry, append result nodes to a dummy head list.",
+        "code": "class Solution:\n    def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:\n        dummy = ListNode(0)\n        curr = dummy\n        carry = 0\n        while l1 or l2 or carry:\n            val1 = l1.val if l1 else 0\n            val2 = l2.val if l2 else 0\n            total = val1 + val2 + carry\n            carry = total // 10\n            curr.next = ListNode(total % 10)\n            curr = curr.next\n            l1 = l1.next if l1 else None\n            l2 = l2.next if l2 else None\n        return dummy.next",
+        "steps": [
+          {
+            "label": "init dummy and carry",
+            "note": "Initialize dummy node to track result list head and carry variable to 0.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "traversal loop",
+            "note": "Loop while l1, l2, or carry remaining.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "compute sum and carry",
+            "note": "Extract digit values (defaulting to 0 if node is null) and sum with carry.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "append result node",
+            "note": "Create new node with digit value (total % 10) and advance pointers.",
+            "from": 4,
+            "to": 5
+          }
+        ]
+      }
+    ]
+  },
+  "find-the-duplicate-number": {
+    "statement": "Given an array of integers nums containing n + 1 integers where each integer is in the range [1, n] inclusive. There is only one repeated number in nums, return this repeated number. You must solve the problem without modifying the array nums and using only constant extra space.",
+    "given": "An array of integers nums of length n + 1",
+    "ret": "The repeated duplicate integer",
+    "summary": "Treat the array as a linked list where nums[i] points to index nums[i], converting the problem into finding the entry point of a cycle using Floyd's Tortoise and Hare algorithm.",
+    "starter": "def findDuplicate(nums: list[int]) -> int:\n    pass",
+    "tests": [
+      {
+        "label": "nums = [1,3,4,2,2]",
+        "inputStr": "{\"nums\": [1,3,4,2,2]}",
+        "expectedStr": "2"
+      },
+      {
+        "label": "nums = [3,1,3,4,2]",
+        "inputStr": "{\"nums\": [3,1,3,4,2]}",
+        "expectedStr": "3"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Brute Force (Nested Loops)",
+        "time": "O(n^2)",
+        "space": "O(1)",
+        "idea": "Compare every element with every other element in the array to find the duplicate pair.",
+        "code": "def findDuplicate(nums: list[int]) -> int:\n    n = len(nums)\n    for i in range(n):\n        for j in range(i + 1, n):\n            if nums[i] == nums[j]:\n                return nums[i]\n    return -1",
+        "steps": [
+          {
+            "label": "outer loop",
+            "note": "Iterate through each index i from 0 to n-1",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "inner loop",
+            "note": "Iterate through subsequent indices j from i+1 to n-1",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "compare elements",
+            "note": "Check if nums[i] is equal to nums[j]",
+            "from": 5,
+            "to": 6,
+            "yes": "Duplicate found, return nums[i]",
+            "no": "Continue searching inner loop"
+          },
+          {
+            "label": "return answer",
+            "note": "Return duplicate element when equality condition is met",
+            "from": 6,
+            "to": 6
+          }
+        ]
+      },
+      {
+        "name": "Floyd's Cycle Detection (Optimal)",
+        "time": "O(n)",
+        "space": "O(1)",
+        "idea": "Use fast and slow pointers to detect a cycle. Since values are in range [1, n], indices form a cycle at the duplicate element. Once pointers meet, reset one pointer to the start and move both at step speed 1 to find the cycle entrance.",
+        "code": "def findDuplicate(nums: list[int]) -> int:\n    slow = nums[0]\n    fast = nums[0]\n    while True:\n        slow = nums[slow]\n        fast = nums[nums[fast]]\n        if slow == fast:\n            break\n    slow = nums[0]\n    while slow != fast:\n        slow = nums[slow]\n        fast = nums[fast]\n    return slow",
+        "steps": [
+          {
+            "label": "initialize pointers",
+            "note": "Start both slow and fast pointers at nums[0]",
+            "from": 2,
+            "to": 4
+          },
+          {
+            "label": "first phase traversal",
+            "note": "Advance slow pointer by 1 step and fast pointer by 2 steps",
+            "from": 5,
+            "to": 7
+          },
+          {
+            "label": "check collision",
+            "note": "Check if slow and fast pointers meet inside the cycle",
+            "from": 7,
+            "to": 8,
+            "yes": "Break first loop",
+            "no": "Continue traversal"
+          },
+          {
+            "label": "reset slow pointer",
+            "note": "Set slow pointer back to head (nums[0]) to prepare for phase two",
+            "from": 9,
+            "to": 10
+          },
+          {
+            "label": "second phase traversal",
+            "note": "Move both pointers step-by-step (1 position each) until they meet at cycle entry",
+            "from": 10,
+            "to": 12,
+            "yes": "Match reached; cycle entry identified",
+            "no": "Advance both pointers by 1 step"
+          },
+          {
+            "label": "return duplicate",
+            "note": "Return value where pointers meet, which is the duplicate number",
+            "from": 13,
+            "to": 13
+          }
+        ]
+      }
+    ]
+  },
+  "lru-cache": {
+    "statement": "Design a data structure that follows the constraints of a Least Recently Used (LRU) cache. Implement the LRUCache class with __init__(capacity), get(key), and put(key, value). get and put must run in O(1) average time complexity.",
+    "given": "Cache capacity and sequence of get/put method calls with keys and values",
+    "ret": "Values returned by get operations (-1 if key not found)",
+    "summary": "Combine a Hash Map for O(1) key lookups with a Doubly Linked List to maintain key recency order (Most Recently Used at head, Least Recently Used at tail) in O(1) time.",
+    "starter": "class LRUCache:\n    def __init__(self, capacity: int):\n        pass\n\n    def get(self, key: int) -> int:\n        pass\n\n    def put(self, key: int, value: int) -> None:\n        pass",
+    "tests": [
+      {
+        "label": "capacity = 2, commands = [put(1,1), put(2,2), get(1), put(3,3), get(2), put(4,4), get(1), get(3), get(4)]",
+        "inputStr": "{\"capacity\": 2, \"actions\": [\"put\", \"put\", \"get\", \"put\", \"get\", \"put\", \"get\", \"get\", \"get\"], \"args\": [[1, 1], [2, 2], [1], [3, 3], [2], [4, 4], [1], [3], [4]]}",
+        "expectedStr": "[null, null, 1, null, -1, null, -1, 3, 4]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "OrderedDict / Brute Force List",
+        "time": "O(n) for list shift or O(1) amortized using Python OrderedDict",
+        "space": "O(capacity)",
+        "idea": "Use an array to track usage order and search linearly, or use built-in data structures like OrderedDict to re-insert keys upon access.",
+        "code": "class LRUCache:\n    def __init__(self, capacity: int):\n        self.capacity = capacity\n        self.cache = {}\n        self.order = []\n\n    def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        self.order.remove(key)\n        self.order.append(key)\n        return self.cache[key]\n\n    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self.order.remove(key)\n        elif len(self.cache) >= self.capacity:\n            lru = self.order.pop(0)\n            del self.cache[lru]\n        self.cache[key] = value\n        self.order.append(key)",
+        "steps": [
+          {
+            "label": "check key existence",
+            "note": "Verify if requested key is in cache dictionary",
+            "from": 7,
+            "to": 8,
+            "yes": "Proceed to update usage order",
+            "no": "Return -1"
+          },
+          {
+            "label": "update usage order in list",
+            "note": "Remove key from current position in self.order list and append to end",
+            "from": 9,
+            "to": 11
+          },
+          {
+            "label": "handle eviction on put",
+            "note": "If cache is full and key is new, remove oldest item from front of self.order and cache",
+            "from": 15,
+            "to": 18,
+            "yes": "Evict LRU key",
+            "no": "Proceed to insert key"
+          },
+          {
+            "label": "insert new key-value",
+            "note": "Store new value in hash map and mark key as most recently used",
+            "from": 19,
+            "to": 20
+          }
+        ]
+      },
+      {
+        "name": "Hash Map + Doubly Linked List (Optimal)",
+        "time": "O(1) for both get and put operations",
+        "space": "O(capacity)",
+        "idea": "Use dummy head and tail nodes in a Doubly Linked List. The node next to head is Most Recently Used; node before tail is Least Recently Used. Hash map maps key to DLL node pointer.",
+        "code": "class Node:\n    def __init__(self, key=0, val=0):\n        self.key, self.val = key, val\n        self.prev, self.next = None, None\n\nclass LRUCache:\n    def __init__(self, capacity: int):\n        self.cap = capacity\n        self.cache = {}\n        self.head, self.tail = Node(), Node()\n        self.head.next, self.tail.prev = self.tail, self.head\n\n    def _remove(self, node: Node):\n        p, n = node.prev, node.next\n        p.next, n.prev = n, p\n\n    def _add_to_head(self, node: Node):\n        node.next = self.head.next\n        node.prev = self.head\n        self.head.next.prev = node\n        self.head.next = node\n\n    def get(self, key: int) -> int:\n        if key not in self.cache:\n            return -1\n        node = self.cache[key]\n        self._remove(node)\n        self._add_to_head(node)\n        return node.val\n\n    def put(self, key: int, value: int) -> None:\n        if key in self.cache:\n            self._remove(self.cache[key])\n        node = Node(key, value)\n        self.cache[key] = node\n        self._add_to_head(node)\n        if len(self.cache) > self.cap:\n            lru = self.tail.prev\n            self._remove(lru)\n            del self.cache[lru.key]",
+        "steps": [
+          {
+            "label": "initialize structure",
+            "note": "Connect dummy head and dummy tail nodes together to create empty doubly linked list",
+            "from": 9,
+            "to": 10
+          },
+          {
+            "label": "get hit operation",
+            "note": "Lookup key node, remove node from current position, insert right after dummy head",
+            "from": 22,
+            "to": 26,
+            "yes": "Node refreshed to head, return value",
+            "no": "Return -1"
+          },
+          {
+            "label": "put existing key",
+            "note": "If key exists, remove existing node from DLL before adding updated node",
+            "from": 29,
+            "to": 30,
+            "yes": "Remove old node",
+            "no": "Create new node"
+          },
+          {
+            "label": "add new node to head",
+            "note": "Create Node, link in dictionary, and attach right after dummy head",
+            "from": 31,
+            "to": 33
+          },
+          {
+            "label": "check capacity breach",
+            "note": "If capacity exceeded, identify tail.prev as LRU node, remove from list and delete from hash map",
+            "from": 34,
+            "to": 37,
+            "yes": "Evict node right before dummy tail",
+            "no": "Operation finished"
+          }
+        ]
+      }
+    ]
+  },
+  "reverse-nodes-in-k-group": {
+    "statement": "Given the head of a linked list, reverse the nodes of a list k at a time, and return its modified list. k is a positive integer and is less than or equal to the length of the linked list. If the number of nodes is not a multiple of k then left-out nodes, in the end, should remain as it is.",
+    "given": "Head of a singly linked list and an integer k",
+    "ret": "Head of modified linked list reversed in k-groups",
+    "summary": "Iteratively check if there are at least k nodes remaining; if so, reverse those k nodes, link the previous group's tail to the new reversed head, and proceed to the next group.",
+    "starter": "class ListNode:\n    def __init__(self, val=0, next=None):\n        self.val = val\n        self.next = next\n\ndef reverseKGroup(head: ListNode, k: int) -> ListNode:\n    pass",
+    "tests": [
+      {
+        "label": "head = [1,2,3,4,5], k = 2",
+        "inputStr": "{\"head\": [1,2,3,4,5], \"k\": 2}",
+        "expectedStr": "[2,1,4,3,5]"
+      },
+      {
+        "label": "head = [1,2,3,4,5], k = 3",
+        "inputStr": "{\"head\": [1,2,3,4,5], \"k\": 3}",
+        "expectedStr": "[3,2,1,4,5]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Array Conversion (Suboptimal)",
+        "time": "O(n)",
+        "space": "O(n)",
+        "idea": "Extract all list node values into an array, reverse values in contiguous groups of size k, and construct a new linked list with the modified values.",
+        "code": "def reverseKGroup(head: ListNode, k: int) -> ListNode:\n    vals = []\n    curr = head\n    while curr:\n        vals.append(curr.val)\n        curr = curr.next\n    n = len(vals)\n    for i in range(0, n - n % k, k):\n        vals[i:i+k] = vals[i:i+k][::-1]\n    dummy = ListNode(0)\n    curr = dummy\n    for v in vals:\n        curr.next = ListNode(v)\n        curr = curr.next\n    return dummy.next",
+        "steps": [
+          {
+            "label": "extract node values",
+            "note": "Traverse linked list and append node values to array",
+            "from": 3,
+            "to": 6
+          },
+          {
+            "label": "reverse group elements",
+            "note": "Iterate in steps of k up to the last full group and reverse sub-arrays in place",
+            "from": 7,
+            "to": 9
+          },
+          {
+            "label": "reconstruct linked list",
+            "note": "Build new nodes using reversed value array",
+            "from": 10,
+            "to": 14
+          },
+          {
+            "label": "return new head",
+            "note": "Return dummy.next as head of reconstructed list",
+            "from": 15,
+            "to": 15
+          }
+        ]
+      },
+      {
+        "name": "Iterative In-Place Reversal (Optimal)",
+        "time": "O(n)",
+        "space": "O(1)",
+        "idea": "Count k nodes ahead using a pointer. If k nodes exist, reverse them in-place, connect with previous group tail, and update group pointers.",
+        "code": "def reverseKGroup(head: ListNode, k: int) -> ListNode:\n    dummy = ListNode(0, head)\n    groupPrev = dummy\n    while True:\n        kth = groupPrev\n        for _ in range(k):\n            kth = kth.next\n            if not kth:\n                break\n        if not kth:\n            break\n        groupNext = kth.next\n        prev, curr = kth.next, groupPrev.next\n        while curr != groupNext:\n            nxt = curr.next\n            curr.next = prev\n            prev = curr\n            curr = nxt\n        tmp = groupPrev.next\n        groupPrev.next = kth\n        groupPrev = tmp\n    return dummy.next",
+        "steps": [
+          {
+            "label": "setup dummy node",
+            "note": "Attach dummy node before head and initialize groupPrev pointer",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "find kth node",
+            "note": "Advance kth pointer by k steps to check if full group exists",
+            "from": 5,
+            "to": 9
+          },
+          {
+            "label": "check remaining length",
+            "note": "If fewer than k nodes remain, exit loop leaving trailing nodes intact",
+            "from": 10,
+            "to": 11,
+            "yes": "Exit main loop",
+            "no": "Proceed to group reversal"
+          },
+          {
+            "label": "reverse group in place",
+            "note": "Reverse pointers within group between groupPrev.next and kth node",
+            "from": 13,
+            "to": 18
+          },
+          {
+            "label": "relink outer pointers",
+            "note": "Connect groupPrev to reversed group head and update groupPrev to group tail",
+            "from": 19,
+            "to": 21
+          },
+          {
+            "label": "return result",
+            "note": "Return dummy.next as new list head",
+            "from": 22,
+            "to": 22
+          }
+        ]
+      }
+    ]
+  },
+  "diameter-of-binary-tree": {
+    "statement": "Given the root of a binary tree, return the length of the diameter of the tree. The diameter of a binary tree is the length of the longest path between any two nodes in a tree. This path may or may not pass through the root. The length of a path between two nodes is represented by the number of edges between them.",
+    "given": "the root of a binary tree",
+    "ret": "the integer representing the diameter (number of edges on the longest path)",
+    "summary": "Compute the longest path through each node by adding the max height of its left subtree to the max height of its right subtree using a single post-order traversal.",
+    "starter": "# Definition for a binary tree node.\n# class TreeNode:\n#     def __init__(self, val=0, left=None, right=None):\n#         self.val = val\n#         self.left = left\n#         self.right = right\nclass Solution:\n    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "root = [1,2,3,4,5]",
+        "inputStr": "{\"root\": [1,2,3,4,5]}",
+        "expectedStr": "3"
+      },
+      {
+        "label": "root = [1,2]",
+        "inputStr": "{\"root\": [1,2]}",
+        "expectedStr": "1"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Recursive Height Calculation per Node",
+        "time": "O(n^2)",
+        "space": "O(h)",
+        "idea": "For every node, recursively compute the height of its left and right subtrees. Sum these heights to get the candidate diameter through that node, then recurse on left and right children.",
+        "code": "class Solution:\n    def height(self, node: Optional[TreeNode]) -> int:\n        if not node:\n            return 0\n        return 1 + max(self.height(node.left), self.height(node.right))\n\n    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:\n        if not root:\n            return 0\n        left_h = self.height(root.left)\n        right_h = self.height(root.right)\n        current_diameter = left_h + right_h\n        left_diameter = self.diameterOfBinaryTree(root.left)\n        right_diameter = self.diameterOfBinaryTree(root.right)\n        return max(current_diameter, left_diameter, right_diameter)",
+        "steps": [
+          {
+            "label": "Base case check",
+            "note": "If root is None, return 0 as diameter.",
+            "from": 8,
+            "to": 9,
+            "yes": "Return 0 if tree is empty",
+            "no": "Proceed to height calculation"
+          },
+          {
+            "label": "Compute subtree heights",
+            "note": "Call height helper on left and right children of current node.",
+            "from": 10,
+            "to": 11
+          },
+          {
+            "label": "Calculate node diameter",
+            "note": "Sum left and right heights for diameter through current root.",
+            "from": 12,
+            "to": 12
+          },
+          {
+            "label": "Recurse on children",
+            "note": "Find diameters in left and right subtrees.",
+            "from": 13,
+            "to": 14
+          },
+          {
+            "label": "Return overall max",
+            "note": "Return max of current diameter, left subtree diameter, right subtree diameter.",
+            "from": 15,
+            "to": 15
+          }
+        ]
+      },
+      {
+        "name": "Optimal Bottom-Up Post-Order DFS",
+        "time": "O(n)",
+        "space": "O(h)",
+        "idea": "Use a bottom-up DFS helper function that returns subtree height while continuously updating a global maximum diameter variable with (left_height + right_height).",
+        "code": "class Solution:\n    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:\n        self.max_diameter = 0\n        \n        def dfs(node: Optional[TreeNode]) -> int:\n            if not node:\n                return 0\n            left_h = dfs(node.left)\n            right_h = dfs(node.right)\n            self.max_diameter = max(self.max_diameter, left_h + right_h)\n            return 1 + max(left_h, right_h)\n            \n        dfs(root)\n        return self.max_diameter",
+        "steps": [
+          {
+            "label": "Initialize global max",
+            "note": "Set max_diameter state to 0.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "DFS base case",
+            "note": "Check if current node is null; return 0 height.",
+            "from": 6,
+            "to": 7,
+            "yes": "Return height 0",
+            "no": "Recurse on left and right children"
+          },
+          {
+            "label": "Recurse subtrees",
+            "note": "Compute left_h and right_h using dfs.",
+            "from": 8,
+            "to": 9
+          },
+          {
+            "label": "Update diameter",
+            "note": "Update max_diameter with left_h + right_h.",
+            "from": 10,
+            "to": 10
+          },
+          {
+            "label": "Return node height",
+            "note": "Return 1 + max(left_h, right_h) to parent caller.",
+            "from": 11,
+            "to": 11
+          },
+          {
+            "label": "Execute and return",
+            "note": "Invoke dfs on root and return global max_diameter.",
+            "from": 13,
+            "to": 14
+          }
+        ]
+      }
+    ]
+  },
+  "balanced-binary-tree": {
+    "statement": "Given a binary tree, determine if it is height-balanced. A height-balanced binary tree is defined as a binary tree in which the left and right subtrees of every node differ in height by no more than 1.",
+    "given": "the root of a binary tree",
+    "ret": "a boolean indicating whether the binary tree is height-balanced",
+    "summary": "Traverse subtrees in post-order order, returning height if balanced or -1 if unbalanced to short-circuit calculation immediately upon detection.",
+    "starter": "# Definition for a binary tree node.\n# class TreeNode:\n#     def __init__(self, val=0, left=None, right=None):\n#         self.val = val\n#         self.left = left\n#         self.right = right\nclass Solution:\n    def isBalanced(self, root: Optional[TreeNode]) -> bool:\n        pass",
+    "tests": [
+      {
+        "label": "root = [3,9,20,null,null,15,7]",
+        "inputStr": "{\"root\": [3,9,20,null,null,15,7]}",
+        "expectedStr": "true"
+      },
+      {
+        "label": "root = [1,2,2,3,3,null,null,4,4]",
+        "inputStr": "{\"root\": [1,2,2,3,3,null,null,4,4]}",
+        "expectedStr": "false"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Top-Down Height Check",
+        "time": "O(n^2)",
+        "space": "O(h)",
+        "idea": "For every node, calculate height of left and right subtrees. Check if abs(left - right) <= 1, then recursively check left and right children.",
+        "code": "class Solution:\n    def height(self, node: Optional[TreeNode]) -> int:\n        if not node:\n            return 0\n        return 1 + max(self.height(node.left), self.height(node.right))\n\n    def isBalanced(self, root: Optional[TreeNode]) -> bool:\n        if not root:\n            return True\n        left_h = self.height(root.left)\n        right_h = self.height(root.right)\n        if abs(left_h - right_h) > 1:\n            return False\n        return self.isBalanced(root.left) and self.isBalanced(root.right)",
+        "steps": [
+          {
+            "label": "Base case check",
+            "note": "Null root is balanced, return True.",
+            "from": 8,
+            "to": 9,
+            "yes": "Return True for empty node/tree",
+            "no": "Proceed to height calculation"
+          },
+          {
+            "label": "Calculate heights",
+            "note": "Call height helper on left and right children.",
+            "from": 10,
+            "to": 11
+          },
+          {
+            "label": "Check height difference",
+            "note": "If height difference > 1, return False immediately.",
+            "from": 12,
+            "to": 13,
+            "yes": "Return False if unbalanced",
+            "no": "Recurse on children"
+          },
+          {
+            "label": "Recurse on children",
+            "note": "Return True only if both subtrees are also balanced.",
+            "from": 14,
+            "to": 14
+          }
+        ]
+      },
+      {
+        "name": "Bottom-Up DFS Short-Circuit",
+        "time": "O(n)",
+        "space": "O(h)",
+        "idea": "Perform a post-order traversal DFS. Return height if subtree is balanced, or -1 if unbalanced. Propagate -1 upward to short-circuit remaining checks.",
+        "code": "class Solution:\n    def isBalanced(self, root: Optional[TreeNode]) -> bool:\n        def check(node: Optional[TreeNode]) -> int:\n            if not node:\n                return 0\n            left = check(node.left)\n            if left == -1:\n                return -1\n            right = check(node.right)\n            if right == -1:\n                return -1\n            if abs(left - right) > 1:\n                return -1\n            return 1 + max(left, right)\n            \n        return check(root) != -1",
+        "steps": [
+          {
+            "label": "Check node existence",
+            "note": "If node is null, return 0 height.",
+            "from": 4,
+            "to": 5,
+            "yes": "Return 0",
+            "no": "Recurse left"
+          },
+          {
+            "label": "Check left child",
+            "note": "Call check(left). Short-circuit with -1 if unbalanced.",
+            "from": 6,
+            "to": 8,
+            "yes": "Return -1 immediately",
+            "no": "Recurse right"
+          },
+          {
+            "label": "Check right child",
+            "note": "Call check(right). Short-circuit with -1 if unbalanced.",
+            "from": 9,
+            "to": 11,
+            "yes": "Return -1 immediately",
+            "no": "Compare heights"
+          },
+          {
+            "label": "Check balance condition",
+            "note": "Compare left and right heights.",
+            "from": 12,
+            "to": 13,
+            "yes": "Return -1 if abs(left - right) > 1",
+            "no": "Return height"
+          },
+          {
+            "label": "Return node height",
+            "note": "Return 1 + max(left, right) if balanced.",
+            "from": 14,
+            "to": 14
+          },
+          {
+            "label": "Final output",
+            "note": "Return True if helper output is not -1.",
+            "from": 16,
+            "to": 16
+          }
+        ]
+      }
+    ]
+  },
+  "binary-tree-right-side-view": {
+    "statement": "Given the root of a binary tree, imagine yourself standing on the right side of it, return the values of the nodes you can see ordered from top to bottom.",
+    "given": "the root of a binary tree",
+    "ret": "a list of integers representing node values visible from the right side",
+    "summary": "Traverse the tree level-by-level via BFS and capture the last node value of each level, or use DFS prioritizing right subtrees first and recording depth.",
+    "starter": "# Definition for a binary tree node.\n# class TreeNode:\n#     def __init__(self, val=0, left=None, right=None):\n#         self.val = val\n#         self.left = left\n#         self.right = right\nclass Solution:\n    def rightSideView(self, root: Optional[TreeNode]) -> List[int]:\n        pass",
+    "tests": [
+      {
+        "label": "root = [1,2,3,null,5,null,4]",
+        "inputStr": "{\"root\": [1,2,3,null,5,null,4]}",
+        "expectedStr": "[1,3,4]"
+      },
+      {
+        "label": "root = [1,null,3]",
+        "inputStr": "{\"root\": [1,null,3]}",
+        "expectedStr": "[1,3]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "BFS Level Order Traversal",
+        "time": "O(n)",
+        "space": "O(w)",
+        "idea": "Perform a standard level-order BFS using a queue. For each level, append the value of the last node processed in that level to the result array.",
+        "code": "from collections import deque\n\nclass Solution:\n    def rightSideView(self, root: Optional[TreeNode]) -> List[int]:\n        if not root:\n            return []\n        res = []\n        queue = deque([root])\n        while queue:\n            level_len = len(queue)\n            for i in range(level_len):\n                node = queue.popleft()\n                if i == level_len - 1:\n                    res.append(node.val)\n                if node.left:\n                    queue.append(node.left)\n                if node.right:\n                    queue.append(node.right)\n        return res",
+        "steps": [
+          {
+            "label": "Check root and setup queue",
+            "note": "Initialize result list and deque with root.",
+            "from": 5,
+            "to": 8
+          },
+          {
+            "label": "Level loop",
+            "note": "Process each level by measuring queue length.",
+            "from": 9,
+            "to": 10
+          },
+          {
+            "label": "Pop node",
+            "note": "Pop node from front of queue.",
+            "from": 11,
+            "to": 12
+          },
+          {
+            "label": "Capture last element",
+            "note": "If current index is the last in level (i == level_len - 1), append to res.",
+            "from": 13,
+            "to": 14,
+            "yes": "Append node.val to res",
+            "no": "Do not append"
+          },
+          {
+            "label": "Push children",
+            "note": "Push left and right children to queue for next level.",
+            "from": 15,
+            "to": 18
+          },
+          {
+            "label": "Return result",
+            "note": "Return completed res list.",
+            "from": 19,
+            "to": 19
+          }
+        ]
+      },
+      {
+        "name": "DFS Right-First Traversal",
+        "time": "O(n)",
+        "space": "O(h)",
+        "idea": "Traverse DFS visiting right child before left child. When the current depth equals the size of the result list, the current node is the rightmost visible node for that level.",
+        "code": "class Solution:\n    def rightSideView(self, root: Optional[TreeNode]) -> List[int]:\n        res = []\n        def dfs(node: Optional[TreeNode], depth: int):\n            if not node:\n                return\n            if depth == len(res):\n                res.append(node.val)\n            dfs(node.right, depth + 1)\n            dfs(node.left, depth + 1)\n            \n        dfs(root, 0)\n        return res",
+        "steps": [
+          {
+            "label": "Initialize DFS",
+            "note": "Create res list and trigger DFS starting at depth 0.",
+            "from": 3,
+            "to": 11
+          },
+          {
+            "label": "DFS base case",
+            "note": "Return if node is None.",
+            "from": 5,
+            "to": 6,
+            "yes": "Return",
+            "no": "Continue processing node"
+          },
+          {
+            "label": "Record visible node",
+            "note": "If depth == len(res), this is the first time reaching this depth (rightmost node).",
+            "from": 7,
+            "to": 8,
+            "yes": "Append node.val to res",
+            "no": "Skip append"
+          },
+          {
+            "label": "Recurse right subtree first",
+            "note": "Recurse on node.right with depth + 1.",
+            "from": 9,
+            "to": 9
+          },
+          {
+            "label": "Recurse left subtree second",
+            "note": "Recurse on node.left with depth + 1.",
+            "from": 10,
+            "to": 10
+          },
+          {
+            "label": "Return result",
+            "note": "Return res list containing right side view.",
+            "from": 12,
+            "to": 12
+          }
+        ]
+      }
+    ]
+  },
+  "count-good-nodes-in-binary-tree": {
+    "statement": "Given a binary tree root, a node X in the tree is named good if in the path from root to X there are no nodes with a value greater than X.\n\nReturn the number of good nodes in the binary tree.",
+    "given": "the root of a binary tree root",
+    "ret": "the number of good nodes in the binary tree",
+    "summary": "Traverse the tree using DFS or BFS while tracking the maximum value seen along the path from the root. A node is good if its value is greater than or equal to this path maximum.",
+    "starter": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\nclass Solution:\n    def goodNodes(self, root: TreeNode) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "root = [3,1,4,3,null,5]",
+        "inputStr": "{\"root\": [3,1,4,3,null,5]}",
+        "expectedStr": "4"
+      },
+      {
+        "label": "root = [3,3,null,4,2]",
+        "inputStr": "{\"root\": [3,3,null,4,2]}",
+        "expectedStr": "3"
+      },
+      {
+        "label": "root = [1]",
+        "inputStr": "{\"root\": [1]}",
+        "expectedStr": "1"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Depth-First Search (DFS)",
+        "time": "O(N)",
+        "space": "O(H)",
+        "idea": "Perform a recursive pre-order traversal. Pass down the running maximum value from the root to the current node. If the current node's value is greater than or equal to the path max, count it as good and update the path max.",
+        "code": "class Solution:\n    def goodNodes(self, root: TreeNode) -> int:\n        def dfs(node, max_val):\n            if not node:\n                return 0\n            \n            is_good = 1 if node.val >= max_val else 0\n            max_val = max(max_val, node.val)\n            \n            return is_good + dfs(node.left, max_val) + dfs(node.right, max_val)\n            \n        return dfs(root, root.val)",
+        "steps": [
+          {
+            "label": "Start DFS",
+            "note": "Invoke the helper function `dfs` passing the root node and initial `root.val` as the starting maximum.",
+            "from": 12,
+            "to": 3
+          },
+          {
+            "label": "Check Base Case",
+            "note": "If `node` is `None`, return 0 since an empty node contributes 0 good nodes.",
+            "from": 3,
+            "to": 4,
+            "yes": "Return 0 if node is None",
+            "no": "Proceed to evaluate current node"
+          },
+          {
+            "label": "Evaluate Good Node",
+            "note": "Compare `node.val` with `max_val`. If `node.val >= max_val`, set `is_good = 1`, else `0`.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "Update Path Maximum",
+            "note": "Update `max_val = max(max_val, node.val)` to pass to child calls.",
+            "from": 7,
+            "to": 9
+          },
+          {
+            "label": "Recurse and Return",
+            "note": "Recursively call `dfs` on left and right children with updated `max_val`, sum results with `is_good`, and return.",
+            "from": 9,
+            "to": 12
+          }
+        ]
+      },
+      {
+        "name": "Breadth-First Search (BFS)",
+        "time": "O(N)",
+        "space": "O(W)",
+        "idea": "Use a queue to perform a level-order traversal. Each entry in the queue stores a tuple of (node, path_max). For each node, increment count if node.val >= path_max, and push children with updated max values.",
+        "code": "from collections import deque\n\nclass Solution:\n    def goodNodes(self, root: TreeNode) -> int:\n        if not root:\n            return 0\n            \n        count = 0\n        queue = deque([(root, root.val)])\n        \n        while queue:\n            node, max_val = queue.popleft()\n            if node.val >= max_val:\n                count += 1\n            new_max = max(max_val, node.val)\n            \n            if node.left:\n                queue.append((node.left, new_max))\n            if node.right:\n                queue.append((node.right, new_max))\n                \n        return count",
+        "steps": [
+          {
+            "label": "Initialize Queue",
+            "note": "Check if root exists, initialize `count = 0` and queue with `(root, root.val)`.",
+            "from": 5,
+            "to": 11
+          },
+          {
+            "label": "Pop Node",
+            "note": "Dequeue the front node and its associated path maximum `max_val`.",
+            "from": 11,
+            "to": 12
+          },
+          {
+            "label": "Check Good Node",
+            "note": "If `node.val >= max_val`, increment `count` by 1.",
+            "from": 12,
+            "to": 14,
+            "yes": "Increment count",
+            "no": "Do not increment count"
+          },
+          {
+            "label": "Enqueue Children",
+            "note": "Calculate `new_max` and push left/right children to queue if they exist.",
+            "from": 14,
+            "to": 21
+          },
+          {
+            "label": "Return Result",
+            "note": "When queue is empty, return total `count`.",
+            "from": 21,
+            "to": 21
+          }
+        ]
+      }
+    ]
+  },
+  "kth-largest-element-in-a-stream": {
+    "statement": "Design a class to find the kth largest element in a stream. Note that it is the kth largest element in the sorted order, not the kth distinct element.\n\nImplement KthLargest class:\n- KthLargest(int k, int[] nums) Initializes the object with the integer k and the stream of integers nums.\n- int add(int val) Appends the integer val to the stream and returns the element representing the kth largest element in the stream.",
+    "given": "an integer k and an initial array of numbers nums",
+    "ret": "a class instance that returns the kth largest element after each addition",
+    "summary": "Maintain a min-heap of size k containing the k largest elements seen so far. The root of the min-heap will always represent the kth largest element.",
+    "starter": "import heapq\n\nclass KthLargest:\n    def __init__(self, k: int, nums: list[int]):\n        pass\n\n    def add(self, val: int) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "k = 3, nums = [4, 5, 8, 2], adds = [3, 5, 10, 9, 4]",
+        "inputStr": "{\"k\": 3, \"nums\": [4, 5, 8, 2], \"adds\": [3, 5, 10, 9, 4]}",
+        "expectedStr": "[4, 5, 5, 8, 8]"
+      },
+      {
+        "label": "k = 1, nums = [], adds = [-3, -2, -4, 0, 4]",
+        "inputStr": "{\"k\": 1, \"nums\": [], \"adds\": [-3, -2, -4, 0, 4]}",
+        "expectedStr": "[-3, -2, -2, 0, 4]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Sort Array on Every Add (Brute Force)",
+        "time": "O(M * N log N)",
+        "space": "O(N)",
+        "idea": "Keep an array of all stream elements. Every time `add` is called, append the new element, sort the array in descending order, and return the element at index `k - 1`.",
+        "code": "class KthLargest:\n    def __init__(self, k: int, nums: list[int]):\n        self.k = k\n        self.nums = nums\n\n    def add(self, val: int) -> int:\n        self.nums.append(val)\n        self.nums.sort(reverse=True)\n        return self.nums[self.k - 1]",
+        "steps": [
+          {
+            "label": "Initialize State",
+            "note": "Store `k` and `nums` array in instance variables.",
+            "from": 2,
+            "to": 4
+          },
+          {
+            "label": "Append New Value",
+            "note": "Append parameter `val` to `self.nums`.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "Sort Array",
+            "note": "Sort `self.nums` in descending order so largest elements are at the front.",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "Return Kth Element",
+            "note": "Access index `self.k - 1` and return that value.",
+            "from": 8,
+            "to": 9
+          }
+        ]
+      },
+      {
+        "name": "Min-Heap of Size K (Optimal)",
+        "time": "O(N log K) init, O(log K) per add",
+        "space": "O(K)",
+        "idea": "Use a min-heap to keep track of the largest k numbers. The smallest element among these k numbers (top of min-heap) is the kth largest element overall.",
+        "code": "import heapq\n\nclass KthLargest:\n    def __init__(self, k: int, nums: list[int]):\n        self.k = k\n        self.min_heap = nums\n        heapq.heapify(self.min_heap)\n        while len(self.min_heap) > self.k:\n            heapq.heappop(self.min_heap)\n\n    def add(self, val: int) -> int:\n        heapq.heappush(self.min_heap, val)\n        if len(self.min_heap) > self.k:\n            heapq.heappop(self.min_heap)\n        return self.min_heap[0]",
+        "steps": [
+          {
+            "label": "Heapify Input",
+            "note": "Store `k` and convert `nums` list into a heap structure using `heapq.heapify`.",
+            "from": 4,
+            "to": 7
+          },
+          {
+            "label": "Trim Heap Size",
+            "note": "Pop elements from `min_heap` until size becomes at most `k`.",
+            "from": 7,
+            "to": 10,
+            "yes": "Pop smallest element",
+            "no": "Heap size <= k reached"
+          },
+          {
+            "label": "Push New Value",
+            "note": "Push new stream `val` into `min_heap`.",
+            "from": 10,
+            "to": 11
+          },
+          {
+            "label": "Evict Excess Element",
+            "note": "If heap length exceeds `k`, pop the smallest element to maintain size `k`.",
+            "from": 11,
+            "to": 13,
+            "yes": "Pop excess element",
+            "no": "Heap size is <= k"
+          },
+          {
+            "label": "Return Top Element",
+            "note": "The root `self.min_heap[0]` is the kth largest element.",
+            "from": 13,
+            "to": 14
+          }
+        ]
+      }
+    ]
+  },
+  "last-stone-weight": {
+    "statement": "You are given an array of integers stones where stones[i] is the weight of the ith stone.\n\nWe are playing a game with the stones. On each turn, we choose the heaviest two stones and smash them together. Suppose the heaviest two stones have weights x and y with x <= y. The result of this smash is:\n- If x == y, both stones are destroyed.\n- If x != y, the stone of weight x is destroyed, and the stone of weight y has new weight y - x.\n\nAt the end of the game, there is at most one stone left.\n\nReturn the weight of the last remaining stone. If there are no stones left, return 0.",
+    "given": "an array of integers stones representing stone weights",
+    "ret": "the weight of the last remaining stone, or 0 if no stones are left",
+    "summary": "Repeatedly extract the two heaviest stones using a max-heap (by negating values in Python). If they are unequal, push the difference back into the heap until at most one stone remains.",
+    "starter": "import heapq\n\nclass Solution:\n    def lastStoneWeight(self, stones: list[int]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "stones = [2,7,4,1,8,1]",
+        "inputStr": "{\"stones\": [2,7,4,1,8,1]}",
+        "expectedStr": "1"
+      },
+      {
+        "label": "stones = [1]",
+        "inputStr": "{\"stones\": [1]}",
+        "expectedStr": "1"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Iterative Array Sorting (Brute Force)",
+        "time": "O(N^2 log N)",
+        "space": "O(1)",
+        "idea": "In every turn, sort the array to bring the heaviest stones to the end, pop the two largest, smash them, and append the non-zero difference back into the array.",
+        "code": "class Solution:\n    def lastStoneWeight(self, stones: list[int]) -> int:\n        while len(stones) > 1:\n            stones.sort()\n            first = stones.pop()\n            second = stones.pop()\n            if first != second:\n                stones.append(first - second)\n        return stones[0] if stones else 0",
+        "steps": [
+          {
+            "label": "Loop Until <= 1 Stone",
+            "note": "Continue running smashing rounds while `len(stones) > 1`.",
+            "from": 3,
+            "to": 4,
+            "yes": "Proceed to smash stones",
+            "no": "Break loop"
+          },
+          {
+            "label": "Sort Stones",
+            "note": "Sort array in ascending order so heaviest stones are at the end.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Pop Two Heaviest",
+            "note": "Pop the last two elements as `first` (heaviest) and `second` (second heaviest).",
+            "from": 5,
+            "to": 7
+          },
+          {
+            "label": "Smash and Push Difference",
+            "note": "If `first != second`, push remaining weight `first - second` back into array.",
+            "from": 7,
+            "to": 8,
+            "yes": "Append non-zero difference",
+            "no": "Both stones destroyed"
+          },
+          {
+            "label": "Return Final Stone Weight",
+            "note": "Return `stones[0]` if one stone remains, otherwise return 0.",
+            "from": 9,
+            "to": 9
+          }
+        ]
+      },
+      {
+        "name": "Max-Heap / Priority Queue (Optimal)",
+        "time": "O(N log N)",
+        "space": "O(N)",
+        "idea": "Convert stones into negative values to simulate a max-heap using Python's min-heap standard library (`heapq`). Pop the top two elements, compare them, and push the negated difference back if non-zero.",
+        "code": "import heapq\n\nclass Solution:\n    def lastStoneWeight(self, stones: list[int]) -> int:\n        stones = [-s for s in stones]\n        heapq.heapify(stones)\n        \n        while len(stones) > 1:\n            first = heapq.heappop(stones)\n            second = heapq.heappop(stones)\n            if first != second:\n                heapq.heappush(stones, first - second)\n                \n        return -stones[0] if stones else 0",
+        "steps": [
+          {
+            "label": "Negate and Heapify",
+            "note": "Negate all stone values to convert Python min-heap into max-heap behavior, then call `heapify`.",
+            "from": 5,
+            "to": 8
+          },
+          {
+            "label": "Loop While > 1 Stone",
+            "note": "Check if heap contains at least 2 stones.",
+            "from": 8,
+            "to": 9,
+            "yes": "Extract top two stones",
+            "no": "Break loop"
+          },
+          {
+            "label": "Extract Top Two",
+            "note": "Pop `first` and `second` heaviest stones from heap.",
+            "from": 9,
+            "to": 11
+          },
+          {
+            "label": "Push Remaining Difference",
+            "note": "If `first != second`, push `first - second` (note negative arithmetic preserves order) back into heap.",
+            "from": 11,
+            "to": 13,
+            "yes": "Push difference to heap",
+            "no": "Both destroyed"
+          },
+          {
+            "label": "Return Result",
+            "note": "Return `-stones[0]` to restore original positive value, or 0 if heap is empty.",
+            "from": 13,
+            "to": 14
+          }
+        ]
+      }
+    ]
+  },
+  "k-closest-points-to-origin": {
+    "statement": "Given an array of points where points[i] = [xi, yi] represents a point on the X-Y plane and an integer k, return the k closest points to the origin (0, 0).\n\nThe distance between two points on the X-Y plane is the Euclidean distance (i.e., \u221a(x1 - x2)^2 + (y1 - y2)^2).\n\nYou may return the answer in any order. The answer is guaranteed to be unique (except for the order that it is in).",
+    "given": "an array of 2D points and an integer k",
+    "ret": "the k closest points to the origin (0, 0)",
+    "summary": "Calculate the squared distance for each point, then use a max-heap of size k to track the k smallest distances in O(N log K) time.",
+    "starter": "class Solution:\n    def kClosest(self, points: List[List[int]], k: int) -> List[List[int]]:\n        ",
+    "tests": [
+      {
+        "label": "points = [[1,3],[-2,2]], k = 1",
+        "inputStr": "{\"points\": [[1, 3], [-2, 2]], \"k\": 1}",
+        "expectedStr": "[[-2, 2]]"
+      },
+      {
+        "label": "points = [[3,3],[5,-1],[-2,4]], k = 2",
+        "inputStr": "{\"points\": [[3, 3], [5, -1], [-2, 4]], \"k\": 2}",
+        "expectedStr": "[[3, 3], [-2, 4]]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Full Sorting",
+        "time": "O(N log N)",
+        "space": "O(N)",
+        "idea": "Compute the Euclidean distance squared for each point, sort all points by distance, and slice the first k points.",
+        "code": "class Solution:\n    def kClosest(self, points: List[List[int]], k: int) -> List[List[int]]:\n        points.sort(key=lambda p: p[0]**2 + p[1]**2)\n        return points[:k]",
+        "steps": [
+          {
+            "label": "Define sort key",
+            "note": "Use squared distance x^2 + y^2 as key to avoid computing square root operations.",
+            "from": 1,
+            "to": 3
+          },
+          {
+            "label": "Sort points",
+            "note": "Sort all N points in ascending order based on their computed distance key.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "Return prefix slice",
+            "note": "Slice the array to get the first k points from the sorted list.",
+            "from": 3,
+            "to": 4
+          }
+        ]
+      },
+      {
+        "name": "Max Heap",
+        "time": "O(N log K)",
+        "space": "O(K)",
+        "idea": "Maintain a Max-Heap of size K. For each point, insert negative distance so Python's min-heap acts as a max-heap. If heap exceeds size K, pop the maximum distance.",
+        "code": "import heapq\n\nclass Solution:\n    def kClosest(self, points: List[List[int]], k: int) -> List[List[int]]:\n        max_heap = []\n        for x, y in points:\n            dist = -(x*x + y*y)\n            heapq.heappush(max_heap, (dist, [x, y]))\n            if len(max_heap) > k:\n                heapq.heappop(max_heap)\n        return [pt for dist, pt in max_heap]",
+        "steps": [
+          {
+            "label": "Initialize Heap",
+            "note": "Create an empty list to represent our max heap.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Iterate & Calculate Distance",
+            "note": "For each point (x, y), calculate the negative squared distance to invert heap ordering.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "Push to Heap",
+            "note": "Push pair (-dist, point) into max_heap.",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "Check Heap Size",
+            "note": "If heap size exceeds k, pop the farthest point (largest distance).",
+            "from": 9,
+            "to": 10,
+            "yes": "Size > k: pop farthest element",
+            "no": "Size <= k: keep building heap"
+          },
+          {
+            "label": "Extract Results",
+            "note": "Extract all k point elements remaining in the max heap.",
+            "from": 10,
+            "to": 11
+          }
+        ]
+      }
+    ]
+  },
+  "kth-largest-element-in-an-array": {
+    "statement": "Given an integer array nums and an integer k, return the kth largest element in the array.\n\nNote that it is the kth largest element in the sorted order, not the kth distinct element.\n\nCan you solve it without sorting?",
+    "given": "an array of integers nums and an integer k",
+    "ret": "the kth largest element in nums",
+    "summary": "Use a min-heap of size k to track the largest elements in the array. The root of the heap will hold the kth largest element.",
+    "starter": "class Solution:\n    def findKthLargest(self, nums: List[int], k: int) -> int:\n        ",
+    "tests": [
+      {
+        "label": "nums = [3,2,1,5,6,4], k = 2",
+        "inputStr": "{\"nums\": [3, 2, 1, 5, 6, 4], \"k\": 2}",
+        "expectedStr": "5"
+      },
+      {
+        "label": "nums = [3,2,3,1,2,4,5,5,6], k = 4",
+        "inputStr": "{\"nums\": [3, 2, 3, 1, 2, 4, 5, 5, 6], \"k\": 4}",
+        "expectedStr": "4"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Array Sorting",
+        "time": "O(N log N)",
+        "space": "O(1)",
+        "idea": "Sort the array in ascending order and select the element at index len(nums) - k.",
+        "code": "class Solution:\n    def findKthLargest(self, nums: List[int], k: int) -> int:\n        nums.sort()\n        return nums[len(nums) - k]",
+        "steps": [
+          {
+            "label": "Sort array",
+            "note": "Sort all elements in nums in ascending order.",
+            "from": 1,
+            "to": 3
+          },
+          {
+            "label": "Access Kth Largest",
+            "note": "The kth largest element is at index len(nums) - k after ascending sort.",
+            "from": 3,
+            "to": 4
+          }
+        ]
+      },
+      {
+        "name": "Min-Heap",
+        "time": "O(N log K)",
+        "space": "O(K)",
+        "idea": "Maintain a min-heap of size K. Iterate through nums, pushing each element. If the size exceeds K, pop the minimum. At the end, the top of the heap is the Kth largest element.",
+        "code": "import heapq\n\nclass Solution:\n    def findKthLargest(self, nums: List[int], k: int) -> int:\n        heap = []\n        for num in nums:\n            heapq.heappush(heap, num)\n            if len(heap) > k:\n                heapq.heappop(heap)\n        return heap[0]",
+        "steps": [
+          {
+            "label": "Initialize Heap",
+            "note": "Create an empty list to act as our min-heap.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Iterate Elements",
+            "note": "Loop through each integer 'num' in the input array 'nums'.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "Push to Heap",
+            "note": "Push 'num' onto the min-heap.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "Maintain Size K",
+            "note": "If heap size grows larger than K, pop the smallest element.",
+            "from": 7,
+            "to": 8,
+            "yes": "len(heap) > k: remove smallest",
+            "no": "len(heap) <= k: continue"
+          },
+          {
+            "label": "Return Top",
+            "note": "The root of the min-heap (heap[0]) is the Kth largest element overall.",
+            "from": 8,
+            "to": 9
+          }
+        ]
+      }
+    ]
+  },
+  "task-scheduler": {
+    "statement": "Given a characters array tasks, representing the tasks a CPU needs to do, where each letter represents a different task. Tasks could be done in any order. Each task is done in one unit of time. For each unit of time, the CPU could have done a task or, at least, be idle.\n\nHowever, there is a non-negative integer n that represents the cooldown period between two same tasks (the same letter in the array), that is that there must be at least n units of time between any two same tasks.\n\nReturn the least number of units of times that the CPU will take to finish all the given tasks.",
+    "given": "an array of task characters tasks and a cooldown parameter n",
+    "ret": "the minimum total units of time needed to execute all tasks with cooling restrictions",
+    "summary": "Calculate frequencies of tasks. Find the max frequency task count to structure execution intervals mathematically, or simulate using a Max-Heap and Queue.",
+    "starter": "class Solution:\n    def leastInterval(self, tasks: List[str], n: int) -> int:\n        ",
+    "tests": [
+      {
+        "label": "tasks = [\"A\",\"A\",\"A\",\"B\",\"B\",\"B\"], n = 2",
+        "inputStr": "{\"tasks\": [\"A\", \"A\", \"A\", \"B\", \"B\", \"B\"], \"n\": 2}",
+        "expectedStr": "8"
+      },
+      {
+        "label": "tasks = [\"A\",\"C\",\"A\",\"B\",\"D\",\"B\"], n = 1",
+        "inputStr": "{\"tasks\": [\"A\", \"C\", \"A\", \"B\", \"D\", \"B\"], \"n\": 1}",
+        "expectedStr": "6"
+      },
+      {
+        "label": "tasks = [\"A\",\"A\",\"A\",\"B\",\"B\",\"B\"], n = 0",
+        "inputStr": "{\"tasks\": [\"A\", \"A\", \"A\", \"B\", \"B\", \"B\"], \"n\": 0}",
+        "expectedStr": "6"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Max Heap & Cooling Queue Simulation",
+        "time": "O(N)",
+        "space": "O(1)",
+        "idea": "Use a max-heap to process tasks with the highest remaining frequency, and a queue to enforce the cooling off time 'n' for tasks.",
+        "code": "from collections import Counter, deque\nimport heapq\n\nclass Solution:\n    def leastInterval(self, tasks: List[str], n: int) -> int:\n        counts = Counter(tasks)\n        max_heap = [-cnt for cnt in counts.values()]\n        heapq.heapify(max_heap)\n        q = deque()\n        time = 0\n        \n        while max_heap or q:\n            time += 1\n            if max_heap:\n                cnt = heapq.heappop(max_heap) + 1\n                if cnt != 0:\n                    q.append((cnt, time + n))\n            if q and q[0][1] == time:\n                heapq.heappush(max_heap, q.popleft()[0])\n                \n        return time",
+        "steps": [
+          {
+            "label": "Frequency Count & Heap Build",
+            "note": "Count frequencies and push negative counts into max_heap to simulate max-heap in Python.",
+            "from": 5,
+            "to": 8
+          },
+          {
+            "label": "Initialize Clock & Queue",
+            "note": "Set time = 0 and create a deque 'q' to hold tasks currently on cooldown.",
+            "from": 8,
+            "to": 10
+          },
+          {
+            "label": "Process Unit Time",
+            "note": "Increment clock counter 'time' by 1.",
+            "from": 11,
+            "to": 12
+          },
+          {
+            "label": "Pop Max Freq Task",
+            "note": "Pop highest remaining frequency task from heap, decrement its count, and enqueue if count remaining > 0.",
+            "from": 13,
+            "to": 16,
+            "yes": "Heap not empty: execute most frequent task",
+            "no": "Heap empty: CPU is idle for this unit"
+          },
+          {
+            "label": "Check Cooldown Queue",
+            "note": "If top task in queue completed cooldown (time == target time), push back into max_heap.",
+            "from": 17,
+            "to": 18,
+            "yes": "Cooldown finished: push task back to heap",
+            "no": "Task still in cooldown"
+          },
+          {
+            "label": "Return Elapsed Time",
+            "note": "Loop finishes when max_heap and cooldown queue are both empty. Return total time elapsed.",
+            "from": 19,
+            "to": 20
+          }
+        ]
+      },
+      {
+        "name": "Mathematical / Greedy Frequency Counting",
+        "time": "O(N)",
+        "space": "O(1)",
+        "idea": "The bottleneck is the task with the maximum frequency. Calculate minimum slots required using formula: (max_freq - 1) * (n + 1) + max_freq_count. Compare with total task count.",
+        "code": "from collections import Counter\n\nclass Solution:\n    def leastInterval(self, tasks: List[str], n: int) -> int:\n        counts = Counter(tasks)\n        max_freq = max(counts.values())\n        max_freq_count = sum(1 for cnt in counts.values() if cnt == max_freq)\n        \n        ans = (max_freq - 1) * (n + 1) + max_freq_count\n        return max(ans, len(tasks))",
+        "steps": [
+          {
+            "label": "Count Task Frequencies",
+            "note": "Find occurrence counts of each distinct task.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Identify Max Frequency",
+            "note": "Find the maximum frequency `max_freq` among all tasks.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "Count Max Frequency Tasks",
+            "note": "Count how many distinct tasks tie for having `max_freq` occurrences.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "Calculate Frame Bound",
+            "note": "Compute slots bound: (max_freq - 1) full cycles of length (n + 1) plus max_freq_count tasks in final cycle.",
+            "from": 8,
+            "to": 9
+          },
+          {
+            "label": "Return Result",
+            "note": "Result is maximum of calculated frame bound and actual total task count.",
+            "from": 9,
+            "to": 10
+          }
+        ]
+      }
+    ]
+  },
+  "design-twitter": {
+    "statement": "Design a simplified version of Twitter where users can post tweets, follow/unfollow another user, and see the 10 most recent tweets in their news feed.\n\nImplement the Twitter class:\n- Twitter() Initializes your twitter object.\n- void postTweet(int userId, int tweetId) Composes a new tweet with ID tweetId by the user userId. Each call to this function will be made with a unique tweetId.\n- List<Integer> getNewsFeed(int userId) Retrieves the 10 most recent tweet IDs in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user themself. Tweets must be ordered from most recent to least recent.\n- void follow(int followerId, int followeeId) The user with ID followerId started following the user with ID followeeId.\n- void unfollow(int followerId, int followeeId) The user with ID followerId stopped following the user with ID followeeId.",
+    "given": "A sequence of Twitter API calls and parameters",
+    "ret": "Results of getNewsFeed calls and null for void operations",
+    "summary": "Track user tweets and follow relationships using hash maps/sets, and merge the 10 most recent tweets across followed users using a priority queue (max-heap).",
+    "starter": "class Twitter:\n\n    def __init__(self):\n        pass\n\n    def postTweet(self, userId: int, tweetId: int) -> None:\n        pass\n\n    def getNewsFeed(self, userId: int) -> List[int]:\n        pass\n\n    def follow(self, followerId: int, followeeId: int) -> None:\n        pass\n\n    def unfollow(self, followerId: int, followeeId: int) -> None:\n        pass",
+    "tests": [
+      {
+        "label": "actions = [\"Twitter\", \"postTweet\", \"getNewsFeed\", \"follow\", \"postTweet\", \"getNewsFeed\", \"unfollow\", \"getNewsFeed\"], params = [[], [1, 5], [1], [1, 2], [2, 6], [1], [1, 2], [1]]",
+        "inputStr": "{\"actions\": [\"Twitter\", \"postTweet\", \"getNewsFeed\", \"follow\", \"postTweet\", \"getNewsFeed\", \"unfollow\", \"getNewsFeed\"], \"params\": [[], [1, 5], [1], [1, 2], [2, 6], [1], [1, 2], [1]]}",
+        "expectedStr": "[null, null, [5], null, null, [6, 5], null, [5]]"
+      },
+      {
+        "label": "actions = [\"Twitter\", \"postTweet\", \"postTweet\", \"getNewsFeed\"], params = [[], [1, 101], [1, 102], [1]]",
+        "inputStr": "{\"actions\": [\"Twitter\", \"postTweet\", \"postTweet\", \"getNewsFeed\"], \"params\": [[], [1, 101], [1, 102], [1]]}",
+        "expectedStr": "[null, null, null, [102, 101]]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Naive Aggregation and Sorting",
+        "time": "O(N * M log(N * M)) for getNewsFeed where N is followees and M is tweets per followee",
+        "space": "O(Total Tweets + Total Follows)",
+        "idea": "Store all tweets in a list per user along with a global timestamp. To generate a news feed, aggregate all tweets from the user and their followees, sort them descending by timestamp, and pick the top 10.",
+        "code": "from collections import defaultdict\n\nclass Twitter:\n    def __init__(self):\n        self.time = 0\n        self.tweets = defaultdict(list)  # userId -> list of (time, tweetId)\n        self.follows = defaultdict(set)   # followerId -> set of followeeIds\n\n    def postTweet(self, userId: int, tweetId: int) -> None:\n        self.time += 1\n        self.tweets[userId].append((self.time, tweetId))\n\n    def getNewsFeed(self, userId: int) -> list[int]:\n        all_tweets = []\n        # Followees + user self\n        user_ids = self.follows[userId] | {userId}\n        for u in user_ids:\n            all_tweets.extend(self.tweets[u])\n        all_tweets.sort(key=lambda x: x[0], reverse=True)\n        return [t[1] for t in all_tweets[:10]]\n\n    def follow(self, followerId: int, followeeId: int) -> None:\n        self.follows[followerId].add(followeeId)\n\n    def unfollow(self, followerId: int, followeeId: int) -> None:\n        self.follows[followerId].discard(followeeId)",
+        "steps": [
+          {
+            "label": "Aggregate tweets",
+            "note": "Collect all tweets from self and all followees into a single list",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "Sort by timestamp",
+            "note": "Sort all collected tweets in descending order using their creation time",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Extract top 10",
+            "note": "Slice top 10 items and return only their tweet IDs",
+            "from": 3,
+            "to": 4
+          }
+        ]
+      },
+      {
+        "name": "Priority Queue / Min-Heap Optimization",
+        "time": "O(K log U) where K=10 and U is the number of followees",
+        "space": "O(Total Tweets + Total Follows)",
+        "idea": "Treat each user's tweet list as a sorted queue. Use a heap to efficiently extract the 10 most recent tweets overall, dynamic merging similar to Merging K Sorted Lists.",
+        "code": "import heapq\nfrom collections import defaultdict\n\nclass Twitter:\n    def __init__(self):\n        self.count = 0\n        self.tweetMap = defaultdict(list)  # userId -> list of [count, tweetId]\n        self.followMap = defaultdict(set)  # userId -> set of followeeIds\n\n    def postTweet(self, userId: int, tweetId: int) -> None:\n        self.tweetMap[userId].append([self.count, tweetId])\n        self.count -= 1  # Using negative values for min-heap to act as max-heap\n\n    def getNewsFeed(self, userId: int) -> list[int]:\n        res = []\n        minHeap = []\n        self.followMap[userId].add(userId)\n        \n        for followeeId in self.followMap[userId]:\n            if followeeId in self.tweetMap:\n                index = len(self.tweetMap[followeeId]) - 1\n                count, tweetId = self.tweetMap[followeeId][index]\n                minHeap.append([count, tweetId, followeeId, index - 1])\n        \n        heapq.heapify(minHeap)\n        while minHeap and len(res) < 10:\n            count, tweetId, followeeId, index = heapq.heappop(minHeap)\n            res.append(tweetId)\n            if index >= 0:\n                count, tweetId = self.tweetMap[followeeId][index]\n                heapq.heappush(minHeap, [count, tweetId, followeeId, index - 1])\n        return res\n\n    def follow(self, followerId: int, followeeId: int) -> None:\n        self.followMap[followerId].add(followeeId)\n\n    def unfollow(self, followerId: int, followeeId: int) -> None:\n        if followeeId in self.followMap[followerId]:\n            self.followMap[followerId].remove(followeeId)",
+        "steps": [
+          {
+            "label": "Ensure self-follow",
+            "note": "Include user's own ID in their follow map set",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "Initialize heap",
+            "note": "Populate heap with the latest tweet from each followee",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Pop most recent",
+            "note": "Pop the latest tweet from heap, append tweet ID to result set",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "Push next tweet",
+            "note": "If the followee has earlier tweets, push the next latest into heap",
+            "from": 4,
+            "to": 5,
+            "yes": "index >= 0",
+            "no": "No earlier tweets for this followee"
+          },
+          {
+            "label": "Loop termination check",
+            "note": "Stop when result list reaches length 10 or heap becomes empty",
+            "from": 5,
+            "to": 6,
+            "yes": "len(res) < 10 and heap not empty",
+            "no": "Return res"
+          }
+        ]
+      }
+    ]
+  },
+  "subsets": {
+    "statement": "Given an integer array nums of unique elements, return all possible subsets (the power set).\n\nThe solution set must not contain duplicate subsets. Return the solution in any order.",
+    "given": "an array of unique integers `nums`",
+    "ret": "all possible subsets (the power set)",
+    "summary": "Iterate through elements or branch recursively, making a decision to include or exclude each element to build all $2^N$ subsets.",
+    "starter": "class Solution:\n    def subsets(self, nums: List[int]) -> List[List[int]]:\n        pass",
+    "tests": [
+      {
+        "label": "nums = [1,2,3]",
+        "inputStr": "{\"nums\": [1, 2, 3]}",
+        "expectedStr": "[[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]"
+      },
+      {
+        "label": "nums = [0]",
+        "inputStr": "{\"nums\": [0]}",
+        "expectedStr": "[[], [0]]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Iterative (Cascading)",
+        "time": "O(N * 2^N)",
+        "space": "O(N * 2^N)",
+        "idea": "Start with an empty set [[]]. For each number in nums, duplicate all existing subsets and append the current number to each clone.",
+        "code": "class Solution:\n    def subsets(self, nums: list[int]) -> list[list[int]]:\n        res = [[]]\n        for num in nums:\n            res += [curr + [num] for curr in res]\n        return res",
+        "steps": [
+          {
+            "label": "Initialize result",
+            "note": "Start with base array containing empty subset [[]]",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "Iterate elements",
+            "note": "Loop through each number in nums",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Cascade existing subsets",
+            "note": "For current number, duplicate all current subsets in res and append num to them",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "Return result",
+            "note": "Return completed power set res",
+            "from": 4,
+            "to": 5
+          }
+        ]
+      },
+      {
+        "name": "Backtracking / DFS Decision Tree",
+        "time": "O(N * 2^N)",
+        "space": "O(N)",
+        "idea": "Traverse a decision tree where at each index `i`, we choose to either include `nums[i]` or exclude `nums[i]` before recursing to index `i + 1`.",
+        "code": "class Solution:\n    def subsets(self, nums: list[int]) -> list[list[int]]:\n        res = []\n        subset = []\n\n        def dfs(i):\n            if i >= len(nums):\n                res.append(subset.copy())\n                return\n            # Decision to include nums[i]\n            subset.append(nums[i])\n            dfs(i + 1)\n            # Decision NOT to include nums[i]\n            subset.pop()\n            dfs(i + 1)\n\n        dfs(0)\n        return res",
+        "steps": [
+          {
+            "label": "Check base case",
+            "note": "If index i equals length of nums, add clone of subset to res and return",
+            "from": 1,
+            "to": 2,
+            "yes": "i >= len(nums)",
+            "no": "i < len(nums)"
+          },
+          {
+            "label": "Include branch",
+            "note": "Append nums[i] to subset path, recurse to index i + 1",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Backtrack",
+            "note": "Pop nums[i] from subset path to restore state",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "Exclude branch",
+            "note": "Recurse to index i + 1 without including nums[i]",
+            "from": 4,
+            "to": 5
+          }
+        ]
+      }
+    ]
+  },
+  "permutations": {
+    "statement": "Given an array nums of distinct integers, return all the possible permutations. You can return the answer in any order.",
+    "given": "an array `nums` of distinct integers",
+    "ret": "all possible permutations",
+    "summary": "Recursively construct sequences by choosing available choices at each depth, maintaining state with a used tracking set or in-place swapping.",
+    "starter": "class Solution:\n    def permute(self, nums: List[int]) -> List[List[int]]:\n        pass",
+    "tests": [
+      {
+        "label": "nums = [1,2,3]",
+        "inputStr": "{\"nums\": [1, 2, 3]}",
+        "expectedStr": "[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]"
+      },
+      {
+        "label": "nums = [0,1]",
+        "inputStr": "{\"nums\": [0, 1]}",
+        "expectedStr": "[[0,1],[1,0]]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Backtracking with Used Tracking",
+        "time": "O(N * N!)",
+        "space": "O(N)",
+        "idea": "Build candidate permutations element by element. At each step, pick an unused element from nums, add it to current candidate path, recurse, and then backtrack.",
+        "code": "class Solution:\n    def permute(self, nums: list[int]) -> list[list[int]]:\n        res = []\n        sol = []\n        \n        def backtrack():\n            if len(sol) == len(nums):\n                res.append(sol.copy())\n                return\n            \n            for x in nums:\n                if x not in sol:\n                    sol.append(x)\n                    backtrack()\n                    sol.pop()\n                    \n        backtrack()\n        return res",
+        "steps": [
+          {
+            "label": "Base case check",
+            "note": "If sol length equals nums length, permutation is complete. Save copy to res",
+            "from": 1,
+            "to": 2,
+            "yes": "len(sol) == len(nums)",
+            "no": "len(sol) < len(nums)"
+          },
+          {
+            "label": "Iterate options",
+            "note": "Loop through each candidate number x in nums",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Check availability",
+            "note": "Check if candidate x is already used in current permutation sol",
+            "from": 3,
+            "to": 4,
+            "yes": "x not in sol",
+            "no": "x already used"
+          },
+          {
+            "label": "Make choice & Recurse",
+            "note": "Append x to sol and trigger recursive backtrack call",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Backtrack step",
+            "note": "Remove last element x from sol to restore state for next candidate loop iteration",
+            "from": 5,
+            "to": 6
+          }
+        ]
+      },
+      {
+        "name": "In-place Swap Backtracking",
+        "time": "O(N * N!)",
+        "space": "O(N)",
+        "idea": "Partition array into fixed elements (left) and candidates (right). Swap candidates into the current index position, recurse for next position, then swap back.",
+        "code": "class Solution:\n    def permute(self, nums: list[int]) -> list[list[int]]:\n        res = []\n        \n        def backtrack(first=0):\n            if first == len(nums):\n                res.append(nums[:])\n                return\n            for i in range(first, len(nums)):\n                nums[first], nums[i] = nums[i], nums[first]\n                backtrack(first + 1)\n                nums[first], nums[i] = nums[i], nums[first]\n                \n        backtrack()\n        return res",
+        "steps": [
+          {
+            "label": "Check termination",
+            "note": "If first pointer reaches end of array, current arrangement is a full permutation",
+            "from": 1,
+            "to": 2,
+            "yes": "first == len(nums)",
+            "no": "first < len(nums)"
+          },
+          {
+            "label": "Swap element",
+            "note": "Swap current index element with target element at index i",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Recurse next depth",
+            "note": "Call backtrack with first + 1 to fix current position",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "Undo swap",
+            "note": "Swap elements back to restore original state before trying next swap target i",
+            "from": 4,
+            "to": 5
+          }
+        ]
+      }
+    ]
+  },
+  "subsets-ii": {
+    "statement": "Given an integer array nums that may contain duplicates, return all possible subsets (the power set). The solution set must not contain duplicate subsets. Return the solution in any order.",
+    "given": "an array of integers nums that may contain duplicates",
+    "ret": "all possible unique subsets of the given array",
+    "summary": "Sort the array to group duplicate numbers together. Use backtracking to generate all subsets while skipping duplicate elements at the same level of recursion.",
+    "starter": "class Solution:\n    def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:\n        pass",
+    "tests": [
+      {
+        "label": "nums = [1,2,2]",
+        "inputStr": "{\"nums\": [1, 2, 2]}",
+        "expectedStr": "[[], [1], [1, 2], [1, 2, 2], [2], [2, 2]]"
+      },
+      {
+        "label": "nums = [0]",
+        "inputStr": "{\"nums\": [0]}",
+        "expectedStr": "[[], [0]]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Brute Force (Set Deduplication)",
+        "time": "O(n * 2^n)",
+        "space": "O(n * 2^n)",
+        "idea": "Generate all possible 2^n subsets using standard recursion without skipping duplicates. Convert each generated subset to a sorted tuple and add it to a hash set to remove duplicate subsets, then convert the set back to a list of lists.",
+        "code": "class Solution:\n    def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:\n        res = set()\n        \n        def backtrack(index, path):\n            if index == len(nums):\n                res.add(tuple(sorted(path)))\n                return\n            backtrack(index + 1, path + [nums[index]])\n            backtrack(index + 1, path)\n            \n        backtrack(0, [])\n        return [list(s) for s in res]",
+        "steps": [
+          {
+            "label": "Initialize Result Set",
+            "note": "Create a set named 'res' to automatically store unique sorted tuples.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Check Base Case",
+            "note": "If index reaches len(nums), convert path to a sorted tuple and add it to res set.",
+            "from": 5,
+            "to": 7
+          },
+          {
+            "label": "Include Element Branch",
+            "note": "Recursively call backtrack including nums[index] in the path.",
+            "from": 8,
+            "to": 8
+          },
+          {
+            "label": "Exclude Element Branch",
+            "note": "Recursively call backtrack excluding nums[index] from the path.",
+            "from": 9,
+            "to": 9
+          },
+          {
+            "label": "Return Formatted Subsets",
+            "note": "Convert all unique tuples in 'res' back into lists and return.",
+            "from": 12,
+            "to": 12
+          }
+        ]
+      },
+      {
+        "name": "Backtracking with Pruning (Optimal)",
+        "time": "O(n * 2^n)",
+        "space": "O(n)",
+        "idea": "Sort the input array first so duplicates are adjacent. When generating subsets recursively, loop through candidates starting from the current index. If an element is identical to its predecessor and is not the first element in the current decision branch (i > start), skip it to prevent duplicate subsets.",
+        "code": "class Solution:\n    def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:\n        nums.sort()\n        res = []\n        \n        def backtrack(start, path):\n            res.append(list(path))\n            for i in range(start, len(nums)):\n                if i > start and nums[i] == nums[i - 1]:\n                    continue\n                path.append(nums[i])\n                backtrack(i + 1, path)\n                path.pop()\n                \n        backtrack(0, [])\n        return res",
+        "steps": [
+          {
+            "label": "Sort Input",
+            "note": "Sort nums to group duplicate numbers together.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "Record Current Path",
+            "note": "Append a copy of the current subset path to res immediately.",
+            "from": 7,
+            "to": 7
+          },
+          {
+            "label": "Iterate Candidates",
+            "note": "Loop through remaining elements from index 'start' to len(nums) - 1.",
+            "from": 8,
+            "to": 8
+          },
+          {
+            "label": "Duplicate Check",
+            "note": "If i > start and nums[i] == nums[i-1], skip this element to prune duplicate subsets at the same recursion level.",
+            "from": 9,
+            "to": 10,
+            "yes": "Skip iteration if duplicate element at current depth",
+            "no": "Proceed to include element"
+          },
+          {
+            "label": "Backtrack Step",
+            "note": "Append nums[i], recursively explore next elements with index i + 1, then pop nums[i] to backtrack.",
+            "from": 11,
+            "to": 13
+          }
+        ]
+      }
+    ]
+  },
+  "combination-sum-ii": {
+    "statement": "Given a collection of candidate numbers (candidates) and a target number (target), find all unique combinations in candidates where the candidate numbers sum to target. Each number in candidates may only be used once in the combination. Note: The solution set must not contain duplicate combinations.",
+    "given": "a list of integers candidates and an integer target",
+    "ret": "all unique combinations that sum up to target",
+    "summary": "Sort candidates to make duplicate detection easy and enable early stopping. Use backtracking, skipping duplicate elements at the same tree depth and stopping early if the sum exceeds target.",
+    "starter": "class Solution:\n    def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:\n        pass",
+    "tests": [
+      {
+        "label": "candidates = [10,1,2,7,6,1,5], target = 8",
+        "inputStr": "{\"candidates\": [10, 1, 2, 7, 6, 1, 5], \"target\": 8}",
+        "expectedStr": "[[1, 1, 6], [1, 2, 5], [1, 7], [2, 6]]"
+      },
+      {
+        "label": "candidates = [2,5,2,1,2], target = 5",
+        "inputStr": "{\"candidates\": [2, 5, 2, 1, 2], \"target\": 5}",
+        "expectedStr": "[[1, 2, 2], [5]]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Brute Force (Set Deduplication)",
+        "time": "O(2^n * n)",
+        "space": "O(2^n * n)",
+        "idea": "Explore all combinations using standard recursion, picking each element at most once. Add valid combinations that sum to target to a set (as sorted tuples) to remove duplicate combinations.",
+        "code": "class Solution:\n    def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:\n        res = set()\n        candidates.sort()\n        \n        def backtrack(index, current_sum, path):\n            if current_sum == target:\n                res.add(tuple(path))\n                return\n            if current_sum > target or index == len(candidates):\n                return\n            \n            backtrack(index + 1, current_sum + candidates[index], path + [candidates[index]])\n            backtrack(index + 1, current_sum, path)\n            \n        backtrack(0, 0, [])\n        return [list(comb) for comb in res]",
+        "steps": [
+          {
+            "label": "Sort Candidates",
+            "note": "Sort candidates so generated tuples will be in consistent order for set hashing.",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "Check Target Reached",
+            "note": "If current_sum equals target, add path as a tuple to set res.",
+            "from": 7,
+            "to": 9,
+            "yes": "Target match found, add to set and return"
+          },
+          {
+            "label": "Check Exceed Target or Boundary",
+            "note": "If sum exceeds target or index is out of bounds, prune search branch.",
+            "from": 10,
+            "to": 11,
+            "yes": "Return early to stop invalid exploration"
+          },
+          {
+            "label": "Include & Exclude Calls",
+            "note": "Recurse twice: once including current candidate and once excluding it.",
+            "from": 13,
+            "to": 14
+          }
+        ]
+      },
+      {
+        "name": "Backtracking with Pruning (Optimal)",
+        "time": "O(2^n)",
+        "space": "O(n)",
+        "idea": "Sort candidates first. Recursively build combinations. Loop starting at index `start`; if `candidates[i] > target`, break early (since array is sorted). Skip duplicate elements at the same tree depth (`i > start and candidates[i] == candidates[i-1]`).",
+        "code": "class Solution:\n    def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:\n        candidates.sort()\n        res = []\n        \n        def backtrack(start, remain, path):\n            if remain == 0:\n                res.append(list(path))\n                return\n            for i in range(start, len(candidates)):\n                if candidates[i] > remain:\n                    break\n                if i > start and candidates[i] == candidates[i - 1]:\n                    continue\n                path.append(candidates[i])\n                backtrack(i + 1, remain - candidates[i], path)\n                path.pop()\n                \n        backtrack(0, target, [])\n        return res",
+        "steps": [
+          {
+            "label": "Sort Candidates",
+            "note": "Sort candidates in non-decreasing order to enable duplicate skipping and early breaking.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "Base Case Check",
+            "note": "If remain == 0, a valid combination is found. Append path to res.",
+            "from": 7,
+            "to": 9
+          },
+          {
+            "label": "Loop and Early Break",
+            "note": "If candidates[i] exceeds remain, break the loop since all subsequent elements will also exceed remain.",
+            "from": 11,
+            "to": 12,
+            "yes": "Break out of loop early due to sorted property"
+          },
+          {
+            "label": "Skip Duplicates",
+            "note": "If i > start and candidates[i] == candidates[i - 1], skip candidate to avoid duplicate combinations.",
+            "from": 13,
+            "to": 14,
+            "yes": "Skip duplicate element at same tree level"
+          },
+          {
+            "label": "Recurse & Backtrack",
+            "note": "Choose candidates[i], subtract value from remain, call backtrack recursively with next index i + 1, then pop element.",
+            "from": 15,
+            "to": 17
+          }
+        ]
+      }
+    ]
+  },
+  "palindrome-partitioning": {
+    "statement": "Given a string s, partition s such that every substring of the partition is a palindrome. Return all possible palindrome partitioning of s.",
+    "given": "a string s",
+    "ret": "a list of all possible palindrome partitionings of string s",
+    "summary": "Use depth-first search backtracking. For each position, check every possible prefix substring. If it's a palindrome, recursively partition the remaining substring.",
+    "starter": "class Solution:\n    def partition(self, s: str) -> List[List[str]]:\n        pass",
+    "tests": [
+      {
+        "label": "s = \"aab\"",
+        "inputStr": "{\"s\": \"aab\"}",
+        "expectedStr": "[[\"a\", \"a\", \"b\"], [\"aa\", \"b\"]]"
+      },
+      {
+        "label": "s = \"a\"",
+        "inputStr": "{\"s\": \"a\"}",
+        "expectedStr": "[[\"a\"]]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Backtracking with String Slicing",
+        "time": "O(n * 2^n)",
+        "space": "O(n)",
+        "idea": "For every index in string `s`, partition into prefixes `s[start:i+1]`. Check if prefix is palindrome using string slice reversal (`sub == sub[::-1]`). If valid, append prefix to current path and recursively process suffix.",
+        "code": "class Solution:\n    def partition(self, s: str) -> List[List[str]]:\n        res = []\n        \n        def is_palindrome(sub):\n            return sub == sub[::-1]\n        \n        def backtrack(start, path):\n            if start == len(s):\n                res.append(list(path))\n                return\n            for end in range(start + 1, len(s) + 1):\n                sub = s[start:end]\n                if is_palindrome(sub):\n                    path.append(sub)\n                    backtrack(end, path)\n                    path.pop()\n                    \n        backtrack(0, [])\n        return res",
+        "steps": [
+          {
+            "label": "Base Case Reach Target",
+            "note": "When start == len(s), the entire string has been partitioned into palindromes. Save path to res.",
+            "from": 9,
+            "to": 11
+          },
+          {
+            "label": "Iterate Substrings",
+            "note": "Try ending positions 'end' from start + 1 to len(s) + 1 to slice candidate prefixes.",
+            "from": 12,
+            "to": 13
+          },
+          {
+            "label": "Check Palindrome",
+            "note": "Validate if sliced substring sub is equal to sub[::-1].",
+            "from": 14,
+            "to": 14,
+            "yes": "Proceed to explore partition",
+            "no": "Try next ending position"
+          },
+          {
+            "label": "Recurse and Backtrack",
+            "note": "Append valid substring sub to path, call backtrack(end, path), then pop sub to backtrack.",
+            "from": 15,
+            "to": 17
+          }
+        ]
+      },
+      {
+        "name": "Backtracking with DP Precomputation (Optimal)",
+        "time": "O(n * 2^n)",
+        "space": "O(n^2)",
+        "idea": "Precompute palindrome information for all substrings `s[i:j+1]` using a 2D Dynamic Programming table in O(n^2) time. Then perform backtracking without spending O(n) checking substring palindrome validity at each branch step.",
+        "code": "class Solution:\n    def partition(self, s: str) -> List[List[str]]:\n        n = len(s)\n        dp = [[False] * n for _ in range(n)]\n        for right in range(n):\n            for left in range(right + 1):\n                if s[left] == s[right] and (right - left <= 2 or dp[left + 1][right - 1]):\n                    dp[left][right] = True\n                    \n        res = []\n        def backtrack(start, path):\n            if start == n:\n                res.append(list(path))\n                return\n            for end in range(start, n):\n                if dp[start][end]:\n                    path.append(s[start:end + 1])\n                    backtrack(end + 1, path)\n                    path.pop()\n                    \n        backtrack(0, [])\n        return res",
+        "steps": [
+          {
+            "label": "Precompute DP Table",
+            "note": "Build 2D boolean grid dp[left][right] where cell represents if s[left:right+1] is palindrome.",
+            "from": 4,
+            "to": 8
+          },
+          {
+            "label": "Backtrack Base Case",
+            "note": "If start index reaches end of string n, record full path of valid palindromes.",
+            "from": 12,
+            "to": 14
+          },
+          {
+            "label": "O(1) Palindrome Lookup",
+            "note": "Check if dp[start][end] is True in O(1) time instead of slicing and checking string equality.",
+            "from": 16,
+            "to": 16,
+            "yes": "Valid palindrome, advance search",
+            "no": "Not a palindrome, continue loop"
+          },
+          {
+            "label": "Recursive Backtracking",
+            "note": "Append substring, recursively search suffix starting at end + 1, then pop substring.",
+            "from": 17,
+            "to": 19
+          }
+        ]
+      }
+    ]
+  },
+  "letter-combinations-of-a-phone-number": {
+    "statement": "Given a string containing digits from 2-9 inclusive, return all possible letter combinations that the number could represent. Return the answer in any order. A mapping of digits to letters (just like on the telephone buttons) is given below. Note that 1 does not map to any letters.",
+    "given": "a string digits containing digits from 2-9",
+    "ret": "a list of all possible letter combinations as strings",
+    "summary": "Recursively explore or iteratively build all character combinations mapped to each input digit using backtracking or queue-based generation.",
+    "starter": "class Solution:\n    def letterCombinations(self, digits: str) -> List[str]:\n        pass",
+    "tests": [
+      {
+        "label": "digits = \"23\"",
+        "inputStr": "{\"digits\": \"23\"}",
+        "expectedStr": "[\"ad\",\"ae\",\"af\",\"bd\",\"be\",\"bf\",\"cd\",\"ce\",\"cf\"]"
+      },
+      {
+        "label": "digits = \"\"",
+        "inputStr": "{\"digits\": \"\"}",
+        "expectedStr": "[]"
+      },
+      {
+        "label": "digits = \"2\"",
+        "inputStr": "{\"digits\": \"2\"}",
+        "expectedStr": "[\"a\",\"b\",\"c\"]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Iterative Queue / BFS",
+        "time": "O(4^n * n)",
+        "space": "O(4^n)",
+        "idea": "Start with a list containing an empty string. For each digit, pop each existing partial combination, append each mapped letter, and push the new combinations back into the list.",
+        "code": "class Solution:\n    def letterCombinations(self, digits: str) -> List[str]:\n        if not digits:\n            return []\n        mapping = {'2':'abc', '3':'def', '4':'ghi', '5':'jkl', '6':'mno', '7':'pqrs', '8':'tuv', '9':'wxyz'}\n        res = [\"\"]\n        for digit in digits:\n            next_res = []\n            for comb in res:\n                for char in mapping[digit]:\n                    next_res.append(comb + char)\n            res = next_res\n        return res",
+        "steps": [
+          {
+            "label": "Check Empty Input",
+            "note": "Return [] immediately if digits is empty.",
+            "from": 3,
+            "to": 4,
+            "yes": "digits is empty, return []",
+            "no": "digits is non-empty, continue"
+          },
+          {
+            "label": "Initialize Mapping & Queue",
+            "note": "Define digit-to-letter dict and seed res with [\"\"].",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "Iterate Digits",
+            "note": "Outer loop iterates over each input digit.",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "Expand Combinations",
+            "note": "For each combination in res, append each character mapped to the current digit.",
+            "from": 9,
+            "to": 11
+          },
+          {
+            "label": "Return Result",
+            "note": "Return final list of combinations when loop finishes.",
+            "from": 13,
+            "to": 13
+          }
+        ]
+      },
+      {
+        "name": "Backtracking (DFS - Optimal)",
+        "time": "O(4^n * n)",
+        "space": "O(n)",
+        "idea": "Use Depth-First Search with backtracking to construct combinations letter by letter until the path length equals the length of digits.",
+        "code": "class Solution:\n    def letterCombinations(self, digits: str) -> List[str]:\n        if not digits:\n            return []\n        mapping = {'2':'abc', '3':'def', '4':'ghi', '5':'jkl', '6':'mno', '7':'pqrs', '8':'tuv', '9':'wxyz'}\n        res = []\n        def backtrack(index, path):\n            if index == len(digits):\n                res.append(\"\".join(path))\n                return\n            for char in mapping[digits[index]]:\n                path.append(char)\n                backtrack(index + 1, path)\n                path.pop()\n        backtrack(0, [])\n        return res",
+        "steps": [
+          {
+            "label": "Check Base Input",
+            "note": "Handle edge case for empty string input.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "Base Case Reach",
+            "note": "Check if current index equals digits length.",
+            "from": 8,
+            "to": 10,
+            "yes": "Full combination formed; join and store in res",
+            "no": "Continue expanding next digit choices"
+          },
+          {
+            "label": "Branch Exploration",
+            "note": "Loop through all letters for mapping[digits[index]].",
+            "from": 11,
+            "to": 12
+          },
+          {
+            "label": "Recursion & Backtrack",
+            "note": "Push character to path, recurse to index + 1, and pop character to reset state.",
+            "from": 13,
+            "to": 14
+          }
+        ]
+      }
+    ]
+  },
+  "n-queens": {
+    "statement": "The n-queens puzzle is the problem of placing n queens on an n x n chessboard such that no two queens attack each other. Given an integer n, return all distinct solutions to the n-queens puzzle. Each solution contains a distinct board configuration of the n-queens' placement, where 'Q' and '.' both indicate a queen and an empty space, respectively.",
+    "given": "an integer n representing board dimensions (n x n)",
+    "ret": "a list of all distinct board configurations solving the N-Queens puzzle",
+    "summary": "Place queens row-by-row using backtracking while tracking occupied columns and diagonals in hash sets for O(1) conflict validation.",
+    "starter": "class Solution:\n    def solveNQueens(self, n: int) -> List[List[str]]:\n        pass",
+    "tests": [
+      {
+        "label": "n = 4",
+        "inputStr": "{\"n\": 4}",
+        "expectedStr": "[[\".Q..\",\"...Q\",\"Q...\",\"..Q.\"],[\"..Q.\",\"Q...\",\"...Q\",\".Q..\"]]"
+      },
+      {
+        "label": "n = 1",
+        "inputStr": "{\"n\": 1}",
+        "expectedStr": "[[\"Q\"]]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Backtracking with Matrix Validation",
+        "time": "O(N!)",
+        "space": "O(N^2)",
+        "idea": "Place queens row by row. For every cell (r, c), iterate backward up the column and diagonals on the 2D grid to check for placement conflicts.",
+        "code": "class Solution:\n    def solveNQueens(self, n: int) -> List[List[str]]:\n        res = []\n        board = [[\".\"] * n for _ in range(n)]\n        def is_safe(r, c):\n            for i in range(r):\n                if board[i][c] == 'Q': return False\n                if c - (r - i) >= 0 and board[i][c - (r - i)] == 'Q': return False\n                if c + (r - i) < n and board[i][c + (r - i)] == 'Q': return False\n            return True\n        def backtrack(r):\n            if r == n:\n                res.append([\"\".join(row) for row in board])\n                return\n            for c in range(n):\n                if is_safe(r, c):\n                    board[r][c] = 'Q'\n                    backtrack(r + 1)\n                    board[r][c] = '.'\n        backtrack(0)\n        return res",
+        "steps": [
+          {
+            "label": "Initialize Board",
+            "note": "Create an n x n board initialized with '.'",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "Safety Check",
+            "note": "Check straight up and both upper-diagonal directions for 'Q'.",
+            "from": 5,
+            "to": 10
+          },
+          {
+            "label": "Backtrack Base Condition",
+            "note": "If r == n, a valid configuration is found.",
+            "from": 12,
+            "to": 14,
+            "yes": "Convert board rows to strings and append to output",
+            "no": "Try placing a queen in columns 0..n-1"
+          },
+          {
+            "label": "Place and Recurse",
+            "note": "If safe, set 'Q', backtrack on r + 1, then clear to '.'",
+            "from": 16,
+            "to": 18
+          }
+        ]
+      },
+      {
+        "name": "Backtracking with Hash Sets (Optimal)",
+        "time": "O(N!)",
+        "space": "O(N)",
+        "idea": "Track occupied columns, positive diagonals (r + c), and negative diagonals (r - c) using set lookups to achieve O(1) placement validation.",
+        "code": "class Solution:\n    def solveNQueens(self, n: int) -> List[List[str]]:\n        cols = set()\n        posDiag = set()\n        negDiag = set()\n        res = []\n        board = [[\".\"] * n for _ in range(n)]\n        def backtrack(r):\n            if r == n:\n                res.append([\"\".join(row) for row in board])\n                return\n            for c in range(n):\n                if c in cols or (r + c) in posDiag or (r - c) in negDiag:\n                    continue\n                cols.add(c)\n                posDiag.add(r + c)\n                negDiag.add(r - c)\n                board[r][c] = \"Q\"\n                backtrack(r + 1)\n                cols.remove(c)\n                posDiag.remove(r + c)\n                negDiag.remove(r - c)\n                board[r][c] = \".\"\n        backtrack(0)\n        return res",
+        "steps": [
+          {
+            "label": "Initialize Sets",
+            "note": "Create sets for cols, posDiag (r + c), and negDiag (r - c).",
+            "from": 3,
+            "to": 6
+          },
+          {
+            "label": "Base Case Check",
+            "note": "If r reaches n, construct board response and store.",
+            "from": 9,
+            "to": 11
+          },
+          {
+            "label": "Conflict Validation",
+            "note": "Check if column c or diagonals are in tracked sets.",
+            "from": 13,
+            "to": 14,
+            "yes": "Conflict detected, skip column",
+            "no": "No conflict, proceed to place queen"
+          },
+          {
+            "label": "Update Sets & Place Queen",
+            "note": "Add c, r+c, r-c to sets, place 'Q', and recurse to next row.",
+            "from": 15,
+            "to": 19
+          },
+          {
+            "label": "Backtrack Reset",
+            "note": "Remove c, r+c, r-c from sets and restore cell to '.'.",
+            "from": 20,
+            "to": 23
+          }
+        ]
+      }
+    ]
+  },
+  "max-area-of-island": {
+    "statement": "You are given an m x n binary matrix grid. An island is a group of 1's (representing land) connected 4-directionally (horizontal or vertical). You may assume all four edges of the grid are surrounded by water. The area of an island is the number of cells with a value 1 in the island. Return the maximum area of an island in grid. If there is no island, return 0.",
+    "given": "an m x n binary matrix grid where 1 is land and 0 is water",
+    "ret": "an integer representing the maximum area of an island",
+    "summary": "Iterate through every grid cell, triggering a DFS or BFS traversal from unvisited land cells ('1') to calculate connected component size, keeping track of the max area found.",
+    "starter": "class Solution:\n    def maxAreaOfIsland(self, grid: List[List[int]]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "grid = [[0,0,1,0,0],[0,0,0,0,0],[0,1,1,0,0],[0,1,0,0,0]]",
+        "inputStr": "{\"grid\": [[0,0,1,0,0],[0,0,0,0,0],[0,1,1,0,0],[0,1,0,0,0]]}",
+        "expectedStr": "3"
+      },
+      {
+        "label": "grid = [[0,0,0,0,0,0,0,0]]",
+        "inputStr": "{\"grid\": [[0,0,0,0,0,0,0,0]]}",
+        "expectedStr": "0"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "BFS with Queue",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "idea": "Traverse grid cells; when encountering a 1, launch Breadth-First Search (BFS) using a queue to explore all connected land cells and sink them by changing 1 to 0.",
+        "code": "from collections import deque\n\nclass Solution:\n    def maxAreaOfIsland(self, grid: List[List[int]]) -> int:\n        rows, cols = len(grid), len(grid[0])\n        max_area = 0\n        for r in range(rows):\n            for c in range(cols):\n                if grid[r][c] == 1:\n                    area = 0\n                    queue = deque([(r, c)])\n                    grid[r][c] = 0\n                    while queue:\n                        curr_r, curr_c = queue.popleft()\n                        area += 1\n                        for dr, dc in [(-1,0),(1,0),(0,-1),(0,1)]:\n                            nr, nc = curr_r + dr, curr_c + dc\n                            if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 1:\n                                grid[nr][nc] = 0\n                                queue.append((nr, nc))\n                    max_area = max(max_area, area)\n        return max_area",
+        "steps": [
+          {
+            "label": "Grid Scan Loop",
+            "note": "Iterate through each cell (r, c) in the grid.",
+            "from": 7,
+            "to": 9,
+            "yes": "Cell contains land (1), launch BFS",
+            "no": "Water cell (0), skip"
+          },
+          {
+            "label": "BFS Queue Init & Sink",
+            "note": "Initialize queue with starting land cell and mark as 0 (visited).",
+            "from": 10,
+            "to": 12
+          },
+          {
+            "label": "Pop Queue & Expand",
+            "note": "Pop cell, increment area counter, check 4-directional neighbors.",
+            "from": 13,
+            "to": 19
+          },
+          {
+            "label": "Update Global Max",
+            "note": "Update max_area with area of component after BFS completion.",
+            "from": 20,
+            "to": 20
+          }
+        ]
+      },
+      {
+        "name": "Recursive DFS (In-place Marking - Optimal)",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "idea": "Perform recursive Depth-First Search for each land cell (1), marking visited cells as 0 to avoid extra visited space and returning total cell counts recursively.",
+        "code": "class Solution:\n    def maxAreaOfIsland(self, grid: List[List[int]]) -> int:\n        rows, cols = len(grid), len(grid[0])\n        def dfs(r, c):\n            if r < 0 or r >= rows or c < 0 or c >= cols or grid[r][c] == 0:\n                return 0\n            grid[r][c] = 0\n            return 1 + dfs(r + 1, c) + dfs(r - 1, c) + dfs(r, c + 1) + dfs(r, c - 1)\n        \n        max_area = 0\n        for r in range(rows):\n            for c in range(cols):\n                if grid[r][c] == 1:\n                    max_area = max(max_area, dfs(r, c))\n        return max_area",
+        "steps": [
+          {
+            "label": "DFS Boundary & Water Check",
+            "note": "Return 0 if cell coordinates are out of bounds or cell is water (0).",
+            "from": 5,
+            "to": 6,
+            "yes": "Out of bounds or water, return 0",
+            "no": "Valid land cell, continue DFS"
+          },
+          {
+            "label": "Mark Visited",
+            "note": "Mutate cell grid[r][c] to 0 to prevent re-visiting.",
+            "from": 7,
+            "to": 7
+          },
+          {
+            "label": "Recurse 4 Directions",
+            "note": "Return 1 + sum of DFS calls in down, up, right, left directions.",
+            "from": 8,
+            "to": 8
+          },
+          {
+            "label": "Scan Matrix & Compute Max",
+            "note": "Trigger DFS on each unvisited land cell and compute maximum island area.",
+            "from": 11,
+            "to": 14
+          }
+        ]
+      }
+    ]
+  },
+  "surrounded-regions": {
+    "statement": "Given an m x n matrix board containing 'X' and 'O', capture all regions that are 4-directionally surrounded by 'X'. A region is captured by flipping all 'O's into 'X's in that surrounded region. Any 'O' connected to the boundary is NOT surrounded.",
+    "given": "an m x n matrix board containing 'X' and 'O'",
+    "ret": "None (modify board in-place)",
+    "summary": "Traverse from all boundary cells containing 'O' using DFS/BFS to mark them as safe. Then scan the entire board: capture remaining 'O's into 'X's and revert safe cells back to 'O'.",
+    "starter": "class Solution:\n    def solve(self, board: list[list[str]]) -> None:\n        \"\"\"\n        Do not return anything, modify board in-place instead.\n        \"\"\"\n        pass",
+    "tests": [
+      {
+        "label": "board = [[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"O\",\"X\"],[\"X\",\"X\",\"O\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]",
+        "inputStr": "{\"board\": [[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"O\",\"X\"],[\"X\",\"X\",\"O\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]}",
+        "expectedStr": "[[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"X\",\"X\",\"X\"],[\"X\",\"O\",\"X\",\"X\"]]"
+      },
+      {
+        "label": "board = [[\"X\"]]",
+        "inputStr": "{\"board\": [[\"X\"]]}",
+        "expectedStr": "[[\"X\"]]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force",
+        "time": "O((M * N)^2)",
+        "space": "O(M * N)",
+        "idea": "For every cell containing 'O', run a separate traversal (DFS or BFS) to check if it can reach the boundary. If the traversal reaches a boundary cell, the region is unsafe. Otherwise, flip all cells in that component to 'X'.",
+        "code": "class Solution:\n    def solve(self, board: list[list[str]]) -> None:\n        if not board or not board[0]:\n            return\n        rows, cols = len(board), len(board[0])\n        \n        for r in range(rows):\n            for c in range(cols):\n                if board[r][c] == 'O':\n                    visited = set()\n                    is_surrounded = True\n                    stack = [(r, c)]\n                    region = []\n                    \n                    while stack:\n                        curr_r, curr_c = stack.pop()\n                        if (curr_r, curr_c) in visited:\n                            continue\n                        visited.add((curr_r, curr_c))\n                        region.append((curr_r, curr_c))\n                        \n                        if curr_r in (0, rows - 1) or curr_c in (0, cols - 1):\n                            is_surrounded = False\n                            \n                        for dr, dc in [(-1,0),(1,0),(0,-1),(0,1)]:\n                            nr, nc = curr_r + dr, curr_c + dc\n                            if 0 <= nr < rows and 0 <= nc < cols and board[nr][nc] == 'O':\n                                stack.append((nr, nc))\n                                \n                    if is_surrounded:\n                        for fr, fc in region:\n                            board[fr][fc] = 'X'",
+        "steps": [
+          {
+            "label": "Iterate grid cells",
+            "note": "Loop through every cell (r, c) looking for an uncaptured 'O'.",
+            "from": 6,
+            "to": 8
+          },
+          {
+            "label": "Check initial cell",
+            "note": "If cell contains 'O', initialize search state (visited set, region list, is_surrounded flag).",
+            "from": 8,
+            "to": 12,
+            "yes": "Cell is 'O', start graph traversal.",
+            "no": "Cell is 'X', continue to next cell."
+          },
+          {
+            "label": "Traverse component",
+            "note": "Pop current coordinate from stack, check if it hits boundary, and add valid neighbors.",
+            "from": 14,
+            "to": 26
+          },
+          {
+            "label": "Capture surrounded region",
+            "note": "If the component traversal never touched a boundary, flip all collected region cells to 'X'.",
+            "from": 28,
+            "to": 30,
+            "yes": "is_surrounded is True, flip cells to 'X'.",
+            "no": "Component is connected to boundary, leave unchanged."
+          }
+        ]
+      },
+      {
+        "name": "boundary dfs / safe marking",
+        "time": "O(M * N)",
+        "space": "O(M * N)",
+        "idea": "Instead of checking every 'O', reverse the logic: any 'O' on the boundary and any 'O' connected to it can NEVER be captured. Run DFS starting only from boundary 'O' cells, temporarily marking them as 'E' (escaped). Finally, convert remaining 'O's to 'X's, and 'E's back to 'O's.",
+        "code": "class Solution:\n    def solve(self, board: list[list[str]]) -> None:\n        if not board or not board[0]:\n            return\n        rows, cols = len(board), len(board[0])\n        \n        def dfs(r, c):\n            if r < 0 or r >= rows or c < 0 or c >= cols or board[r][c] != 'O':\n                return\n            board[r][c] = 'E'\n            dfs(r + 1, c)\n            dfs(r - 1, c)\n            dfs(r, c + 1)\n            dfs(r, c - 1)\n            \n        for r in range(rows):\n            dfs(r, 0)\n            dfs(r, cols - 1)\n        for c in range(cols):\n            dfs(0, c)\n            dfs(rows - 1, c)\n            \n        for r in range(rows):\n            for c in range(cols):\n                if board[r][c] == 'O':\n                    board[r][c] = 'X'\n                elif board[r][c] == 'E':\n                    board[r][c] = 'O'",
+        "steps": [
+          {
+            "label": "Boundary DFS helper",
+            "note": "Define DFS function to change reachable 'O's from border into temporary state 'E'.",
+            "from": 6,
+            "to": 13
+          },
+          {
+            "label": "Trigger DFS on borders",
+            "note": "Call DFS for every border cell (first/last row and first/last column).",
+            "from": 15,
+            "to": 20
+          },
+          {
+            "label": "Scan grid and capture",
+            "note": "Iterate all cells: turn unvisited 'O's into 'X' (captured) and restore 'E's back to 'O' (safe).",
+            "from": 22,
+            "to": 27
+          }
+        ]
+      }
+    ]
+  },
+  "rotting-oranges": {
+    "statement": "You are given an m x n grid where each cell can have one of three values: 0 representing an empty cell, 1 representing a fresh orange, or 2 representing a rotten orange. Every minute, any fresh orange that is 4-directionally adjacent to a rotten orange becomes rotten. Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return -1.",
+    "given": "an m x n grid containing values 0 (empty), 1 (fresh), or 2 (rotten)",
+    "ret": "minimum number of minutes until no fresh oranges remain, or -1",
+    "summary": "Use multi-source BFS starting simultaneously from all initially rotten oranges. Spread rot level-by-level (minute-by-minute) until fresh orange count hits zero or queue empties.",
+    "starter": "class Solution:\n    def orangesRotting(self, grid: list[list[int]]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "grid = [[2,1,1],[1,1,0],[0,1,1]]",
+        "inputStr": "{\"grid\": [[2,1,1],[1,1,0],[0,1,1]]}",
+        "expectedStr": "4"
+      },
+      {
+        "label": "grid = [[2,1,1],[0,1,1],[1,0,1]]",
+        "inputStr": "{\"grid\": [[2,1,1],[0,1,1],[1,0,1]]}",
+        "expectedStr": "-1"
+      },
+      {
+        "label": "grid = [[0,2]]",
+        "inputStr": "{\"grid\": [[0,2]]}",
+        "expectedStr": "0"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force / repeated scan",
+        "time": "O((M * N)^2)",
+        "space": "O(M * N)",
+        "idea": "In each step (representing 1 minute), scan the grid to find all current rotten oranges, identify neighboring fresh oranges, convert them to rotten, and increment the time. Repeat until no new oranges rot in a pass.",
+        "code": "class Solution:\n    def orangesRotting(self, grid: list[list[int]]) -> int:\n        rows, cols = len(grid), len(grid[0])\n        minutes = 0\n        \n        while True:\n            to_rot = []\n            for r in range(rows):\n                for c in range(cols):\n                    if grid[r][c] == 2:\n                        for dr, dc in [(-1,0),(1,0),(0,-1),(0,1)]:\n                            nr, nc = r + dr, c + dc\n                            if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 1:\n                                to_rot.append((nr, nc))\n            if not to_rot:\n                break\n            for r, c in to_rot:\n                grid[r][c] = 2\n            minutes += 1\n            \n        for r in range(rows):\n            for c in range(cols):\n                if grid[r][c] == 1:\n                    return -1\n        return minutes",
+        "steps": [
+          {
+            "label": "Minute loop",
+            "note": "Outer loop scans the entire grid repeatedly until no new fresh oranges are adjacent to rotten ones.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "Collect newly rotten candidates",
+            "note": "Identify all fresh oranges (1) adjacent to rotten oranges (2) and stage them in `to_rot`.",
+            "from": 8,
+            "to": 14
+          },
+          {
+            "label": "Check termination",
+            "note": "If no new fresh oranges can be rotted this minute, break from the loop.",
+            "from": 15,
+            "to": 16,
+            "yes": "to_rot is empty, break loop.",
+            "no": "New oranges found, continue rotting process."
+          },
+          {
+            "label": "Apply state changes",
+            "note": "Mutate staged coordinates to rotten (2) and increment minute count.",
+            "from": 17,
+            "to": 19
+          },
+          {
+            "label": "Final freshness check",
+            "note": "Scan grid for remaining fresh oranges. Return -1 if any exist, else return total minutes.",
+            "from": 21,
+            "to": 25
+          }
+        ]
+      },
+      {
+        "name": "multi-source bfs",
+        "time": "O(M * N)",
+        "space": "O(M * N)",
+        "idea": "Perform a multi-source Breadth-First Search. Add all initially rotten oranges to a queue and count fresh oranges. Process the queue level-by-level, rotting adjacent fresh oranges and pushing them to the queue until all fresh oranges are rotted or queue is empty.",
+        "code": "from collections import deque\n\nclass Solution:\n    def orangesRotting(self, grid: list[list[int]]) -> int:\n        rows, cols = len(grid), len(grid[0])\n        queue = deque()\n        fresh = 0\n        \n        for r in range(rows):\n            for c in range(cols):\n                if grid[r][c] == 2:\n                    queue.append((r, c))\n                elif grid[r][c] == 1:\n                    fresh += 1\n                    \n        if fresh == 0:\n            return 0\n            \n        minutes = 0\n        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]\n        \n        while queue and fresh > 0:\n            minutes += 1\n            for _ in range(len(queue)):\n                r, c = queue.popleft()\n                for dr, dc in directions:\n                    nr, nc = r + dr, c + dc\n                    if 0 <= nr < rows and 0 <= nc < cols and grid[nr][nc] == 1:\n                        grid[nr][nc] = 2\n                        fresh -= 1\n                        queue.append((nr, nc))\n                        \n        return minutes if fresh == 0 else -1",
+        "steps": [
+          {
+            "label": "Initialize queue and count fresh",
+            "note": "Scan grid once to store initial rotten positions in queue and count initial fresh oranges.",
+            "from": 9,
+            "to": 14
+          },
+          {
+            "label": "Check edge case",
+            "note": "If fresh orange count is 0, return 0 immediately.",
+            "from": 16,
+            "to": 17,
+            "yes": "fresh == 0, return 0.",
+            "no": "Fresh oranges present, proceed to BFS."
+          },
+          {
+            "label": "BFS level-by-level expansion",
+            "note": "Process all queue items for current minute level. Decrement fresh count and rot adjacent fresh cells.",
+            "from": 22,
+            "to": 31
+          },
+          {
+            "label": "Return result",
+            "note": "If fresh orange count reaches 0, return total minutes elapsed; otherwise, return -1.",
+            "from": 33,
+            "to": 33
+          }
+        ]
+      }
+    ]
+  },
+  "walls-and-gates": {
+    "statement": "You are given an m x n grid rooms initialized with these possible values: -1 (wall/obstacle), 0 (gate), 2147483647 (empty room, INF). Fill each empty room with the distance to its nearest gate. If it is impossible to reach a gate, it should remain INF.",
+    "given": "an m x n grid rooms containing -1 (wall), 0 (gate), and 2147483647 (empty room)",
+    "ret": "None (modify rooms in-place)",
+    "summary": "Push all gate locations into a queue and run a multi-source BFS. Explore empty neighboring rooms, updating their values with incremental distance from nearest gate.",
+    "starter": "class Solution:\n    def wallsAndGates(self, rooms: list[list[int]]) -> None:\n        \"\"\"\n        Do not return anything, modify rooms in-place instead.\n        \"\"\"\n        pass",
+    "tests": [
+      {
+        "label": "rooms = [[2147483647,-1,0,2147483647],[2147483647,2147483647,2147483647,-1],[2147483647,-1,2147483647,-1],[0,-1,2147483647,2147483647]]",
+        "inputStr": "{\"rooms\": [[2147483647,-1,0,2147483647],[2147483647,2147483647,2147483647,-1],[2147483647,-1,2147483647,-1],[0,-1,2147483647,2147483647]]}",
+        "expectedStr": "[[3,-1,0,1],[2,2,1,-1],[1,-1,2,-1],[0,-1,3,4]]"
+      },
+      {
+        "label": "rooms = [[-1]]",
+        "inputStr": "{\"rooms\": [[-1]]}",
+        "expectedStr": "[[-1]]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force / search from every room",
+        "time": "O((M * N)^2)",
+        "space": "O(M * N)",
+        "idea": "For every empty room cell (INF), perform a BFS to find the shortest path to any gate (0). Update the cell with the found shortest distance.",
+        "code": "from collections import deque\n\nclass Solution:\n    def wallsAndGates(self, rooms: list[list[int]]) -> None:\n        if not rooms or not rooms[0]:\n            return\n        rows, cols = len(rooms), len(rooms[0])\n        INF = 2147483647\n        \n        for r in range(rows):\n            for c in range(cols):\n                if rooms[r][c] == INF:\n                    queue = deque([(r, c, 0)])\n                    visited = {(r, c)}\n                    found = False\n                    while queue and not found:\n                        curr_r, curr_c, dist = queue.popleft()\n                        if rooms[curr_r][curr_c] == 0:\n                            rooms[r][c] = dist\n                            found = True\n                            break\n                        for dr, dc in [(-1,0),(1,0),(0,-1),(0,1)]:\n                            nr, nc = curr_r + dr, curr_c + dc\n                            if 0 <= nr < rows and 0 <= nc < cols and rooms[nr][nc] != -1 and (nr, nc) not in visited:\n                                visited.add((nr, nc))\n                                queue.append((nr, nc, dist + 1))",
+        "steps": [
+          {
+            "label": "Find empty room",
+            "note": "Iterate grid and locate cells initialized with value INF.",
+            "from": 10,
+            "to": 12,
+            "yes": "Cell is empty room, start search.",
+            "no": "Cell is wall or gate, continue."
+          },
+          {
+            "label": "Run BFS from room",
+            "note": "Initialize queue and visited set to search for nearest gate.",
+            "from": 13,
+            "to": 16
+          },
+          {
+            "label": "Check for gate reached",
+            "note": "When a gate (0) is popped from queue, record distance and break search.",
+            "from": 18,
+            "to": 21,
+            "yes": "Gate found, assign minimum distance.",
+            "no": "Continue expanding neighboring empty rooms."
+          },
+          {
+            "label": "Enqueue valid neighbors",
+            "note": "Push adjacent unvisited non-wall cells into queue with dist + 1.",
+            "from": 22,
+            "to": 25
+          }
+        ]
+      },
+      {
+        "name": "multi-source bfs from gates",
+        "time": "O(M * N)",
+        "space": "O(M * N)",
+        "idea": "Start simultaneously from all gates (0). Push all gate coordinates to a queue. For each step, pop a cell and update adjacent empty rooms (INF) with current cell value + 1, adding updated rooms to the queue.",
+        "code": "from collections import deque\n\nclass Solution:\n    def wallsAndGates(self, rooms: list[list[int]]) -> None:\n        if not rooms or not rooms[0]:\n            return\n        rows, cols = len(rooms), len(rooms[0])\n        queue = deque()\n        \n        for r in range(rows):\n            for c in range(cols):\n                if rooms[r][c] == 0:\n                    queue.append((r, c))\n                    \n        directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]\n        INF = 2147483647\n        \n        while queue:\n            r, c = queue.popleft()\n            for dr, dc in directions:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < rows and 0 <= nc < cols and rooms[nr][nc] == INF:\n                    rooms[nr][nc] = rooms[r][c] + 1\n                    queue.append((nr, nc))",
+        "steps": [
+          {
+            "label": "Collect all gate positions",
+            "note": "Scan grid and enqueue all cells containing gate value 0.",
+            "from": 10,
+            "to": 13
+          },
+          {
+            "label": "Multi-source BFS traversal",
+            "note": "Pop cell (r, c) from front of queue and iterate through 4-directional neighbors.",
+            "from": 18,
+            "to": 21
+          },
+          {
+            "label": "Update empty rooms",
+            "note": "If neighboring cell is unvisited empty room (INF), set its distance to current distance + 1 and push it to queue.",
+            "from": 22,
+            "to": 24,
+            "yes": "Neighbor is INF, set distance and append to queue.",
+            "no": "Neighbor is wall (-1), gate (0), or already updated room."
+          }
+        ]
+      }
+    ]
   }
 };
