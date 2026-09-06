@@ -12976,5 +12976,637 @@ window.PRELOADED_PROBLEMS = {
         ]
       }
     ]
+  },
+  "target-sum": {
+    "statement": "You are given an integer array nums and an integer target.\n\nYou want to build an expression out of nums by adding one of the symbols '+' and '-' before each integer in nums and then concatenate all the integers.\n\nFor example, if nums = [2, 1], you can add a '+' before 2 and a '-' before 1 and concatenate them to build the expression \"+2-1\".\nReturn the number of different expressions that you can build, which evaluate to target.",
+    "given": "an array of integers nums and an integer target",
+    "ret": "the number of different expressions that evaluate to target",
+    "summary": "This problem can be transformed into the 0/1 Knapsack / Subset Sum problem: find the number of subsets whose sum equals (sum(nums) + target) // 2 using dynamic programming.",
+    "starter": "class Solution:\n    def findTargetSumWays(self, nums: List[int], target: int) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "nums = [1, 1, 1, 1, 1], target = 3",
+        "inputStr": "{\"nums\": [1, 1, 1, 1, 1], \"target\": 3}",
+        "expectedStr": "5"
+      },
+      {
+        "label": "nums = [1], target = 1",
+        "inputStr": "{\"nums\": [1], \"target\": 1}",
+        "expectedStr": "1"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force recursion",
+        "time": "O(2^n)",
+        "space": "O(n)",
+        "idea": "Try all possible combinations of adding '+' or '-' to each element using depth-first recursion.",
+        "code": "class Solution:\n    def findTargetSumWays(self, nums: List[int], target: int) -> int:\n        def backtrack(index, current_sum):\n            if index == len(nums):\n                return 1 if current_sum == target else 0\n            add = backtrack(index + 1, current_sum + nums[index])\n            sub = backtrack(index + 1, current_sum - nums[index])\n            return add + sub\n        return backtrack(0, 0)",
+        "steps": [
+          {
+            "label": "check base case",
+            "note": "If we have processed all elements, check if current sum equals target.",
+            "from": 4,
+            "to": 5,
+            "yes": "Return 1 if current_sum == target else 0",
+            "no": "Proceed to expand recursive branches"
+          },
+          {
+            "label": "add current element",
+            "note": "Recursively assign '+' sign to nums[index].",
+            "from": 6,
+            "to": 6
+          },
+          {
+            "label": "subtract current element",
+            "note": "Recursively assign '-' sign to nums[index].",
+            "from": 7,
+            "to": 7
+          },
+          {
+            "label": "aggregate ways",
+            "note": "Sum the ways found from adding and subtracting branches.",
+            "from": 8,
+            "to": 8
+          }
+        ]
+      },
+      {
+        "name": "dynamic programming (subset sum)",
+        "time": "O(n * s)",
+        "space": "O(s)",
+        "idea": "Split nums into two subsets P (positive) and N (negative). P - N = target and P + N = total_sum => 2*P = total_sum + target => P = (total_sum + target) / 2. We reduced the problem to finding the number of subsets that sum up to P.",
+        "code": "class Solution:\n    def findTargetSumWays(self, nums: List[int], target: int) -> int:\n        total_sum = sum(nums)\n        if abs(target) > total_sum or (total_sum + target) % 2 != 0:\n            return 0\n        s = (total_sum + target) // 2\n        dp = [0] * (s + 1)\n        dp[0] = 1\n        for num in nums:\n            for j in range(s, num - 1, -1):\n                dp[j] += dp[j - num]\n        return dp[s]",
+        "steps": [
+          {
+            "label": "calculate total sum",
+            "note": "Sum all elements in nums to determine total possibilities.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "validate target feasibility",
+            "note": "If target magnitude is too large or sum+target is odd, target is unreachable.",
+            "from": 4,
+            "to": 5,
+            "yes": "Return 0 as no valid assignment exists",
+            "no": "Target target sum transformation is valid"
+          },
+          {
+            "label": "calculate subset sum target",
+            "note": "Determine required positive subset sum s.",
+            "from": 6,
+            "to": 6
+          },
+          {
+            "label": "initialize dp array",
+            "note": "dp[j] stores the number of subsets with sum j; base case dp[0] = 1.",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "update dp table backward",
+            "note": "For each num, iterate target backwards to avoid reusing the same number.",
+            "from": 9,
+            "to": 11
+          },
+          {
+            "label": "return result",
+            "note": "dp[s] holds total combinations reaching target subset sum s.",
+            "from": 12,
+            "to": 12
+          }
+        ]
+      }
+    ]
+  },
+  "interleaving-string": {
+    "statement": "Given strings s1, s2, and s3, find whether s3 is formed by an interleaving of s1 and s2.\n\nAn interleaving of two strings s and t is a configuration where s and t are divided into n and m substrings respectively, such that:\n- s = s1 + s2 + ... + sn\n- t = t1 + t2 + ... + tm\n- |n - m| <= 1\n- The interleaving is s1 + t1 + s2 + t2 + ... or t1 + s1 + t2 + s2 + ...",
+    "given": "three strings s1, s2, and s3",
+    "ret": "a boolean indicating if s3 is formed by interleaving s1 and s2",
+    "summary": "Use dynamic programming where dp[i][j] indicates if s3[0..i+j-1] can be formed by interleaving s1[0..i-1] and s2[0..j-1].",
+    "starter": "class Solution:\n    def isInterleave(self, s1: str, s2: str, s3: str) -> bool:\n        pass",
+    "tests": [
+      {
+        "label": "s1 = \"aabcc\", s2 = \"dbbca\", s3 = \"aadbbcbcac\"",
+        "inputStr": "{\"s1\": \"aabcc\", \"s2\": \"dbbca\", \"s3\": \"aadbbcbcac\"}",
+        "expectedStr": "true"
+      },
+      {
+        "label": "s1 = \"aabcc\", s2 = \"dbbca\", s3 = \"aadbbbaccc\"",
+        "inputStr": "{\"s1\": \"aabcc\", \"s2\": \"dbbca\", \"s3\": \"aadbbbaccc\"}",
+        "expectedStr": "false"
+      },
+      {
+        "label": "s1 = \"\", s2 = \"\", s3 = \"\"",
+        "inputStr": "{\"s1\": \"\", \"s2\": \"\", \"s3\": \"\"}",
+        "expectedStr": "true"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force recursion",
+        "time": "O(2^(m+n))",
+        "space": "O(m+n)",
+        "idea": "Recursively check matching character choices from s1 or s2 at each step of s3.",
+        "code": "class Solution:\n    def isInterleave(self, s1: str, s2: str, s3: str) -> bool:\n        if len(s1) + len(s2) != len(s3):\n            return False\n        def check(i, j, k):\n            if k == len(s3):\n                return True\n            ans = False\n            if i < len(s1) and s1[i] == s3[k]:\n                ans = ans or check(i + 1, j, k + 1)\n            if j < len(s2) and s2[j] == s3[k]:\n                ans = ans or check(i, j + 1, k + 1)\n            return ans\n        return check(0, 0, 0)",
+        "steps": [
+          {
+            "label": "length check",
+            "note": "Verify total length matches; return False if len(s1) + len(s2) != len(s3).",
+            "from": 3,
+            "to": 4,
+            "yes": "Return False",
+            "no": "Continue to recursion"
+          },
+          {
+            "label": "check end of target",
+            "note": "If index k reaches end of s3, all characters matched successfully.",
+            "from": 6,
+            "to": 7,
+            "yes": "Return True",
+            "no": "Try matching from s1 or s2"
+          },
+          {
+            "label": "match character from s1",
+            "note": "If s1[i] matches s3[k], recurse with incremented i and k.",
+            "from": 9,
+            "to": 10
+          },
+          {
+            "label": "match character from s2",
+            "note": "If s2[j] matches s3[k], recurse with incremented j and k.",
+            "from": 11,
+            "to": 12
+          },
+          {
+            "label": "return search result",
+            "note": "Return True if any valid branch interleaves s3 successfully.",
+            "from": 13,
+            "to": 13
+          }
+        ]
+      },
+      {
+        "name": "2D dynamic programming",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "idea": "Build a boolean DP table dp[i][j] representing if s3 prefix of length i+j is a valid interleaving of s1 prefix of length i and s2 prefix of length j.",
+        "code": "class Solution:\n    def isInterleave(self, s1: str, s2: str, s3: str) -> bool:\n        m, n = len(s1), len(s2)\n        if m + n != len(s3):\n            return False\n        dp = [[False] * (n + 1) for _ in range(m + 1)]\n        dp[0][0] = True\n        for i in range(m + 1):\n            for j in range(n + 1):\n                if i > 0:\n                    dp[i][j] = dp[i][j] or (dp[i - 1][j] and s1[i - 1] == s3[i + j - 1])\n                if j > 0:\n                    dp[i][j] = dp[i][j] or (dp[i][j - 1] and s2[j - 1] == s3[i + j - 1])\n        return dp[m][n]",
+        "steps": [
+          {
+            "label": "validate string lengths",
+            "note": "Check if sum of s1 and s2 lengths equal length of s3.",
+            "from": 4,
+            "to": 5,
+            "yes": "Return False if lengths mismatch",
+            "no": "Initialize DP table"
+          },
+          {
+            "label": "initialize DP table",
+            "note": "dp[0][0] = True since empty strings form an empty string.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "transition from s1",
+            "note": "Check if s1[i-1] matches s3[i+j-1] and previous state dp[i-1][j] is True.",
+            "from": 10,
+            "to": 11
+          },
+          {
+            "label": "transition from s2",
+            "note": "Check if s2[j-1] matches s3[i+j-1] and previous state dp[i][j-1] is True.",
+            "from": 12,
+            "to": 13
+          },
+          {
+            "label": "return final status",
+            "note": "dp[m][n] answers whether the full s3 can be interleaved.",
+            "from": 14,
+            "to": 14
+          }
+        ]
+      }
+    ]
+  },
+  "longest-increasing-path-in-a-matrix": {
+    "statement": "Given an m x n integers matrix, return the length of the longest increasing path in matrix.\n\nFrom each cell, you can either move in four directions: left, right, up, or down. You may not move diagonally or move outside the boundary (i.e., wrap-around is not allowed).",
+    "given": "an m x n integer matrix",
+    "ret": "the length of the longest increasing path",
+    "summary": "Use DFS with memoization to compute the longest increasing path starting from each cell; memoization prevents re-evaluating cells along shared paths.",
+    "starter": "class Solution:\n    def longestIncreasingPath(self, matrix: List[List[int]]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "matrix = [[9,9,4],[6,6,8],[2,1,1]]",
+        "inputStr": "{\"matrix\": [[9,9,4],[6,6,8],[2,1,1]]}",
+        "expectedStr": "4"
+      },
+      {
+        "label": "matrix = [[3,4,5],[3,2,6],[2,2,1]]",
+        "inputStr": "{\"matrix\": [[3,4,5],[3,2,6],[2,2,1]]}",
+        "expectedStr": "4"
+      },
+      {
+        "label": "matrix = [[1]]",
+        "inputStr": "{\"matrix\": [[1]]}",
+        "expectedStr": "1"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force dfs",
+        "time": "O(4^(m*n))",
+        "space": "O(m*n)",
+        "idea": "Perform simple DFS from every cell in 4 directions to find the maximum path length without caching results.",
+        "code": "class Solution:\n    def longestIncreasingPath(self, matrix: List[List[int]]) -> int:\n        if not matrix or not matrix[0]:\n            return 0\n        m, n = len(matrix), len(matrix[0])\n        def dfs(r, c):\n            max_len = 1\n            for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < m and 0 <= nc < n and matrix[nr][nc] > matrix[r][c]:\n                    max_len = max(max_len, 1 + dfs(nr, nc))\n            return max_len\n        return max(dfs(r, c) for r in range(m) for c in range(n))",
+        "steps": [
+          {
+            "label": "check matrix validity",
+            "note": "Return 0 if matrix is empty.",
+            "from": 3,
+            "to": 4,
+            "yes": "Return 0",
+            "no": "Extract matrix dimensions"
+          },
+          {
+            "label": "init max_len",
+            "note": "Every cell has at least a path length of 1.",
+            "from": 7,
+            "to": 7
+          },
+          {
+            "label": "explore 4 directions",
+            "note": "Check surrounding adjacent neighbors (up, down, left, right).",
+            "from": 8,
+            "to": 9
+          },
+          {
+            "label": "validate move condition",
+            "note": "Only step to neighbor if within bounds and value is strictly greater.",
+            "from": 10,
+            "to": 11,
+            "yes": "Recurse into neighbor and update max_len",
+            "no": "Try next direction"
+          },
+          {
+            "label": "run DFS for all cells",
+            "note": "Find maximum path starting from any cell (r, c) in the matrix.",
+            "from": 13,
+            "to": 13
+          }
+        ]
+      },
+      {
+        "name": "dfs with memoization",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "idea": "Since the matrix defines a Directed Acyclic Graph (DAG) for strictly increasing values, memoize the DFS result for cell (r, c) to achieve linear time complexity.",
+        "code": "class Solution:\n    def longestIncreasingPath(self, matrix: List[List[int]]) -> int:\n        if not matrix or not matrix[0]:\n            return 0\n        m, n = len(matrix), len(matrix[0])\n        memo = {}\n        def dfs(r, c):\n            if (r, c) in memo:\n                return memo[(r, c)]\n            max_len = 1\n            for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < m and 0 <= nc < n and matrix[nr][nc] > matrix[r][c]:\n                    max_len = max(max_len, 1 + dfs(nr, nc))\n            memo[(r, c)] = max_len\n            return max_len\n        return max(dfs(r, c) for r in range(m) for c in range(n))",
+        "steps": [
+          {
+            "label": "check memoized cache",
+            "note": "If cell (r, c) was already computed, return cached value immediately.",
+            "from": 8,
+            "to": 9,
+            "yes": "Return memo[(r, c)]",
+            "no": "Compute path length for cell"
+          },
+          {
+            "label": "explore neighbors",
+            "note": "Traverse all valid adjacent cells with strictly greater values.",
+            "from": 11,
+            "to": 14
+          },
+          {
+            "label": "cache result",
+            "note": "Save computed max path length for (r, c) in memo.",
+            "from": 15,
+            "to": 15
+          },
+          {
+            "label": "compute global maximum",
+            "note": "Iterate over every matrix cell and return max increasing path length.",
+            "from": 17,
+            "to": 17
+          }
+        ]
+      }
+    ]
+  },
+  "distinct-subsequences": {
+    "statement": "Given two strings s and t, return the number of distinct subsequences of s which equals t. The test cases are generated so that the answer fits in a 32-bit signed integer.",
+    "given": "two strings s and t",
+    "ret": "an integer representing the number of distinct subsequences of s that equal t",
+    "summary": "Use dynamic programming where dp[i][j] stores the number of ways to form t[j:] using subsequences of s[i:]. Match characters or skip s[i].",
+    "starter": "class Solution:\n    def numDistinct(self, s: str, t: str) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "s = \"rabbbit\", t = \"rabbit\"",
+        "inputStr": "{\"s\": \"rabbbit\", \"t\": \"rabbit\"}",
+        "expectedStr": "3"
+      },
+      {
+        "label": "s = \"babgbag\", t = \"bag\"",
+        "inputStr": "{\"s\": \"babgbag\", \"t\": \"bag\"}",
+        "expectedStr": "5"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force",
+        "time": "O(2^len(s))",
+        "space": "O(len(s))",
+        "idea": "Recursively explore matching or skipping each character of s against the current target character in t.",
+        "code": "class Solution:\n    def numDistinct(self, s: str, t: str) -> int:\n        def count(i, j):\n            if j == len(t):\n                return 1\n            if i == len(s):\n                return 0\n            if s[i] == t[j]:\n                return count(i + 1, j + 1) + count(i + 1, j)\n            return count(i + 1, j)\n        return count(0, 0)",
+        "steps": [
+          {
+            "label": "check t target complete",
+            "note": "if index j reaches the end of t, a valid subsequence of t was successfully formed",
+            "from": 4,
+            "to": 5,
+            "yes": "return 1 to count this valid matching combination",
+            "no": "continue to check if string s is exhausted"
+          },
+          {
+            "label": "check s string exhausted",
+            "note": "if index i reaches the end of s without finishing t, this path failed",
+            "from": 6,
+            "to": 7,
+            "yes": "return 0 as no more characters are available in s",
+            "no": "compare characters s[i] and t[j]"
+          },
+          {
+            "label": "compare character match",
+            "note": "check if current character in s matches current character needed in t",
+            "from": 8,
+            "to": 9,
+            "yes": "recurse on using s[i] (i+1, j+1) plus skipping s[i] (i+1, j)",
+            "no": "recurse only on skipping s[i] (i+1, j)"
+          },
+          {
+            "label": "skip unmatched character",
+            "note": "s[i] does not match t[j], so advance index i only",
+            "from": 10,
+            "to": 10
+          }
+        ]
+      },
+      {
+        "name": "optimal dynamic programming",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "idea": "Build a 2D table bottom-up where dp[i][j] is the count of matching subsequences for suffixes s[i:] and t[j:].",
+        "code": "class Solution:\n    def numDistinct(self, s: str, t: str) -> int:\n        m, n = len(s), len(t)\n        dp = [[0] * (n + 1) for _ in range(m + 1)]\n        for i in range(m + 1):\n            dp[i][n] = 1\n        for i in range(m - 1, -1, -1):\n            for j in range(n - 1, -1, -1):\n                if s[i] == t[j]:\n                    dp[i][j] = dp[i + 1][j + 1] + dp[i + 1][j]\n                else:\n                    dp[i][j] = dp[i + 1][j]\n        return dp[0][0]",
+        "steps": [
+          {
+            "label": "initialize DP table",
+            "note": "create (m+1) x (n+1) grid filled with zeros",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "set base cases",
+            "note": "an empty string t can always be formed in 1 way from any suffix of s",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "iterate suffixes backwards",
+            "note": "traverse s from index m-1 down to 0 and t from n-1 down to 0",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "character matching check",
+            "note": "if s[i] matches t[j], add combinations from matching both and from skipping s[i]",
+            "from": 9,
+            "to": 10,
+            "yes": "dp[i][j] = dp[i+1][j+1] + dp[i+1][j]",
+            "no": "dp[i][j] = dp[i+1][j]"
+          },
+          {
+            "label": "return result",
+            "note": "dp[0][0] contains the total distinct subsequences for s[0:] and t[0:]",
+            "from": 13,
+            "to": 13
+          }
+        ]
+      }
+    ]
+  },
+  "edit-distance": {
+    "statement": "Given two strings word1 and word2, return the minimum number of operations required to convert word1 to word2. You have the following three operations permitted on a word: Insert a character, Delete a character, Replace a character.",
+    "given": "two strings word1 and word2",
+    "ret": "an integer representing the minimum number of operations to convert word1 to word2",
+    "summary": "Use dynamic programming where dp[i][j] represents the minimum edit distance to transform word1[0..i-1] into word2[0..j-1].",
+    "starter": "class Solution:\n    def minDistance(self, word1: str, word2: str) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "word1 = \"horse\", word2 = \"ros\"",
+        "inputStr": "{\"word1\": \"horse\", \"word2\": \"ros\"}",
+        "expectedStr": "3"
+      },
+      {
+        "label": "word1 = \"intention\", word2 = \"execution\"",
+        "inputStr": "{\"word1\": \"intention\", \"word2\": \"execution\"}",
+        "expectedStr": "5"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force recursion",
+        "time": "O(3^(m+n))",
+        "space": "O(m+n)",
+        "idea": "Recursively check all options (insert, delete, replace) at each character comparison.",
+        "code": "class Solution:\n    def minDistance(self, word1: str, word2: str) -> int:\n        def solve(i, j):\n            if i == len(word1):\n                return len(word2) - j\n            if j == len(word2):\n                return len(word1) - i\n            if word1[i] == word2[j]:\n                return solve(i + 1, j + 1)\n            insert = solve(i, j + 1)\n            delete = solve(i + 1, j)\n            replace = solve(i + 1, j + 1)\n            return 1 + min(insert, delete, replace)\n        return solve(0, 0)",
+        "steps": [
+          {
+            "label": "check word1 exhausted",
+            "note": "if i reached end of word1, remaining characters in word2 must be inserted",
+            "from": 4,
+            "to": 5,
+            "yes": "return len(word2) - j",
+            "no": "check if word2 is exhausted"
+          },
+          {
+            "label": "check word2 exhausted",
+            "note": "if j reached end of word2, remaining characters in word1 must be deleted",
+            "from": 6,
+            "to": 7,
+            "yes": "return len(word1) - i",
+            "no": "compare characters at i and j"
+          },
+          {
+            "label": "characters equal check",
+            "note": "if word1[i] == word2[j], no operation cost needed for current characters",
+            "from": 8,
+            "to": 9,
+            "yes": "recurse on solve(i+1, j+1) with 0 added cost",
+            "no": "branch into 3 possible edit operations"
+          },
+          {
+            "label": "explore edit operations",
+            "note": "recursively evaluate insert, delete, and replace steps",
+            "from": 10,
+            "to": 12
+          },
+          {
+            "label": "return minimum operation cost",
+            "note": "take 1 + min of all three recursive branch costs",
+            "from": 13,
+            "to": 13
+          }
+        ]
+      },
+      {
+        "name": "optimal 2D dynamic programming",
+        "time": "O(m * n)",
+        "space": "O(m * n)",
+        "idea": "Fill a 2D table bottom-up where dp[i][j] stores the edit distance for word1[:i] and word2[:j].",
+        "code": "class Solution:\n    def minDistance(self, word1: str, word2: str) -> int:\n        m, n = len(word1), len(word2)\n        dp = [[0] * (n + 1) for _ in range(m + 1)]\n        for i in range(m + 1):\n            dp[i][0] = i\n        for j in range(n + 1):\n            dp[0][j] = j\n        for i in range(1, m + 1):\n            for j in range(1, n + 1):\n                if word1[i - 1] == word2[j - 1]:\n                    dp[i][j] = dp[i - 1][j - 1]\n                else:\n                    dp[i][j] = 1 + min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])\n        return dp[m][n]",
+        "steps": [
+          {
+            "label": "initialize DP matrix",
+            "note": "create (m+1) x (n+1) matrix for DP state transitions",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "fill boundary base cases",
+            "note": "transforming string to/from empty string costs the length of the string",
+            "from": 5,
+            "to": 8
+          },
+          {
+            "label": "nested loops over prefixes",
+            "note": "iterate i from 1 to m and j from 1 to n",
+            "from": 9,
+            "to": 10
+          },
+          {
+            "label": "character match check",
+            "note": "if word1[i-1] == word2[j-1], carry over previous diagonal value without adding cost",
+            "from": 11,
+            "to": 12,
+            "yes": "dp[i][j] = dp[i-1][j-1]",
+            "no": "dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])"
+          },
+          {
+            "label": "return answer",
+            "note": "dp[m][n] holds total minimum edit distance for word1 and word2",
+            "from": 15,
+            "to": 15
+          }
+        ]
+      }
+    ]
+  },
+  "burst-balloons": {
+    "statement": "You are given n balloons, indexed from 0 to n - 1. Each balloon is painted with a number on it represented by an array nums. You are asked to burst all the balloons. If you burst balloon i you will get nums[i - 1] * nums[i] * nums[i + 1] coins. If i - 1 or i + 1 goes out of bounds, treat it as a balloon with 1 painted on it. Return the maximum coins you can collect.",
+    "given": "an array of integers nums representing balloon values",
+    "ret": "an integer representing the maximum coins collected",
+    "summary": "Think backwards by picking the *last* balloon to burst in range [left, right] using interval DP.",
+    "starter": "class Solution:\n    def maxCoins(self, nums: List[int]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "nums = [3,1,5,8]",
+        "inputStr": "{\"nums\": [3,1,5,8]}",
+        "expectedStr": "167"
+      },
+      {
+        "label": "nums = [1,5]",
+        "inputStr": "{\"nums\": [1,5]}",
+        "expectedStr": "10"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force permutation recursion",
+        "time": "O(n!)",
+        "space": "O(n)",
+        "idea": "Try bursting each available balloon first and recursively evaluate remaining configurations.",
+        "code": "class Solution:\n    def maxCoins(self, nums: List[int]) -> int:\n        def solve(balloons):\n            if not balloons:\n                return 0\n            max_c = 0\n            for i in range(len(balloons)):\n                left = balloons[i - 1] if i > 0 else 1\n                right = balloons[i + 1] if i < len(balloons) - 1 else 1\n                coins = left * balloons[i] * right\n                remaining = balloons[:i] + balloons[i + 1:]\n                max_c = max(max_c, coins + solve(remaining))\n            return max_c\n        return solve(nums)",
+        "steps": [
+          {
+            "label": "check base case",
+            "note": "if no balloons remain in current subproblem, return 0 coins",
+            "from": 4,
+            "to": 5,
+            "yes": "return 0",
+            "no": "initialize max_c tracking variable"
+          },
+          {
+            "label": "loop balloon selection",
+            "note": "try bursting each balloon i in the current list",
+            "from": 7,
+            "to": 7
+          },
+          {
+            "label": "calculate burst score",
+            "note": "compute product of balloon i and its immediate adjacent neighbors",
+            "from": 8,
+            "to": 10
+          },
+          {
+            "label": "recurse on remaining balloons",
+            "note": "remove balloon i from array and recursively burst the rest",
+            "from": 11,
+            "to": 12
+          },
+          {
+            "label": "return maximum accumulated coins",
+            "note": "return the max score found among all balloon choices",
+            "from": 13,
+            "to": 13
+          }
+        ]
+      },
+      {
+        "name": "optimal interval DP",
+        "time": "O(n^3)",
+        "space": "O(n^2)",
+        "idea": "Pad array with 1s and define dp[left][right] as the max coins from bursting all balloons strictly between left and right.",
+        "code": "class Solution:\n    def maxCoins(self, nums: List[int]) -> int:\n        padded = [1] + nums + [1]\n        n = len(padded)\n        dp = [[0] * n for _ in range(n)]\n        for length in range(1, len(nums) + 1):\n            for left in range(1, len(nums) - length + 2):\n                right = left + length - 1\n                for k in range(left, right + 1):\n                    coins = padded[left - 1] * padded[k] * padded[right + 1]\n                    coins += dp[left][k - 1] + dp[k + 1][right]\n                    dp[left][right] = max(dp[left][right], coins)\n        return dp[1][len(nums)]",
+        "steps": [
+          {
+            "label": "pad array with boundaries",
+            "note": "add boundary 1s to both ends of nums array to handle edge conditions easily",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "initialize DP matrix",
+            "note": "create n x n matrix initialized with zeros for range subproblems",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "loop interval length",
+            "note": "expand subproblem interval size from 1 up to original array length",
+            "from": 6,
+            "to": 6
+          },
+          {
+            "label": "set left and right window bounds",
+            "note": "slide window across padded array to define current subrange [left, right]",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "pick last burst balloon k",
+            "note": "try balloon k as the last balloon to burst in interval [left, right]",
+            "from": 9,
+            "to": 12
+          },
+          {
+            "label": "return result for full range",
+            "note": "dp[1][len(nums)] holds max coins collected for bursting all original balloons",
+            "from": 13,
+            "to": 13
+          }
+        ]
+      }
+    ]
   }
 };
