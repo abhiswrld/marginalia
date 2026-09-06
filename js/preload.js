@@ -7055,5 +7055,563 @@ window.PRELOADED_PROBLEMS = {
         ]
       }
     ]
+  },
+  "set-matrix-zeroes": {
+    "statement": "Given an m x n integer matrix matrix, if an element is 0, set its entire row and column to 0's. You must do it in-place.",
+    "given": "an m x n integer matrix matrix",
+    "ret": "modify matrix in-place to set entire row and column to 0 for any 0 element",
+    "summary": "Use the first row and first column as markers to record which rows and columns should be zeroed out, with an extra variable tracking whether the first column itself needs to be zeroed.",
+    "starter": "def setZeroes(matrix: list[list[int]]) -> None:\n    \"\"\"\n    Do not return anything, modify matrix in-place instead.\n    \"\"\"\n    pass",
+    "tests": [
+      {
+        "label": "matrix = [[1,1,1],[1,0,1],[1,1,1]]",
+        "inputStr": "{\"matrix\": [[1,1,1],[1,0,1],[1,1,1]]}",
+        "expectedStr": "[[1,0,1],[0,0,0],[1,0,1]]"
+      },
+      {
+        "label": "matrix = [[0,1,2,0],[3,4,5,2],[1,3,1,5]]",
+        "inputStr": "{\"matrix\": [[0,1,2,0],[3,4,5,2],[1,3,1,5]]}",
+        "expectedStr": "[[0,0,0,0],[0,4,5,0],[0,3,1,0]]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force / auxiliary space",
+        "time": "O(m * n)",
+        "space": "O(m + n)",
+        "idea": "Use two additional hash sets to store the row and column indices that contain zeroes, then iterate over the matrix a second time to set cells to zero if their row or column index is in either set.",
+        "code": "def setZeroes(matrix: list[list[int]]) -> None:\n    R, C = len(matrix), len(matrix[0])\n    rows, cols = set(), set()\n    for r in range(R):\n        for c in range(C):\n            if matrix[r][c] == 0:\n                rows.add(r)\n                cols.add(c)\n    for r in range(R):\n        for c in range(C):\n            if r in rows or c in cols:\n                matrix[r][c] = 0",
+        "steps": [
+          {
+            "label": "Initialize Tracking Sets",
+            "note": "Get matrix dimensions and create hash sets to track zero row and column indices.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Scan Matrix for Zeroes",
+            "note": "Iterate through every cell in the matrix.",
+            "from": 4,
+            "to": 6
+          },
+          {
+            "label": "Record Zero Indices",
+            "note": "If a cell value is 0, add its row index to 'rows' and column index to 'cols'.",
+            "from": 6,
+            "to": 8
+          },
+          {
+            "label": "Iterate for Zeroing",
+            "note": "Traverse the matrix a second time.",
+            "from": 9,
+            "to": 11
+          },
+          {
+            "label": "Apply Zeroes",
+            "note": "Set matrix element to 0 if its row index is in 'rows' or column index is in 'cols'.",
+            "from": 11,
+            "to": 12
+          }
+        ]
+      },
+      {
+        "name": "optimal in-place zeroing",
+        "time": "O(m * n)",
+        "space": "O(1)",
+        "idea": "Use the first row and column of the matrix itself to store zero markers for the rest of the matrix. Track the state of the first column separately using a boolean flag to avoid marker collisions.",
+        "code": "def setZeroes(matrix: list[list[int]]) -> None:\n    R, C = len(matrix), len(matrix[0])\n    first_col_zero = False\n    for r in range(R):\n        if matrix[r][0] == 0:\n            first_col_zero = True\n        for c in range(1, C):\n            if matrix[r][c] == 0:\n                matrix[r][0] = 0\n                matrix[0][c] = 0\n    for r in range(1, R):\n        for c in range(1, C):\n            if matrix[r][0] == 0 or matrix[0][c] == 0:\n                matrix[r][c] = 0\n    if matrix[0][0] == 0:\n        for c in range(C):\n            matrix[0][c] = 0\n    if first_col_zero:\n        for r in range(R):\n            matrix[r][0] = 0",
+        "steps": [
+          {
+            "label": "Check First Column Status",
+            "note": "Track if column 0 contains a zero using 'first_col_zero' variable.",
+            "from": 3,
+            "to": 6
+          },
+          {
+            "label": "Mark Zeroes in Outer Bounds",
+            "note": "For cells (r, c) where c > 0, set matrix[r][0] and matrix[0][c] to 0 if matrix[r][c] is 0.",
+            "from": 7,
+            "to": 10
+          },
+          {
+            "label": "Update Inner Submatrix",
+            "note": "Iterate from row 1 and column 1 upwards; set matrix[r][c] to 0 if its row or column marker is 0.",
+            "from": 11,
+            "to": 14
+          },
+          {
+            "label": "Update First Row",
+            "note": "If matrix[0][0] is 0, set all elements in the first row to 0.",
+            "from": 15,
+            "to": 17
+          },
+          {
+            "label": "Update First Column",
+            "note": "If 'first_col_zero' is True, set all elements in the first column to 0.",
+            "from": 18,
+            "to": 20
+          }
+        ]
+      }
+    ]
+  },
+  "reverse-bits": {
+    "statement": "Reverse bits of a given 32 bits unsigned integer.",
+    "given": "a 32-bit unsigned integer n",
+    "ret": "the 32-bit unsigned integer with reversed bits",
+    "summary": "Extract each bit from the least significant side of input n and construct the output by placing each bit into its corresponding mirrored position using bitwise shifts and OR operations.",
+    "starter": "def reverseBits(n: int) -> int:\n    pass",
+    "tests": [
+      {
+        "label": "n = 43261596",
+        "inputStr": "{\"n\": 43261596}",
+        "expectedStr": "964176192"
+      },
+      {
+        "label": "n = 4294967293",
+        "inputStr": "{\"n\": 4294967293}",
+        "expectedStr": "3221225471"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "string conversion",
+        "time": "O(1)",
+        "space": "O(1)",
+        "idea": "Convert the integer into a 32-bit binary string representation, reverse the string, and parse it back to an integer.",
+        "code": "def reverseBits(n: int) -> int:\n    bit_str = bin(n)[2:].zfill(32)\n    reversed_str = bit_str[::-1]\n    return int(reversed_str, 2)",
+        "steps": [
+          {
+            "label": "Format Binary String",
+            "note": "Convert integer to binary string excluding '0b' prefix and pad with leading zeroes to length 32.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "Reverse String",
+            "note": "Reverse the padded binary string using slicing.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Parse Integer",
+            "note": "Convert the reversed binary string back into a base-2 integer and return.",
+            "from": 3,
+            "to": 4
+          }
+        ]
+      },
+      {
+        "name": "bit manipulation",
+        "time": "O(1)",
+        "space": "O(1)",
+        "idea": "Iterate 32 times, isolating the i-th bit of n and shifting it to position (31 - i) in the result integer using bitwise operations.",
+        "code": "def reverseBits(n: int) -> int:\n    res = 0\n    for i in range(32):\n        bit = (n >> i) & 1\n        res |= (bit << (31 - i))\n    return res",
+        "steps": [
+          {
+            "label": "Initialize Result",
+            "note": "Set result accumulator 'res' to 0 and loop 32 times.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Extract Bit",
+            "note": "Shift input 'n' right by i positions and mask with 1 to get the bit value at index i.",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "Place Bit at Mirror Position",
+            "note": "Shift extracted bit left by (31 - i) positions and perform bitwise OR into 'res'.",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "Return Reversed Integer",
+            "note": "Return the accumulated 32-bit reversed integer.",
+            "from": 3,
+            "to": 6
+          }
+        ]
+      }
+    ]
+  },
+  "number-of-1-bits": {
+    "statement": "Given a positive integer n, write a function that returns the number of set bits it has (also known as the Hamming weight).",
+    "given": "a positive integer n",
+    "ret": "the number of set bits (1s) in n's binary representation",
+    "summary": "Clear the least significant set bit repeatedly using n = n & (n - 1) and count how many steps it takes until n reaches zero.",
+    "starter": "def hammingWeight(n: int) -> int:\n    pass",
+    "tests": [
+      {
+        "label": "n = 11",
+        "inputStr": "{\"n\": 11}",
+        "expectedStr": "3"
+      },
+      {
+        "label": "n = 128",
+        "inputStr": "{\"n\": 128}",
+        "expectedStr": "1"
+      },
+      {
+        "label": "n = 2147483645",
+        "inputStr": "{\"n\": 2147483645}",
+        "expectedStr": "30"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "bit shift loop",
+        "time": "O(1)",
+        "space": "O(1)",
+        "idea": "Inspect each bit of n from right to left by checking the least significant bit (n & 1) and shifting right until n becomes zero.",
+        "code": "def hammingWeight(n: int) -> int:\n    count = 0\n    while n > 0:\n        count += n & 1\n        n >>= 1\n    return count",
+        "steps": [
+          {
+            "label": "Initialize Counter",
+            "note": "Set bit count to 0 and loop while 'n' is greater than 0.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Check LSB",
+            "note": "Bitwise AND n with 1 to determine if current lowest bit is set, adding to count.",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "Shift Right",
+            "note": "Logical shift n right by 1 to inspect the next bit.",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "Return Result",
+            "note": "Return total count after all bits are processed.",
+            "from": 3,
+            "to": 6
+          }
+        ]
+      },
+      {
+        "name": "brian kernighan's algorithm",
+        "time": "O(k)",
+        "space": "O(1)",
+        "idea": "Perform bitwise AND between n and (n - 1), which directly flips the lowest set bit of n to 0, running in iterations equal to the exact number of set bits k.",
+        "code": "def hammingWeight(n: int) -> int:\n    count = 0\n    while n > 0:\n        n &= (n - 1)\n        count += 1\n    return count",
+        "steps": [
+          {
+            "label": "Initialize Counter",
+            "note": "Set set-bit count to 0 and loop while 'n' is non-zero.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Clear Lowest Set Bit",
+            "note": "Operation n &= (n - 1) turns off the rightmost 1-bit in n.",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "Increment Count",
+            "note": "Add 1 to count for the cleared set bit.",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "Return Final Count",
+            "note": "Return count when n reaches 0.",
+            "from": 3,
+            "to": 6
+          }
+        ]
+      }
+    ]
+  },
+  "counting-bits": {
+    "statement": "Given an integer n, return an array ans of length n + 1 such that for each i (0 <= i <= n), ans[i] is the number of 1's in the binary representation of i.",
+    "given": "an integer n",
+    "ret": "an array ans of length n + 1 where ans[i] is the number of set bits in i",
+    "summary": "We can compute bit counts in O(N) time using dynamic programming by observing that the number of set bits in i is equal to the number of set bits in i >> 1 plus the last bit (i & 1).",
+    "starter": "class Solution:\n    def countBits(self, n: int) -> list[int]:\n        pass",
+    "tests": [
+      {
+        "label": "n = 2",
+        "inputStr": "{\"n\": 2}",
+        "expectedStr": "[0, 1, 1]"
+      },
+      {
+        "label": "n = 5",
+        "inputStr": "{\"n\": 5}",
+        "expectedStr": "[0, 1, 1, 2, 1, 2]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force",
+        "time": "O(n log n)",
+        "space": "O(1)",
+        "idea": "For every number from 0 to n, convert it to binary or iterate through its bits individually, counting the number of 1s.",
+        "code": "class Solution:\n    def countBits(self, n: int) -> list[int]:\n        ans = []\n        for i in range(n + 1):\n            count = 0\n            num = i\n            while num > 0:\n                count += num & 1\n                num >>= 1\n            ans.append(count)\n        return ans",
+        "steps": [
+          {
+            "label": "initialize output array",
+            "note": "Create an empty list `ans` to store the set bit count for each integer.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "outer loop",
+            "note": "Loop through every integer `i` from 0 up to `n` inclusive.",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "inner loop bit counting",
+            "note": "Extract the lowest bit with `num & 1`, add it to `count`, and right-shift `num` until `num` becomes 0.",
+            "from": 7,
+            "to": 9
+          },
+          {
+            "label": "append result",
+            "note": "Append the calculated bit count for current integer `i` to `ans`.",
+            "from": 10,
+            "to": 10
+          },
+          {
+            "label": "return result",
+            "note": "Return the completed `ans` list.",
+            "from": 11,
+            "to": 11
+          }
+        ]
+      },
+      {
+        "name": "optimal dynamic programming",
+        "time": "O(n)",
+        "space": "O(1)",
+        "idea": "Reuse bit counts of smaller numbers using the relation ans[i] = ans[i >> 1] + (i & 1). Shift right removes the last bit, which we've already solved.",
+        "code": "class Solution:\n    def countBits(self, n: int) -> list[int]:\n        dp = [0] * (n + 1)\n        for i in range(1, n + 1):\n            dp[i] = dp[i >> 1] + (i & 1)\n        return dp",
+        "steps": [
+          {
+            "label": "initialize dp array",
+            "note": "Create an array `dp` of size `n + 1` filled with zeroes. `dp[0]` is correctly set to 0.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "iterate from 1 to n",
+            "note": "Iterate through integers `i` from 1 up to `n` inclusive.",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "dp bit transition",
+            "note": "Look up `dp[i >> 1]` (number divided by 2) and add `i & 1` (1 if `i` is odd, 0 if even).",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "return dp array",
+            "note": "Return the computed `dp` array containing bit counts for all indices.",
+            "from": 6,
+            "to": 6
+          }
+        ]
+      }
+    ]
+  },
+  "missing-number": {
+    "statement": "Given an array nums containing n distinct numbers in the range [0, n], return the only number in the range that is missing from the array.",
+    "given": "an array of integers nums",
+    "ret": "the missing integer from the range [0, n]",
+    "summary": "We can compute the expected sum of range [0, n] using Gauss' formula n * (n + 1) / 2 and subtract the sum of elements in nums, or use XOR cancellation.",
+    "starter": "class Solution:\n    def missingNumber(self, nums: list[int]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "nums = [3,0,1]",
+        "inputStr": "{\"nums\": [3,0,1]}",
+        "expectedStr": "2"
+      },
+      {
+        "label": "nums = [0,1]",
+        "inputStr": "{\"nums\": [0,1]}",
+        "expectedStr": "2"
+      },
+      {
+        "label": "nums = [9,6,4,2,3,5,7,0,1]",
+        "inputStr": "{\"nums\": [9,6,4,2,3,5,7,0,1]}",
+        "expectedStr": "8"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "hash set lookup",
+        "time": "O(n)",
+        "space": "O(n)",
+        "idea": "Convert array to a hash set for O(1) lookups. Check every number from 0 to n to find which one is missing.",
+        "code": "class Solution:\n    def missingNumber(self, nums: list[int]) -> int:\n        num_set = set(nums)\n        n = len(nums)\n        for number in range(n + 1):\n            if number not in num_set:\n                return number",
+        "steps": [
+          {
+            "label": "build set",
+            "note": "Convert `nums` into a set `num_set` for O(1) lookups.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "get array length",
+            "note": "Calculate `n`, which represents the upper bound of the full expected sequence [0, n].",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "iterate range",
+            "note": "Check each `number` from 0 up to `n` inclusive.",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "check membership",
+            "note": "If `number` is missing from `num_set`, return it immediately.",
+            "from": 6,
+            "to": 7,
+            "yes": "Number not found in set, return this number.",
+            "no": "Number exists in set, continue loop."
+          }
+        ]
+      },
+      {
+        "name": "math sum formula (optimal)",
+        "time": "O(n)",
+        "space": "O(1)",
+        "idea": "Calculate expected sum using n*(n+1)//2 and subtract actual sum of array elements. Difference is the missing number.",
+        "code": "class Solution:\n    def missingNumber(self, nums: list[int]) -> int:\n        n = len(nums)\n        expected_sum = n * (n + 1) // 2\n        actual_sum = sum(nums)\n        return expected_sum - actual_sum",
+        "steps": [
+          {
+            "label": "get length",
+            "note": "Find `n`, the size of `nums`.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "expected sum formula",
+            "note": "Calculate Gauss sum `n * (n + 1) // 2` representing total sum of numbers [0, n].",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "actual sum",
+            "note": "Sum all actual elements in `nums`.",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "subtract and return",
+            "note": "Subtract `actual_sum` from `expected_sum` to reveal missing number.",
+            "from": 6,
+            "to": 6
+          }
+        ]
+      },
+      {
+        "name": "bitwise xor (optimal alternative)",
+        "time": "O(n)",
+        "space": "O(1)",
+        "idea": "XORing a number with itself cancels out (a ^ a = 0). XOR all indices from 0 to n and all numbers in array; remaining value is missing.",
+        "code": "class Solution:\n    def missingNumber(self, nums: list[int]) -> int:\n        res = len(nums)\n        for i, num in enumerate(nums):\n            res ^= i ^ num\n        return res",
+        "steps": [
+          {
+            "label": "initialize res",
+            "note": "Set `res` to `len(nums)` (the maximum number `n`).",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "iterate indices and values",
+            "note": "Iterate over `nums` using `enumerate` to get index `i` and element `num`.",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "xor step",
+            "note": "XOR current `res` with index `i` and array element `num` to cancel out matching pairs.",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "return result",
+            "note": "Return `res` containing the single unpaired number.",
+            "from": 6,
+            "to": 6
+          }
+        ]
+      }
+    ]
+  },
+  "sum-of-two-integers": {
+    "statement": "Given two integers a and b, return the sum of the two integers without using the operators + and -.",
+    "given": "two integers a and b",
+    "ret": "the sum of a and b",
+    "summary": "Use XOR (^) to add bits without carry, and AND (&) shifted left by 1 to compute carries. In Python, handle 32-bit signed integer masking explicitly.",
+    "starter": "class Solution:\n    def getSum(self, a: int, b: int) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "a = 1, b = 2",
+        "inputStr": "{\"a\": 1, \"b\": 2}",
+        "expectedStr": "3"
+      },
+      {
+        "label": "a = 2, b = 3",
+        "inputStr": "{\"a\": 2, \"b\": 3}",
+        "expectedStr": "5"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "bit manipulation with 32-bit masking",
+        "time": "O(1)",
+        "space": "O(1)",
+        "idea": "Repeatedly compute sum without carry using XOR (a ^ b) and carry using AND shifted left ((a & b) << 1). Limit mask to 32 bits to prevent infinite Python bit growth.",
+        "code": "class Solution:\n    def getSum(self, a: int, b: int) -> int:\n        mask = 0xFFFFFFFF\n        while (b & mask) > 0:\n            carry = (a & b) << 1\n            a = a ^ b\n            b = carry\n        return (a & mask) if b > 0 else a",
+        "steps": [
+          {
+            "label": "initialize bitmask",
+            "note": "Define a 32-bit mask `0xFFFFFFFF` to simulate 32-bit signed integer behavior in Python.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "loop while carry exists",
+            "note": "Continue loop while carry bits `b & mask` are non-zero.",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "compute carry",
+            "note": "Find carry bits where both `a` and `b` have 1s, and shift left by 1 position.",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "compute sum without carry",
+            "note": "XOR `a` and `b` to perform addition for bits without carrying.",
+            "from": 6,
+            "to": 6
+          },
+          {
+            "label": "update carry variable",
+            "note": "Set `b = carry` so the next iteration processes remaining carries.",
+            "from": 7,
+            "to": 7
+          },
+          {
+            "label": "format signed output",
+            "note": "Mask `a` to 32 bits if `b > 0`, handling negative values properly, and return.",
+            "from": 8,
+            "to": 8
+          }
+        ]
+      }
+    ]
   }
 };
