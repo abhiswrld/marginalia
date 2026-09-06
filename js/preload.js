@@ -12357,5 +12357,624 @@ window.PRELOADED_PROBLEMS = {
         ]
       }
     ]
+  },
+  "swim-in-rising-water": {
+    "statement": "You are given an n x n integer matrix grid where each value grid[i][j] represents the elevation at that point (i, j). The rain starts to fall. At time t, the depth of the water everywhere is t. You can swim from a square to another 4-directionally adjacent square if and only if the elevation of both squares at most t. You can swim infinite distances in zero time. You must stay within the boundaries of the grid during your swim. Return the least time until you can reach the bottom right square (n - 1, n - 1) if you start at the top left square (0, 0).",
+    "given": "a 2D integer array grid of size n x n",
+    "ret": "the minimum time required to swim from (0, 0) to (n - 1, n - 1)",
+    "summary": "Use Dijkstra's algorithm with a min-heap to explore grid locations, keeping track of the maximum elevation encountered along the path to reach the destination with the minimal time.",
+    "starter": "class Solution:\n    def swimInWater(self, grid: list[list[int]]) -> int:",
+    "tests": [
+      {
+        "label": "grid = [[0,2],[1,3]]",
+        "inputStr": "{\"grid\": [[0, 2], [1, 3]]}",
+        "expectedStr": "3"
+      },
+      {
+        "label": "grid = [[0,1,2,3,4],[24,23,22,21,5],[12,13,14,15,16],[11,17,18,19,20],[10,9,8,7,6]]",
+        "inputStr": "{\"grid\": [[0, 1, 2, 3, 4], [24, 23, 22, 21, 5], [12, 13, 14, 15, 16], [11, 17, 18, 19, 20], [10, 9, 8, 7, 6]]}",
+        "expectedStr": "16"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Binary Search + DFS",
+        "time": "O(N^2 log(N^2))",
+        "space": "O(N^2)",
+        "idea": "Binary search for the answer T between max(grid[0][0], grid[N-1][N-1]) and N*N - 1. For each midpoint target T, run a standard DFS or BFS to see if a path exists from start to end using only cells with elevation <= T.",
+        "code": "class Solution:\n    def swimInWater(self, grid: list[list[int]]) -> int:\n        n = len(grid)\n        def can_reach(t):\n            if grid[0][0] > t:\n                return False\n            visited = set([(0, 0)])\n            stack = [(0, 0)]\n            while stack:\n                r, c = stack.pop()\n                if r == n - 1 and c == n - 1:\n                    return True\n                for dr, dc in [(-1,0),(1,0),(0,-1),(0,1)]:\n                    nr, nc = r + dr, c + dc\n                    if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in visited:\n                        if grid[nr][nc] <= t:\n                            visited.add((nr, nc))\n                            stack.append((nr, nc))\n            return False\n\n        low, high = grid[0][0], n * n - 1\n        ans = high\n        while low <= high:\n            mid = (low + high) // 2\n            if can_reach(mid):\n                ans = mid\n                high = mid - 1\n            else:\n                low = mid + 1\n        return ans",
+        "steps": [
+          {
+            "label": "Define binary search range",
+            "note": "Set low to grid[0][0] and high to n*n - 1 as upper bound.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "Calculate mid point",
+            "note": "Calculate mid time t = (low + high) // 2.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Run DFS check",
+            "note": "Test if bottom-right can be reached in time mid using grid traversal.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "Branch on feasibility",
+            "note": "If reached, save answer and shrink upper bound; else grow lower bound.",
+            "from": 4,
+            "to": 5,
+            "yes": "Path exists: ans = mid, high = mid - 1",
+            "no": "Path blocked: low = mid + 1"
+          },
+          {
+            "label": "Return minimum target time",
+            "note": "Return final optimal time when binary search terminates.",
+            "from": 5,
+            "to": 6
+          }
+        ]
+      },
+      {
+        "name": "Modified Dijkstra's Algorithm",
+        "time": "O(N^2 log N)",
+        "space": "O(N^2)",
+        "idea": "Use a min-heap to explore path elevations greedily. Always expand the cell with the lowest water level required so far. The time to reach a neighbor is max(current_time, neighbor_elevation).",
+        "code": "import heapq\n\nclass Solution:\n    def swimInWater(self, grid: list[list[int]]) -> int:\n        n = len(grid)\n        pq = [(grid[0][0], 0, 0)]\n        visited = set([(0, 0)])\n        \n        while pq:\n            t, r, c = heapq.heappop(pq)\n            if r == n - 1 and c == n - 1:\n                return t\n            for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:\n                nr, nc = r + dr, c + dc\n                if 0 <= nr < n and 0 <= nc < n and (nr, nc) not in visited:\n                    visited.add((nr, nc))\n                    heapq.heappush(pq, (max(t, grid[nr][nc]), nr, nc))\n        return -1",
+        "steps": [
+          {
+            "label": "Initialize Priority Queue",
+            "note": "Push starting cell (grid[0][0], 0, 0) into min-heap and mark visited.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "Pop lowest elevation cell",
+            "note": "Pop (t, r, c) with the smallest required water elevation.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Check destination",
+            "note": "If reached (n-1, n-1), return current max water elevation t.",
+            "from": 3,
+            "to": 4,
+            "yes": "Target cell popped: return t",
+            "no": "Continue expanding adjacent neighbors"
+          },
+          {
+            "label": "Explore 4 directions",
+            "note": "For valid unvisited neighbors, compute max elevation needed and push into PQ.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Loop until reached",
+            "note": "Repeat queue popping and push steps until bottom-right is reached.",
+            "from": 5,
+            "to": 2
+          }
+        ]
+      }
+    ]
+  },
+  "cheapest-flights-within-k-stops": {
+    "statement": "There are n cities connected by some number of flights. You are given an array flights where flights[i] = [from_i, to_i, price_i] indicates that there is a flight from city from_i to city to_i with cost price_i. You are also given three integers src, dst, and k, return the cheapest price from src to dst with at most k stops. If there is no such route, return -1.",
+    "given": "n cities, flights array where flights[i] = [from, to, price], src, dst, and k",
+    "ret": "the cheapest price from src to dst with at most k stops, or -1 if no such route exists",
+    "summary": "Use the Bellman-Ford dynamic programming approach relaxed exactly K+1 times to find the minimum distance within K stops.",
+    "starter": "class Solution:\n    def findCheapestPrice(self, n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:",
+    "tests": [
+      {
+        "label": "n = 4, flights = [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], src = 0, dst = 3, k = 1",
+        "inputStr": "{\"n\": 4, \"flights\": [[0, 1, 100], [1, 2, 100], [2, 0, 100], [1, 3, 600], [2, 3, 200]], \"src\": 0, \"dst\": 3, \"k\": 1}",
+        "expectedStr": "700"
+      },
+      {
+        "label": "n = 3, flights = [[0,1,100],[1,2,100],[0,2,500]], src = 0, dst = 2, k = 1",
+        "inputStr": "{\"n\": 3, \"flights\": [[0, 1, 100], [1, 2, 100], [0, 2, 500]], \"src\": 0, \"dst\": 2, \"k\": 1}",
+        "expectedStr": "200"
+      },
+      {
+        "label": "n = 3, flights = [[0,1,100],[1,2,100],[0,2,500]], src = 0, dst = 2, k = 0",
+        "inputStr": "{\"n\": 3, \"flights\": [[0, 1, 100], [1, 2, 100], [0, 2, 500]], \"src\": 0, \"dst\": 2, \"k\": 0}",
+        "expectedStr": "500"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Bellman-Ford / BFS Relaxations",
+        "time": "O(K * E)",
+        "space": "O(V)",
+        "idea": "Maintain a distance array initialized to infinity except for the source city. Run k + 1 iterations. In each iteration, copy the distances and relax all edges based on the distances from the previous iteration to prevent using more stops than allowed.",
+        "code": "class Solution:\n    def findCheapestPrice(self, n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:\n        prices = [float('inf')] * n\n        prices[src] = 0\n        \n        for _ in range(k + 1):\n            tmp_prices = list(prices)\n            for u, v, p in flights:\n                if prices[u] == float('inf'):\n                    continue\n                if prices[u] + p < tmp_prices[v]:\n                    tmp_prices[v] = prices[u] + p\n            prices = tmp_prices\n            \n        return prices[dst] if prices[dst] != float('inf') else -1",
+        "steps": [
+          {
+            "label": "Initialize distances",
+            "note": "Set prices[src] = 0 and all other cities to infinity.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "Outer loop k + 1 times",
+            "note": "Loop k + 1 times to allow up to k stops (k + 1 edges).",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Copy price state",
+            "note": "Create tmp_prices copy so updates rely only on prices from the previous stop count.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "Relax edges",
+            "note": "Iterate all flights (u, v, p) and update tmp_prices[v] if prices[u] + p is lower.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Update prices array",
+            "note": "Replace prices with tmp_prices after processing all edges.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "Return result",
+            "note": "Return prices[dst] if reachable, otherwise -1.",
+            "from": 6,
+            "to": 7
+          }
+        ]
+      },
+      {
+        "name": "Modified Dijkstra Algorithm",
+        "time": "O(E * K log(E * K))",
+        "space": "O(V * K)",
+        "idea": "Use a Priority Queue storing (cost, node, stops). Keep track of minimum stops required for each node to prune unpromising paths.",
+        "code": "import heapq\nfrom collections import defaultdict\n\nclass Solution:\n    def findCheapestPrice(self, n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:\n        adj = defaultdict(list)\n        for u, v, w in flights:\n            adj[u].append((v, w))\n            \n        pq = [(0, src, 0)]  # cost, current_node, stops\n        stops_arr = [float('inf')] * n\n        \n        while pq:\n            cost, u, stops = heapq.heappop(pq)\n            if u == dst:\n                return cost\n            if stops > k or stops >= stops_arr[u]:\n                continue\n            stops_arr[u] = stops\n            for v, w in adj[u]:\n                heapq.heappush(pq, (cost + w, v, stops + 1))\n                \n        return -1",
+        "steps": [
+          {
+            "label": "Build Adjacency Graph",
+            "note": "Build graph mapping city -> list of (neighbor, price).",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "Initialize Priority Queue",
+            "note": "Push (cost=0, src, stops=0) into min-heap.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Pop cheapest state",
+            "note": "Extract element with lowest cost from PQ.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "Check Destination",
+            "note": "If destination reached first, return its total cost.",
+            "from": 4,
+            "to": 5,
+            "yes": "Target found: return cost",
+            "no": "Continue exploring neighbors"
+          },
+          {
+            "label": "Prune by stops",
+            "note": "Skip if stops > k or if we already visited this city with fewer stops.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "Push neighbors to PQ",
+            "note": "Push all valid outgoing neighbors with incremented stops and updated cost.",
+            "from": 6,
+            "to": 3
+          }
+        ]
+      }
+    ]
+  },
+  "min-cost-climbing-stairs": {
+    "statement": "You are given an integer array cost where cost[i] is the cost of ith step on a staircase. Once you pay the cost, you can either climb one or two steps. You can either start from the step with index 0, or the step with index 1. Return the minimum cost to reach the top of the floor.",
+    "given": "an integer array cost where cost[i] is the cost of ith step on a staircase",
+    "ret": "the minimum cost to reach the top of the floor",
+    "summary": "Use dynamic programming where the cost to reach step i is cost[i] + min(dp[i-1], dp[i-2]).",
+    "starter": "class Solution:\n    def minCostClimbingStairs(self, cost: list[int]) -> int:",
+    "tests": [
+      {
+        "label": "cost = [10,15,20]",
+        "inputStr": "{\"cost\": [10, 15, 20]}",
+        "expectedStr": "15"
+      },
+      {
+        "label": "cost = [1,100,1,1,1,100,1,1,100,1]",
+        "inputStr": "{\"cost\": [1, 100, 1, 1, 1, 100, 1, 1, 100, 1]}",
+        "expectedStr": "6"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Top-Down DP with Memoization",
+        "time": "O(N)",
+        "space": "O(N)",
+        "idea": "Define a recursive helper min_cost(i) that calculates the minimum cost to reach the top starting from index i. Store results in a memoization dictionary to avoid redundant computations.",
+        "code": "class Solution:\n    def minCostClimbingStairs(self, cost: list[int]) -> int:\n        memo = {}\n        def dp(i):\n            if i >= len(cost):\n                return 0\n            if i in memo:\n                return memo[i]\n            memo[i] = cost[i] + min(dp(i + 1), dp(i + 2))\n            return memo[i]\n        \n        return min(dp(0), dp(1))",
+        "steps": [
+          {
+            "label": "Initialize memoization table",
+            "note": "Create hash map memo to cache completed step calculations.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "Base case check",
+            "note": "If step index i >= len(cost), cost is 0 (already reached the top).",
+            "from": 2,
+            "to": 3,
+            "yes": "Return 0",
+            "no": "Proceed to cache check / recurrence"
+          },
+          {
+            "label": "Recurrence calculation",
+            "note": "Compute current step cost plus min of jumping 1 step or 2 steps.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "Return top entry point min",
+            "note": "Return min(dp(0), dp(1)) to decide starting position.",
+            "from": 4,
+            "to": 5
+          }
+        ]
+      },
+      {
+        "name": "Bottom-Up DP (Constant Space)",
+        "time": "O(N)",
+        "space": "O(1)",
+        "idea": "Iterate backwards through the array. Keep two variables representing the minimum cost to reach the top from the next two steps, updating them dynamically.",
+        "code": "class Solution:\n    def minCostClimbingStairs(self, cost: list[int]) -> int:\n        first, second = 0, 0\n        for i in range(len(cost) - 1, -1, -1):\n            current = cost[i] + min(first, second)\n            second = first\n            first = current\n        return min(first, second)",
+        "steps": [
+          {
+            "label": "Initialize DP variables",
+            "note": "Set first = 0, second = 0 representing cost beyond the last step.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "Iterate backwards",
+            "note": "Loop through cost array from index n-1 down to 0.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "Calculate current step optimal cost",
+            "note": "Compute current step cost + min(first, second).",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "Shift state variables",
+            "note": "Set second = first, and first = current step optimal cost.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Return overall minimum cost",
+            "note": "Return min(first, second) which holds optimal solution from step 0 and 1.",
+            "from": 5,
+            "to": 6
+          }
+        ]
+      }
+    ]
+  },
+  "partition-equal-subset-sum": {
+    "statement": "Given an integer array nums, return true if you can partition the array into two subsets such that the sum of the elements in both subsets is equal or false otherwise.",
+    "given": "an array of positive integers nums",
+    "ret": "true if nums can be partitioned into two equal sum subsets, false otherwise",
+    "summary": "Check if the total sum is even; if so, reduce the problem to 0/1 Knapsack to find if a subset sums to total_sum // 2 using dynamic programming.",
+    "starter": "class Solution:\n    def canPartition(self, nums: list[int]) -> bool:\n        pass",
+    "tests": [
+      {
+        "label": "nums = [1,5,11,5]",
+        "inputStr": "{\"nums\": [1, 5, 11, 5]}",
+        "expectedStr": "true"
+      },
+      {
+        "label": "nums = [1,2,3,5]",
+        "inputStr": "{\"nums\": [1, 2, 3, 5]}",
+        "expectedStr": "false"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Brute Force (Recursive Backtracking)",
+        "time": "O(2^n)",
+        "space": "O(n)",
+        "idea": "Explore all subsets recursively. At each element, choose either to include it in the subset target or exclude it.",
+        "code": "class Solution:\n    def canPartition(self, nums: list[int]) -> bool:\n        total = sum(nums)\n        if total % 2 != 0:\n            return False\n        target = total // 2\n        \n        def dfs(i, current_sum):\n            if current_sum == target:\n                return True\n            if i >= len(nums) or current_sum > target:\n                return False\n            return dfs(i + 1, current_sum + nums[i]) or dfs(i + 1, current_sum)\n        \n        return dfs(0, 0)",
+        "steps": [
+          {
+            "label": "check sum parity",
+            "note": "If total sum is odd, equal partition is impossible.",
+            "from": 3,
+            "to": 5,
+            "yes": "Return False directly if sum is odd.",
+            "no": "Proceed to calculate half target."
+          },
+          {
+            "label": "set target",
+            "note": "Target for each subset is total sum divided by 2.",
+            "from": 6,
+            "to": 6
+          },
+          {
+            "label": "base case match",
+            "note": "Check if current sum equals target.",
+            "from": 9,
+            "to": 10,
+            "yes": "Found valid subset, return True."
+          },
+          {
+            "label": "base case invalid",
+            "note": "Out of bounds or current sum exceeded target.",
+            "from": 11,
+            "to": 12,
+            "yes": "Return False for this recursion path."
+          },
+          {
+            "label": "recursive branching",
+            "note": "Branch into including nums[i] vs excluding nums[i].",
+            "from": 13,
+            "to": 13
+          }
+        ]
+      },
+      {
+        "name": "Optimal DP (Set Iteration)",
+        "time": "O(n * target)",
+        "space": "O(target)",
+        "idea": "Use a hash set to maintain all reachable subset sums. Iterate through each number in nums and generate new reachable sums.",
+        "code": "class Solution:\n    def canPartition(self, nums: list[int]) -> bool:\n        total = sum(nums)\n        if total % 2 != 0:\n            return False\n        target = total // 2\n        dp = {0}\n        for num in nums:\n            next_dp = set()\n            for t in dp:\n                if t + num == target:\n                    return True\n                next_dp.add(t + num)\n                next_dp.add(t)\n            dp = next_dp\n        return target in dp",
+        "steps": [
+          {
+            "label": "check parity & compute target",
+            "note": "Verify total sum is even and divide by 2.",
+            "from": 3,
+            "to": 6
+          },
+          {
+            "label": "initialize DP set",
+            "note": "Start with base sum 0 in the set.",
+            "from": 7,
+            "to": 7
+          },
+          {
+            "label": "iterate numbers",
+            "note": "Process each element in nums one by one.",
+            "from": 8,
+            "to": 8
+          },
+          {
+            "label": "check target reachability",
+            "note": "Early exit if adding num reaches target.",
+            "from": 11,
+            "to": 12,
+            "yes": "Return True immediately."
+          },
+          {
+            "label": "update sum set",
+            "note": "Include both new sum (t + num) and existing sum (t).",
+            "from": 13,
+            "to": 15
+          }
+        ]
+      }
+    ]
+  },
+  "best-time-to-buy-and-sell-stock-with-cooldown": {
+    "statement": "You are given an array prices where prices[i] is the price of a given stock on the i-th day. Find the maximum profit you can achieve. You may complete as many transactions as you like with the restriction that after you sell your stock, you cannot buy stock on the next day (i.e., cooldown one day).",
+    "given": "an array of stock prices prices",
+    "ret": "the maximum profit achievable under the transaction rules",
+    "summary": "Track three state variables for each day: holding stock, sold/cooldown, and reset/ready to buy.",
+    "starter": "class Solution:\n    def maxProfit(self, prices: list[int]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "prices = [1,2,3,0,2]",
+        "inputStr": "{\"prices\": [1, 2, 3, 0, 2]}",
+        "expectedStr": "3"
+      },
+      {
+        "label": "prices = [1]",
+        "inputStr": "{\"prices\": [1]}",
+        "expectedStr": "0"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Brute Force (Recursive DFS)",
+        "time": "O(2^n)",
+        "space": "O(n)",
+        "idea": "Recursively decide at each day whether to Buy, Sell, or Cooldown (skip day).",
+        "code": "class Solution:\n    def maxProfit(self, prices: list[int]) -> int:\n        def dfs(i, buying):\n            if i >= len(prices):\n                return 0\n            if buying:\n                buy = dfs(i + 1, False) - prices[i]\n                cooldown = dfs(i + 1, True)\n                return max(buy, cooldown)\n            else:\n                sell = dfs(i + 2, True) + prices[i]\n                cooldown = dfs(i + 1, False)\n                return max(sell, cooldown)\n        return dfs(0, True)",
+        "steps": [
+          {
+            "label": "base case check",
+            "note": "If index goes past prices array, profit is 0.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "buying decision state",
+            "note": "When in buying state, compare buying now vs doing nothing.",
+            "from": 6,
+            "to": 9
+          },
+          {
+            "label": "selling decision state",
+            "note": "When in selling state, selling forces i+2 jump for 1-day cooldown.",
+            "from": 10,
+            "to": 13
+          },
+          {
+            "label": "start recursion",
+            "note": "Begin at day 0 in buying state.",
+            "from": 14,
+            "to": 14
+          }
+        ]
+      },
+      {
+        "name": "Optimal State Machine DP",
+        "time": "O(n)",
+        "space": "O(1)",
+        "idea": "Maintain three state DP variables: held (holding stock), sold (just sold today), and cooldown (ready to buy). Update state values iteratively.",
+        "code": "class Solution:\n    def maxProfit(self, prices: list[int]) -> int:\n        if not prices:\n            return 0\n        held = -float('inf')\n        sold = 0\n        cooldown = 0\n        for price in prices:\n            prev_sold = sold\n            sold = held + price\n            held = max(held, cooldown - price)\n            cooldown = max(cooldown, prev_sold)\n        return max(sold, cooldown)",
+        "steps": [
+          {
+            "label": "check empty prices",
+            "note": "If no prices exist, profit is 0.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "initialize states",
+            "note": "held = -infinity, sold = 0, cooldown = 0.",
+            "from": 5,
+            "to": 7
+          },
+          {
+            "label": "calculate sold state",
+            "note": "New sold state value is previous held value + price.",
+            "from": 9,
+            "to": 10
+          },
+          {
+            "label": "calculate held state",
+            "note": "Max of keeping held stock or buying stock today after cooldown.",
+            "from": 11,
+            "to": 11
+          },
+          {
+            "label": "calculate cooldown state",
+            "note": "Max of previous cooldown state or transitioning from yesterday's sold.",
+            "from": 12,
+            "to": 12
+          },
+          {
+            "label": "return max profit",
+            "note": "Max total profit is either in sold state or ready/cooldown state.",
+            "from": 13,
+            "to": 13
+          }
+        ]
+      }
+    ]
+  },
+  "coin-change-ii": {
+    "statement": "You are given an integer array coins representing coins of different denominations and an integer amount representing a total amount of money. Return the number of combinations that make up that amount. You may assume that you have an infinite number of each kind of coin.",
+    "given": "an integer amount and an array of integers coins",
+    "ret": "the number of combinations that make up that amount",
+    "summary": "Solve using 1D unbounded knapsack dynamic programming where dp[i] represents combinations to reach amount i, iterating outer loop over coins to avoid permutation duplicates.",
+    "starter": "class Solution:\n    def change(self, amount: int, coins: list[int]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "amount = 5, coins = [1,2,5]",
+        "inputStr": "{\"amount\": 5, \"coins\": [1, 2, 5]}",
+        "expectedStr": "4"
+      },
+      {
+        "label": "amount = 3, coins = [2]",
+        "inputStr": "{\"amount\": 3, \"coins\": [2]}",
+        "expectedStr": "0"
+      },
+      {
+        "label": "amount = 10, coins = [10]",
+        "inputStr": "{\"amount\": 10, \"coins\": [10]}",
+        "expectedStr": "1"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Brute Force (DFS Backtracking)",
+        "time": "O(2^(amount / min_coin))",
+        "space": "O(amount / min_coin)",
+        "idea": "Recursively explore taking current coin or skipping to next coin.",
+        "code": "class Solution:\n    def change(self, amount: int, coins: list[int]) -> int:\n        def dfs(i, rem):\n            if rem == 0:\n                return 1\n            if rem < 0 or i >= len(coins):\n                return 0\n            return dfs(i, rem - coins[i]) + dfs(i + 1, rem)\n        return dfs(0, amount)",
+        "steps": [
+          {
+            "label": "exact target match",
+            "note": "Remaining amount reached 0, count as 1 valid combination.",
+            "from": 4,
+            "to": 5,
+            "yes": "Return 1."
+          },
+          {
+            "label": "out of bounds check",
+            "note": "Remaining amount < 0 or coin index out of bounds.",
+            "from": 6,
+            "to": 7,
+            "yes": "Return 0."
+          },
+          {
+            "label": "recursive step",
+            "note": "Sum combinations of reusing current coin + skipping current coin.",
+            "from": 8,
+            "to": 8
+          },
+          {
+            "label": "entry point",
+            "note": "Start DFS from coin index 0 and target amount.",
+            "from": 9,
+            "to": 9
+          }
+        ]
+      },
+      {
+        "name": "Optimal DP (1D Unbounded Knapsack)",
+        "time": "O(n * amount)",
+        "space": "O(amount)",
+        "idea": "Build DP table dp of size amount + 1. Outer loop over coins ensures combinations (not permutations) are counted.",
+        "code": "class Solution:\n    def change(self, amount: int, coins: list[int]) -> int:\n        dp = [0] * (amount + 1)\n        dp[0] = 1\n        for coin in coins:\n            for i in range(coin, amount + 1):\n                dp[i] += dp[i - coin]\n        return dp[amount]",
+        "steps": [
+          {
+            "label": "initialize DP array",
+            "note": "Create dp table of size amount + 1 populated with 0s.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "set base case",
+            "note": "dp[0] = 1 because there is 1 way to make amount 0 (using no coins).",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "outer coin loop",
+            "note": "Iterate through each coin denomination.",
+            "from": 5,
+            "to": 5
+          },
+          {
+            "label": "inner amount loop",
+            "note": "Update dp values from coin up to target amount.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "return result",
+            "note": "dp[amount] holds the total combinations.",
+            "from": 8,
+            "to": 8
+          }
+        ]
+      }
+    ]
   }
 };
