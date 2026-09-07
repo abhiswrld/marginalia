@@ -14200,5 +14200,287 @@ window.PRELOADED_PROBLEMS = {
         ]
       }
     ]
+  },
+  "valid-parenthesis-string": {
+    "statement": "Given a string s containing only three types of characters: '(', ')' and '*', return true if s is valid.\n\nThe following rules define a valid string:\n- Any left parenthesis '(' must have a corresponding right parenthesis ')'.\n- Any right parenthesis ')' must have a corresponding left parenthesis '('.\n- Left parenthesis '(' must go before the corresponding right parenthesis ')'.\n- '*' could be treated as a single right parenthesis ')' or a single left parenthesis '(' or an empty string \"\".",
+    "given": "a string s containing characters '(', ')' and '*'",
+    "ret": "a boolean true if s is a valid string, or false otherwise",
+    "summary": "Track the range of possible open parenthesis counts [min_open, max_open] as you iterate through the string. If max_open drops below 0, it is impossible to balance; if min_open is 0 at the end, the string can be valid.",
+    "starter": "class Solution:\n    def checkValidString(self, s: str) -> bool:\n        ",
+    "tests": [
+      {
+        "label": "s = \"()\"",
+        "inputStr": "{\"s\": \"()\"}",
+        "expectedStr": "true"
+      },
+      {
+        "label": "s = \"(*)\"",
+        "inputStr": "{\"s\": \"(*)\"}",
+        "expectedStr": "true"
+      },
+      {
+        "label": "s = \"(*))\"",
+        "inputStr": "{\"s\": \"(*))\"}",
+        "expectedStr": "true"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Recursive Backtracking (Brute Force)",
+        "time": "O(3^N)",
+        "space": "O(N)",
+        "idea": "Recursively explore all three possible choices for every '*' character: treat it as '(', ')', or empty. Keep track of open parenthesis count.",
+        "code": "class Solution:\n    def checkValidString(self, s: str) -> bool:\n        def solve(index: int, count: int) -> bool:\n            if count < 0:\n                return False\n            if index == len(s):\n                return count == 0\n            char = s[index]\n            if char == '(':\n                return solve(index + 1, count + 1)\n            elif char == ')':\n                return solve(index + 1, count - 1)\n            else:\n                return solve(index + 1, count + 1) or solve(index + 1, count - 1) or solve(index + 1, count)\n        return solve(0, 0)",
+        "steps": [
+          {
+            "label": "Base Check Negative",
+            "note": "Check if open parenthesis count has dropped below zero.",
+            "from": 4,
+            "to": 5,
+            "yes": "Count < 0, pruned path",
+            "no": "Count >= 0, continue"
+          },
+          {
+            "label": "Base Check End",
+            "note": "Check if index reaches the end of string.",
+            "from": 6,
+            "to": 7,
+            "yes": "Return true if balance count is 0",
+            "no": "Continue processing character"
+          },
+          {
+            "label": "Process '('",
+            "note": "Increment count and recurse to next index.",
+            "from": 9,
+            "to": 10
+          },
+          {
+            "label": "Process ')'",
+            "note": "Decrement count and recurse to next index.",
+            "from": 11,
+            "to": 12
+          },
+          {
+            "label": "Process '*'",
+            "note": "Branch into 3 possibilities: count + 1, count - 1, count.",
+            "from": 13,
+            "to": 14
+          }
+        ]
+      },
+      {
+        "name": "Min/Max Greedy Range (Optimal)",
+        "time": "O(N)",
+        "space": "O(1)",
+        "idea": "Maintain two variables min_open and max_open representing the smallest and largest possible number of open parentheses needed. If max_open < 0, balance is broken; min_open cannot drop below 0.",
+        "code": "class Solution:\n    def checkValidString(self, s: str) -> bool:\n        min_open = 0\n        max_open = 0\n        for char in s:\n            if char == '(':\n                min_open += 1\n                max_open += 1\n            elif char == ')':\n                min_open -= 1\n                max_open -= 1\n            else:\n                min_open -= 1\n                max_open += 1\n            if max_open < 0:\n                return False\n            if min_open < 0:\n                min_open = 0\n        return min_open == 0",
+        "steps": [
+          {
+            "label": "Initialize Bounds",
+            "note": "Set min_open and max_open to 0.",
+            "from": 3,
+            "to": 5
+          },
+          {
+            "label": "Update Range",
+            "note": "Adjust min_open and max_open based on character '(', ')', or '*'.",
+            "from": 6,
+            "to": 14
+          },
+          {
+            "label": "Check Upper Bound",
+            "note": "If max_open < 0, there are too many ')' characters overall.",
+            "from": 15,
+            "to": 16,
+            "yes": "Return False early",
+            "no": "Continue loop"
+          },
+          {
+            "label": "Clamp Lower Bound",
+            "note": "min_open cannot be negative because extra ')' can be ignored as empty/star.",
+            "from": 17,
+            "to": 18
+          },
+          {
+            "label": "Final Validation",
+            "note": "Return true if min_open is 0 (all '(' can be matched).",
+            "from": 19,
+            "to": 19
+          }
+        ]
+      }
+    ]
+  },
+  "minimum-interval-to-include-each-query": {
+    "statement": "You are given a 2D integer array intervals, where intervals[i] = [left_i, right_i] describes the i-th interval starting at left_i and ending at right_i (inclusive). The size of an interval is defined as right_i - left_i + 1.\n\nYou are also given an integer array queries. The answer to the j-th query is the minimum size of an interval i such that left_i <= queries[j] <= right_i. If no such interval exists, the answer is -1.\n\nReturn an array containing the answers to the queries.",
+    "given": "a 2D integer array intervals and an integer array queries",
+    "ret": "an array of integers representing the minimum size interval for each query",
+    "summary": "Sort queries with their original indices and sort intervals by start time. Use a min-heap ordered by interval size to dynamically maintain active valid intervals for each query.",
+    "starter": "class Solution:\n    def minInterval(self, intervals: List[List[int]], queries: List[int]) -> List[int]:\n        ",
+    "tests": [
+      {
+        "label": "intervals = [[1,4],[2,4],[3,6],[4,4]], queries = [2,3,4,5]",
+        "inputStr": "{\"intervals\": [[1,4],[2,4],[3,6],[4,4]], \"queries\": [2,3,4,5]}",
+        "expectedStr": "[3, 3, 1, 4]"
+      },
+      {
+        "label": "intervals = [[2,3],[2,5],[1,8],[2,0]], queries = [2,3,4,5]",
+        "inputStr": "{\"intervals\": [[2,3],[2,5],[1,8]], \"queries\": [2,3,4,5]}",
+        "expectedStr": "[2, 2, 4, 4]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Linear Scan per Query (Brute Force)",
+        "time": "O(Q * N)",
+        "space": "O(1)",
+        "idea": "For each query, iterate through all intervals to find all containing intervals and record the minimum length among them.",
+        "code": "class Solution:\n    def minInterval(self, intervals: List[List[int]], queries: List[int]) -> List[int]:\n        res = []\n        for q in queries:\n            min_size = float('inf')\n            for l, r in intervals:\n                if l <= q <= r:\n                    min_size = min(min_size, r - l + 1)\n            res.append(min_size if min_size != float('inf') else -1)\n        return res",
+        "steps": [
+          {
+            "label": "Iterate Queries",
+            "note": "Loop through each query in queries array.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Iterate Intervals",
+            "note": "Check every interval for containment.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "Check Containment",
+            "note": "If left <= q <= right, update minimum size.",
+            "from": 7,
+            "to": 8,
+            "yes": "Update min_size",
+            "no": "Skip interval"
+          },
+          {
+            "label": "Append Result",
+            "note": "Store result for current query (-1 if no valid interval found).",
+            "from": 9,
+            "to": 9
+          }
+        ]
+      },
+      {
+        "name": "Min-Heap + Sorting (Optimal)",
+        "time": "O(N log N + Q log Q)",
+        "space": "O(N + Q)",
+        "idea": "Sort queries and intervals. Process queries in ascending order. Add newly starting intervals to a min-heap storing (size, end_time), discard expired intervals, and pop the top heap element as answer.",
+        "code": "import heapq\n\nclass Solution:\n    def minInterval(self, intervals: List[List[int]], queries: List[int]) -> List[int]:\n        intervals.sort()\n        sorted_queries = sorted([(q, i) for i, q in enumerate(queries)])\n        res = [-1] * len(queries)\n        min_heap = []\n        i = 0\n        for q, idx in sorted_queries:\n            while i < len(intervals) and intervals[i][0] <= q:\n                l, r = intervals[i]\n                heapq.heappush(min_heap, (r - l + 1, r))\n                i += 1\n            while min_heap and min_heap[0][1] < q:\n                heapq.heappop(min_heap)\n            if min_heap:\n                res[idx] = min_heap[0][0]\n        return res",
+        "steps": [
+          {
+            "label": "Sort Inputs",
+            "note": "Sort intervals by start time; sort queries keeping track of original indices.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "Push Valid Intervals",
+            "note": "Push all intervals starting on or before current query `q` into the min-heap.",
+            "from": 10,
+            "to": 13
+          },
+          {
+            "label": "Remove Expired Intervals",
+            "note": "Pop intervals from the heap whose end time is strictly less than current query `q`.",
+            "from": 14,
+            "to": 15
+          },
+          {
+            "label": "Record Answer",
+            "note": "If min-heap is non-empty, top element is smallest valid interval size.",
+            "from": 16,
+            "to": 17
+          }
+        ]
+      }
+    ]
+  },
+  "happy-number": {
+    "statement": "Write an algorithm to determine if a number n is happy.\n\nA happy number is a number defined by the following process:\n- Starting with any positive integer, replace the number by the sum of the squares of its digits.\n- Repeat the process until the number equals 1 (where it will stay), or it loops endlessly in a cycle which does not include 1.\n- Those numbers for which this process ends in 1 are happy.\n\nReturn true if n is a happy number, and false if not.",
+    "given": "a positive integer n",
+    "ret": "a boolean true if n is a happy number, or false otherwise",
+    "summary": "Detect cycles in digit-square summation using either a Hash Set to track seen numbers or Floyd's Cycle Finding algorithm with fast and slow pointers.",
+    "starter": "class Solution:\n    def isHappy(self, n: int) -> bool:\n        ",
+    "tests": [
+      {
+        "label": "n = 19",
+        "inputStr": "{\"n\": 19}",
+        "expectedStr": "true"
+      },
+      {
+        "label": "n = 2",
+        "inputStr": "{\"n\": 2}",
+        "expectedStr": "false"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Hash Set Cycle Detection",
+        "time": "O(log n)",
+        "space": "O(log n)",
+        "idea": "Compute the sum of squared digits repeatedly. Use a hash set to detect duplicate numbers indicating a cycle that will never reach 1.",
+        "code": "class Solution:\n    def isHappy(self, n: int) -> bool:\n        def get_next(number: int) -> int:\n            total_sum = 0\n            while number > 0:\n                number, digit = divmod(number, 10)\n                total_sum += digit ** 2\n            return total_sum\n\n        seen = set()\n        while n != 1 and n not in seen:\n            seen.add(n)\n            n = get_next(n)\n        return n == 1",
+        "steps": [
+          {
+            "label": "Helper Digit Square",
+            "note": "Extract digits of number using divmod and sum their squares.",
+            "from": 3,
+            "to": 7
+          },
+          {
+            "label": "Check Loop Condition",
+            "note": "Loop while current number is not 1 and hasn't been seen before.",
+            "from": 10,
+            "to": 10,
+            "yes": "Proceed to update set and number",
+            "no": "Break loop"
+          },
+          {
+            "label": "Update Seen Set",
+            "note": "Add current number to seen set and get next transformed number.",
+            "from": 11,
+            "to": 12
+          },
+          {
+            "label": "Return Result",
+            "note": "Return true if final number is 1, false if cycle was detected.",
+            "from": 13,
+            "to": 13
+          }
+        ]
+      },
+      {
+        "name": "Floyd's Cycle Finding (Optimal Space)",
+        "time": "O(log n)",
+        "space": "O(1)",
+        "idea": "Treat the digit-square transformation as a implicit linked list. Use slow and fast pointers to detect a cycle with O(1) auxiliary memory.",
+        "code": "class Solution:\n    def isHappy(self, n: int) -> bool:\n        def get_next(number: int) -> int:\n            total_sum = 0\n            while number > 0:\n                number, digit = divmod(number, 10)\n                total_sum += digit ** 2\n            return total_sum\n\n        slow = n\n        fast = get_next(n)\n        while fast != 1 and slow != fast:\n            slow = get_next(slow)\n            fast = get_next(get_next(fast))\n        return fast == 1",
+        "steps": [
+          {
+            "label": "Initialize Pointers",
+            "note": "Set slow to n, and fast to the next transformed value of n.",
+            "from": 10,
+            "to": 11
+          },
+          {
+            "label": "Advance Pointers",
+            "note": "Advance slow pointer by 1 step and fast pointer by 2 steps while fast != 1 and slow != fast.",
+            "from": 12,
+            "to": 14
+          },
+          {
+            "label": "Check Convergence",
+            "note": "If fast reaches 1, the number is happy. If slow meets fast, a cycle is detected.",
+            "from": 15,
+            "to": 15
+          }
+        ]
+      }
+    ]
   }
 };
