@@ -484,8 +484,8 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "return result",
             "note": "Return dummy.next as head of merged list",
-            "from": 17,
-            "to": 17
+            "from": 16,
+            "to": 16
           }
         ]
       },
@@ -1632,7 +1632,7 @@ window.PRELOADED_PROBLEMS = {
         "time": "O(n^3)",
         "space": "O(n)",
         "idea": "Use three nested loops to test every possible triplet combination. To avoid returning duplicate triplets, sort each valid triplet and store it in a hash set.",
-        "code": "class Solution:\n    def threeSum(self, nums: list[int]) -> list[list[int]]:\n        res = set()\n        n = len(nums)\n        for i in range(n):\n            for j in range(i + 1, n):\n                for k in range(j + 1, n):\n                    if nums[i] + nums[j] + nums[k] == 0:\n                        res.add(tuple(sorted([nums[i], nums[j], nums[k]])))            return [list(t) for t in res]",
+        "code": "class Solution:\n    def threeSum(self, nums: list[int]) -> list[list[int]]:\n        res = set()\n        n = len(nums)\n        for i in range(n):\n            for j in range(i + 1, n):\n                for k in range(j + 1, n):\n                    if nums[i] + nums[j] + nums[k] == 0:\n                        res.add(tuple(sorted([nums[i], nums[j], nums[k]])))\n        return [list(t) for t in res]",
         "steps": [
           {
             "label": "init structure",
@@ -2234,8 +2234,8 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Replace valid pairs",
             "note": "Replace all occurrences of '()', '[]', and '{}' with an empty string.",
-            "from": 4,
-            "to": 3
+            "from": 3,
+            "to": 4
           },
           {
             "label": "Check final length",
@@ -2289,8 +2289,8 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Push open bracket",
             "note": "Push the open bracket char onto top of stack.",
-            "from": 11,
-            "to": 5
+            "from": 5,
+            "to": 11
           },
           {
             "label": "Check stack empty",
@@ -2399,14 +2399,14 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Shift left pointer",
             "note": "Set left = mid + 1 because mid cannot be the minimum.",
-            "from": 7,
-            "to": 4
+            "from": 4,
+            "to": 7
           },
           {
             "label": "Shift right pointer",
             "note": "Set right = mid since mid could potentially be the minimum.",
-            "from": 9,
-            "to": 4
+            "from": 4,
+            "to": 9
           },
           {
             "label": "Return minimum element",
@@ -2747,8 +2747,8 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "start validation",
             "note": "Invoke inner validate helper starting with (-inf, inf) range.",
-            "from": 9,
-            "to": 3
+            "from": 3,
+            "to": 9
           },
           {
             "label": "check empty node",
@@ -4938,8 +4938,8 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "update variables",
             "note": "Compute next step ways as (prev + curr) and shift pointers.",
-            "from": 7,
-            "to": 6
+            "from": 6,
+            "to": 7
           },
           {
             "label": "return result",
@@ -5031,8 +5031,8 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "shift DP state",
             "note": "Update rob1 to rob2 and rob2 to the newly computed maximum temp.",
-            "from": 6,
-            "to": 4
+            "from": 4,
+            "to": 6
           },
           {
             "label": "return answer",
@@ -10073,8 +10073,8 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Start DFS",
             "note": "Invoke the helper function `dfs` passing the root node and initial `root.val` as the starting maximum.",
-            "from": 12,
-            "to": 3
+            "from": 3,
+            "to": 12
           },
           {
             "label": "Check Base Case",
@@ -10356,7 +10356,7 @@ window.PRELOADED_PROBLEMS = {
     "given": "an array of 2D points and an integer k",
     "ret": "the k closest points to the origin (0, 0)",
     "summary": "Calculate the squared distance for each point, then use a max-heap of size k to track the k smallest distances in O(N log K) time.",
-    "starter": "class Solution:\n    def kClosest(self, points: List[List[int]], k: int) -> List[List[int]]:\n        ",
+    "starter": "class Solution:\n    def kClosest(self, points: List[List[int]], k: int) -> List[List[int]]:\n                pass",
     "tests": [
       {
         "label": "points = [[1,3],[-2,2]], k = 1",
@@ -10445,7 +10445,7 @@ window.PRELOADED_PROBLEMS = {
     "given": "an array of integers nums and an integer k",
     "ret": "the kth largest element in nums",
     "summary": "Use a min-heap of size k to track the largest elements in the array. The root of the heap will hold the kth largest element.",
-    "starter": "class Solution:\n    def findKthLargest(self, nums: List[int], k: int) -> int:\n        ",
+    "starter": "class Solution:\n    def findKthLargest(self, nums: List[int], k: int) -> int:\n                pass",
     "tests": [
       {
         "label": "nums = [3,2,1,5,6,4], k = 2",
@@ -10528,7 +10528,7 @@ window.PRELOADED_PROBLEMS = {
     "given": "an array of task characters tasks and a cooldown parameter n",
     "ret": "the minimum total units of time needed to execute all tasks with cooling restrictions",
     "summary": "Calculate frequencies of tasks. Find the max frequency task count to structure execution intervals mathematically, or simulate using a Max-Heap and Queue.",
-    "starter": "class Solution:\n    def leastInterval(self, tasks: List[str], n: int) -> int:\n        ",
+    "starter": "class Solution:\n    def leastInterval(self, tasks: List[str], n: int) -> int:\n                pass",
     "tests": [
       {
         "label": "tasks = [\"A\",\"A\",\"A\",\"B\",\"B\",\"B\"], n = 2",
@@ -12363,7 +12363,7 @@ window.PRELOADED_PROBLEMS = {
     "given": "a 2D integer array grid of size n x n",
     "ret": "the minimum time required to swim from (0, 0) to (n - 1, n - 1)",
     "summary": "Use Dijkstra's algorithm with a min-heap to explore grid locations, keeping track of the maximum elevation encountered along the path to reach the destination with the minimal time.",
-    "starter": "class Solution:\n    def swimInWater(self, grid: list[list[int]]) -> int:",
+    "starter": "class Solution:\n    def swimInWater(self, grid: list[list[int]]) -> int:\n        pass",
     "tests": [
       {
         "label": "grid = [[0,2],[1,3]]",
@@ -12454,8 +12454,8 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Loop until reached",
             "note": "Repeat queue popping and push steps until bottom-right is reached.",
-            "from": 5,
-            "to": 2
+            "from": 2,
+            "to": 5
           }
         ]
       }
@@ -12466,7 +12466,7 @@ window.PRELOADED_PROBLEMS = {
     "given": "n cities, flights array where flights[i] = [from, to, price], src, dst, and k",
     "ret": "the cheapest price from src to dst with at most k stops, or -1 if no such route exists",
     "summary": "Use the Bellman-Ford dynamic programming approach relaxed exactly K+1 times to find the minimum distance within K stops.",
-    "starter": "class Solution:\n    def findCheapestPrice(self, n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:",
+    "starter": "class Solution:\n    def findCheapestPrice(self, n: int, flights: list[list[int]], src: int, dst: int, k: int) -> int:\n        pass",
     "tests": [
       {
         "label": "n = 4, flights = [[0,1,100],[1,2,100],[2,0,100],[1,3,600],[2,3,200]], src = 0, dst = 3, k = 1",
@@ -12572,8 +12572,8 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Push neighbors to PQ",
             "note": "Push all valid outgoing neighbors with incremented stops and updated cost.",
-            "from": 6,
-            "to": 3
+            "from": 3,
+            "to": 6
           }
         ]
       }
@@ -12584,7 +12584,7 @@ window.PRELOADED_PROBLEMS = {
     "given": "an integer array cost where cost[i] is the cost of ith step on a staircase",
     "ret": "the minimum cost to reach the top of the floor",
     "summary": "Use dynamic programming where the cost to reach step i is cost[i] + min(dp[i-1], dp[i-2]).",
-    "starter": "class Solution:\n    def minCostClimbingStairs(self, cost: list[int]) -> int:",
+    "starter": "class Solution:\n    def minCostClimbingStairs(self, cost: list[int]) -> int:\n        pass",
     "tests": [
       {
         "label": "cost = [10,15,20]",
@@ -13910,7 +13910,7 @@ window.PRELOADED_PROBLEMS = {
     "given": "an integer array hand and an integer groupSize",
     "ret": "true if hand can be rearranged into groups of groupSize consecutive cards, false otherwise",
     "summary": "Count occurrences of each card, then greedily form groups starting from the smallest available card value.",
-    "starter": "class Solution:\n    def isNStraightHand(self, hand: list[int], groupSize: int) -> bool:",
+    "starter": "class Solution:\n    def isNStraightHand(self, hand: list[int], groupSize: int) -> bool:\n        pass",
     "tests": [
       {
         "label": "hand = [1,2,3,6,2,3,4,7,8], groupSize = 3",
@@ -14007,8 +14007,8 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "subtract counts",
             "note": "Reduce count of each card in group by start_count.",
-            "from": 14,
-            "to": 8
+            "from": 8,
+            "to": 14
           }
         ]
       }
@@ -14019,7 +14019,7 @@ window.PRELOADED_PROBLEMS = {
     "given": "a 2D integer array triplets and a target integer array target of size 3",
     "ret": "true if target can be formed using valid max operations, false otherwise",
     "summary": "Filter out any triplet that contains elements exceeding target values, then check if remaining valid triplets cover all target components.",
-    "starter": "class Solution:\n    def mergeTriplets(self, triplets: list[list[int]], target: list[int]) -> bool:",
+    "starter": "class Solution:\n    def mergeTriplets(self, triplets: list[list[int]], target: list[int]) -> bool:\n        pass",
     "tests": [
       {
         "label": "triplets = [[2,5,3],[1,8,4],[1,7,5]], target = [2,7,5]",
@@ -14117,7 +14117,7 @@ window.PRELOADED_PROBLEMS = {
     "given": "a string s",
     "ret": "a list of integers representing the size of each partition",
     "summary": "Record the last occurrence of each character, then iterate through the string, dynamically expanding partition boundaries until reaching the furthest last occurrence.",
-    "starter": "class Solution:\n    def partitionLabels(self, s: str) -> list[int]:",
+    "starter": "class Solution:\n    def partitionLabels(self, s: str) -> list[int]:\n        pass",
     "tests": [
       {
         "label": "s = \"ababcbacadefegdehijhklij\"",
@@ -14206,7 +14206,7 @@ window.PRELOADED_PROBLEMS = {
     "given": "a string s containing characters '(', ')' and '*'",
     "ret": "a boolean true if s is a valid string, or false otherwise",
     "summary": "Track the range of possible open parenthesis counts [min_open, max_open] as you iterate through the string. If max_open drops below 0, it is impossible to balance; if min_open is 0 at the end, the string can be valid.",
-    "starter": "class Solution:\n    def checkValidString(self, s: str) -> bool:\n        ",
+    "starter": "class Solution:\n    def checkValidString(self, s: str) -> bool:\n                pass",
     "tests": [
       {
         "label": "s = \"()\"",
@@ -14316,7 +14316,7 @@ window.PRELOADED_PROBLEMS = {
     "given": "a 2D integer array intervals and an integer array queries",
     "ret": "an array of integers representing the minimum size interval for each query",
     "summary": "Sort queries with their original indices and sort intervals by start time. Use a min-heap ordered by interval size to dynamically maintain active valid intervals for each query.",
-    "starter": "class Solution:\n    def minInterval(self, intervals: List[List[int]], queries: List[int]) -> List[int]:\n        ",
+    "starter": "class Solution:\n    def minInterval(self, intervals: List[List[int]], queries: List[int]) -> List[int]:\n                pass",
     "tests": [
       {
         "label": "intervals = [[1,4],[2,4],[3,6],[4,4]], queries = [2,3,4,5]",
@@ -14405,7 +14405,7 @@ window.PRELOADED_PROBLEMS = {
     "given": "a positive integer n",
     "ret": "a boolean true if n is a happy number, or false otherwise",
     "summary": "Detect cycles in digit-square summation using either a Hash Set to track seen numbers or Floyd's Cycle Finding algorithm with fast and slow pointers.",
-    "starter": "class Solution:\n    def isHappy(self, n: int) -> bool:\n        ",
+    "starter": "class Solution:\n    def isHappy(self, n: int) -> bool:\n                pass",
     "tests": [
       {
         "label": "n = 19",
@@ -14564,8 +14564,8 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Set digit to zero",
             "note": "Since digits[i] was 9, set it to 0 due to carry-over.",
-            "from": 8,
-            "to": 4
+            "from": 4,
+            "to": 8
           },
           {
             "label": "Handle overflow case",
@@ -14678,8 +14678,8 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Halve exponent",
             "note": "Divide exponent n by 2 using integer floor division.",
-            "from": 12,
-            "to": 8
+            "from": 8,
+            "to": 12
           },
           {
             "label": "Return computed power",
@@ -14781,6 +14781,293 @@ window.PRELOADED_PROBLEMS = {
             "note": "Join digits into string and return.",
             "from": 16,
             "to": 16
+          }
+        ]
+      }
+    ]
+  },
+  "detect-squares": {
+    "statement": "You are given a stream of points on the 2D plane. Implement the DetectSquares class:\n- DetectSquares() Initializes the object with an empty data structure.\n- void add(int[] point) Adds a new point point = [x, y] to the data structure.\n- int count(int[] point) Counts the number of ways to form axis-aligned squares with point = [x, y] as one of the four vertices.",
+    "given": "a stream of 2D integer coordinates [x, y]",
+    "ret": "the number of ways to form axis-aligned squares using the query point as a vertex",
+    "summary": "Use a hash map to store point counts and a list of unique points. For each query, treat existing points as diagonal opposites, check if valid non-zero length squares are formed, and multiply candidate point frequencies.",
+    "starter": "class DetectSquares:\n\n    def __init__(self):\n        pass\n\n    def add(self, point: List[int]) -> None:\n        pass\n\n    def count(self, point: List[int]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "point = [3, 10]",
+        "inputStr": "{\"point\": [3, 10]}",
+        "expectedStr": "1"
+      },
+      {
+        "label": "point = [14, 8]",
+        "inputStr": "{\"point\": [14, 8]}",
+        "expectedStr": "0"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "brute force (store points list)",
+        "time": "O(N) per count query, where N is the number of points added",
+        "space": "O(N) space to store points",
+        "idea": "Store all points in a list. When counting, iterate over all saved points to treat each as a potential diagonal opposite vertex, then manually count matching corner points from the list.",
+        "code": "from collections import Counter\n\nclass DetectSquares:\n    def __init__(self):\n        self.pts = []\n        self.counts = Counter()\n\n    def add(self, point: list[int]) -> None:\n        p = tuple(point)\n        self.pts.append(p)\n        self.counts[p] += 1\n\n    def count(self, point: list[int]) -> int:\n        px, py = point\n        ans = 0\n        for x, y in self.pts:\n            if abs(px - x) != abs(py - y) or px == x or py == y:\n                continue\n            if (x, py) in self.counts and (px, y) in self.counts:\n                ans += 1\n        return ans",
+        "steps": [
+          {
+            "label": "unpack query point",
+            "note": "Extract target query x and y coordinates (px, py).",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "iterate stored points",
+            "note": "Loop through every stored point (x, y) as a potential diagonal vertex.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "validate diagonal",
+            "note": "Check if dx == dy and dx > 0 to confirm it forms a non-zero axis-aligned diagonal.",
+            "from": 3,
+            "to": 4,
+            "yes": "Valid diagonal found, check adjacent corner existence",
+            "no": "Invalid diagonal, skip to next point"
+          },
+          {
+            "label": "accumulate valid squares",
+            "note": "Increment total square count if opposite corner points exist in point counts.",
+            "from": 4,
+            "to": 5
+          }
+        ]
+      },
+      {
+        "name": "optimal hash map lookup",
+        "time": "O(U) per count query, where U is the number of unique added points",
+        "space": "O(U) space for unique point counts",
+        "idea": "Store point frequencies in a hash map. For `count`, iterate through unique points, treat each as a potential diagonal opposite, and multiply the frequencies of the required three corner points.",
+        "code": "from collections import defaultdict\n\nclass DetectSquares:\n    def __init__(self):\n        self.pts_count = defaultdict(int)\n\n    def add(self, point: list[int]) -> None:\n        self.pts_count[tuple(point)] += 1\n\n    def count(self, point: list[int]) -> int:\n        px, py = point\n        ans = 0\n        for (x, y), count in self.pts_count.items():\n            if abs(px - x) != abs(py - y) or px == x or py == y:\n                continue\n            ans += count * self.pts_count[(px, y)] * self.pts_count[(x, py)]\n        return ans",
+        "steps": [
+          {
+            "label": "initialize query variables",
+            "note": "Extract px, py from target point and initialize total answer count to 0.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "iterate unique points",
+            "note": "Traverse the keys of `pts_count` to test each unique point (x, y) as a potential diagonal opposite point.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "diagonal check",
+            "note": "Ensure abs(px - x) == abs(py - y) and px != x and py != y.",
+            "from": 3,
+            "to": 4,
+            "yes": "Point is a valid diagonal opposite, calculate combination product",
+            "no": "Point cannot form a square, check next unique point"
+          },
+          {
+            "label": "multiply frequencies",
+            "note": "Multiply count(x, y) * count(px, y) * count(x, py) and add to total answer.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "return total",
+            "note": "Return aggregated total square count.",
+            "from": 5,
+            "to": 6
+          }
+        ]
+      }
+    ]
+  },
+  "single-number": {
+    "statement": "Given a non-empty array of integers nums, every element appears twice except for one. Find that single one. You must implement a solution with a linear runtime complexity and use only constant extra space.",
+    "given": "a non-empty array of integers nums",
+    "ret": "the unique integer element that appears only once",
+    "summary": "Use bitwise XOR operation across all elements. Duplicate numbers cancel each other out (A ^ A = 0), leaving only the single unique number (0 ^ B = B).",
+    "starter": "class Solution:\n    def singleNumber(self, nums: List[int]) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "nums = [2,2,1]",
+        "inputStr": "{\"nums\": [2, 2, 1]}",
+        "expectedStr": "1"
+      },
+      {
+        "label": "nums = [4,1,2,1,2]",
+        "inputStr": "{\"nums\": [4, 1, 2, 1, 2]}",
+        "expectedStr": "4"
+      },
+      {
+        "label": "nums = [1]",
+        "inputStr": "{\"nums\": [1]}",
+        "expectedStr": "1"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "hash map / counter",
+        "time": "O(N)",
+        "space": "O(N)",
+        "idea": "Count occurrences of every integer using a frequency map or set, then return the key with a frequency of 1.",
+        "code": "from collections import Counter\n\nclass Solution:\n    def singleNumber(self, nums: list[int]) -> int:\n        counts = Counter(nums)\n        for num, freq in counts.items():\n            if freq == 1:\n                return num\n        return -1",
+        "steps": [
+          {
+            "label": "count frequencies",
+            "note": "Build frequency hash map of all elements in nums array.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "iterate key-value pairs",
+            "note": "Inspect each number and its frequency.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "check frequency",
+            "note": "Check if frequency is equal to 1.",
+            "from": 3,
+            "to": 4,
+            "yes": "Return current num as the single element",
+            "no": "Continue loop to next number"
+          }
+        ]
+      },
+      {
+        "name": "bitwise XOR (optimal)",
+        "time": "O(N)",
+        "space": "O(1)",
+        "idea": "XOR all numbers in the array sequentially. Because x ^ x = 0 and x ^ 0 = x, pairs cancel out completely, leaving only the non-duplicate element.",
+        "code": "class Solution:\n    def singleNumber(self, nums: list[int]) -> int:\n        res = 0\n        for num in nums:\n            res ^= num\n        return res",
+        "steps": [
+          {
+            "label": "initialize accumulator",
+            "note": "Set res = 0 (identity for XOR).",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "loop through array",
+            "note": "Iterate through each element in nums.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "XOR operation",
+            "note": "Update res = res ^ num. Identical values will evaluate to 0.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "return result",
+            "note": "Return accumulated res which contains the unique number.",
+            "from": 4,
+            "to": 5
+          }
+        ]
+      }
+    ]
+  },
+  "reverse-integer": {
+    "statement": "Given a signed 32-bit integer x, return x with its digits reversed. If reversing x causes the value to go outside the signed 32-bit integer range [-2^31, 2^31 - 1], then return 0. Assume the environment does not allow you to store 64-bit integers (signed or unsigned).",
+    "given": "a signed 32-bit integer x",
+    "ret": "the digit-reversed integer, or 0 if reversal causes 32-bit overflow",
+    "summary": "Repeatedly extract the last digit using modulo and append it to a cumulative result while checking for 32-bit integer limits before multiplying by 10.",
+    "starter": "class Solution:\n    def reverse(self, x: int) -> int:\n        pass",
+    "tests": [
+      {
+        "label": "x = 123",
+        "inputStr": "{\"x\": 123}",
+        "expectedStr": "321"
+      },
+      {
+        "label": "x = -123",
+        "inputStr": "{\"x\": -123}",
+        "expectedStr": "-321"
+      },
+      {
+        "label": "x = 120",
+        "inputStr": "{\"x\": 120}",
+        "expectedStr": "21"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "string conversion",
+        "time": "O(N) where N is number of digits",
+        "space": "O(N) for string storage",
+        "idea": "Convert absolute value of integer to string, reverse it, apply negative sign if original was negative, and check if result lies within 32-bit signed bounds.",
+        "code": "class Solution:\n    def reverse(self, x: int) -> int:\n        sign = -1 if x < 0 else 1\n        reversed_str = str(abs(x))[::-1]\n        res = sign * int(reversed_str)\n        if res < -2**31 or res > 2**31 - 1:\n            return 0\n        return res",
+        "steps": [
+          {
+            "label": "determine sign",
+            "note": "Store sign multiplier (-1 or 1) based on sign of x.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "reverse string",
+            "note": "Convert abs(x) to string and slice backwards [::-1].",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "reconstruct integer",
+            "note": "Convert reversed string back to integer and reapply sign.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "overflow check",
+            "note": "Verify if reconstructed integer fits in [-2^31, 2^31 - 1].",
+            "from": 4,
+            "to": 5,
+            "yes": "Return 0 due to overflow",
+            "no": "Return reversed integer"
+          }
+        ]
+      },
+      {
+        "name": "math pop and push (optimal)",
+        "time": "O(log10(|x|))",
+        "space": "O(1)",
+        "idea": "Extract digits one by one using modulo arithmetic, and build reversed number. Check for 32-bit limits prior to each multiplication.",
+        "code": "import math\n\nclass Solution:\n    def reverse(self, x: int) -> int:\n        MIN_INT, MAX_INT = -2**31, 2**31 - 1\n        res = 0\n        while x != 0:\n            digit = int(math.fmod(x, 10))\n            x = int(x / 10)\n            \n            if res > MAX_INT // 10 or (res == MAX_INT // 10 and digit > 7):\n                return 0\n            if res < math.ceil(MIN_INT / 10) or (res == math.ceil(MIN_INT / 10) and digit < -8):\n                return 0\n            \n            res = res * 10 + digit\n            \n        return res",
+        "steps": [
+          {
+            "label": "define limits",
+            "note": "Set MIN_INT (-2^31) and MAX_INT (2^31 - 1) constants.",
+            "from": 1,
+            "to": 2
+          },
+          {
+            "label": "loop while non-zero",
+            "note": "Process digits until x is reduced to 0.",
+            "from": 2,
+            "to": 3
+          },
+          {
+            "label": "pop digit",
+            "note": "Extract last digit using math.fmod to handle negative numbers in Python correctly.",
+            "from": 3,
+            "to": 4
+          },
+          {
+            "label": "check overflow bounds",
+            "note": "Ensure res * 10 + digit will not exceed 32-bit integer limits.",
+            "from": 4,
+            "to": 5,
+            "yes": "Return 0 immediately on overflow",
+            "no": "Push digit to result: res = res * 10 + digit"
+          },
+          {
+            "label": "return result",
+            "note": "Return complete reversed 32-bit integer.",
+            "from": 5,
+            "to": 6
           }
         ]
       }

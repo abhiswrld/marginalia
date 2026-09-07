@@ -72,8 +72,7 @@ function viewForm() {
         <a class="crumbs" onclick="go('#library')"><i data-lucide="arrow-left"></i>back to the index</a>
       </div>
       <h1 class="p-title"><span>${exists ? 'edit a page' : 'write a new page'}</span>${svgSquiggle(230, 9, 'swg tswg')}</h1>
-      <p class="marg">the more honestly this gets filled in, the better practice gets — future-you is reading.</p>
-      ${pasteBoxHTML()}
+      <p class="marg">pre-filled with optimal solutions, edit to your liking</p>
       <div id="f-errs"></div>
       <div class="f-sec">
         <div class="f-row3">
