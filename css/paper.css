@@ -359,16 +359,18 @@ a:focus-visible,
     line-height: 1.06;
     margin: 4px 0 2px;
     display: inline-block;
+    position: relative;
     max-width: 100%;
-    letter-spacing: -.4px
+    letter-spacing: -.4px;
 }
 
-/* block guarantees the squiggle sits BELOW the title, never beside it */
+/* absolute positioning guarantees the squiggle sits BELOW the title and scales to text width */
 .p-title .tswg {
-    display: block;
+    position: absolute;
+    left: 0;
+    bottom: -6px;
     width: 100%;
     height: 9px;
-    margin-top: 3px
 }
 
 .p-title.sm {
