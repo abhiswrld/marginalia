@@ -14482,5 +14482,308 @@ window.PRELOADED_PROBLEMS = {
         ]
       }
     ]
+  },
+  "plus-one": {
+    "statement": "You are given a large integer represented as an integer array digits, where each digits[i] is the ith digit of the integer. The digits are ordered from most significant to least significant in left-to-right order. The large integer does not contain any leading 0's. Increment the large integer by one and return the resulting array of digits.",
+    "given": "an array of digits representing a non-negative integer digits",
+    "ret": "an array of digits representing the integer incremented by one",
+    "summary": "Iterate through the array backwards from the least significant digit. Increment the digit if it's less than 9; if it is 9, reset it to 0 and carry over 1 to the next left digit.",
+    "starter": "class Solution:\n    def plusOne(self, digits: List[int]) -> List[int]:\n        pass",
+    "tests": [
+      {
+        "label": "digits = [1,2,3]",
+        "inputStr": "{\"digits\": [1,2,3]}",
+        "expectedStr": "[1,2,4]"
+      },
+      {
+        "label": "digits = [4,3,2,1]",
+        "inputStr": "{\"digits\": [4,3,2,1]}",
+        "expectedStr": "[4,3,2,2]"
+      },
+      {
+        "label": "digits = [9]",
+        "inputStr": "{\"digits\": [9]}",
+        "expectedStr": "[1,0]"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Convert to Integer and Back",
+        "time": "O(n)",
+        "space": "O(n)",
+        "idea": "Convert the digits list into a string, parse it to a Python integer, add 1, and then convert the result back to a list of integer digits.",
+        "code": "class Solution:\n    def plusOne(self, digits: List[int]) -> List[int]:\n        num_str = ''.join(map(str, digits))\n        num = int(num_str) + 1\n        return [int(ch) for ch in str(num)]",
+        "steps": [
+          {
+            "label": "Join digits into string",
+            "note": "Convert all integers in the array to strings and join them into a single string representation.",
+            "from": 3,
+            "to": 3
+          },
+          {
+            "label": "Convert and increment",
+            "note": "Cast the string representation into a Python integer and add 1 to it.",
+            "from": 4,
+            "to": 4
+          },
+          {
+            "label": "Convert back to array",
+            "note": "Convert the incremented integer to string and iterate through each character to create a list of integer digits.",
+            "from": 5,
+            "to": 5
+          }
+        ]
+      },
+      {
+        "name": "In-Place Carry Loop (Optimal)",
+        "time": "O(n)",
+        "space": "O(1)",
+        "idea": "Traverse the list from right to left. If the digit is less than 9, increment it and return immediately. If it's 9, turn it into 0 and continue left. If all digits were 9, prepend 1 to the array.",
+        "code": "class Solution:\n    def plusOne(self, digits: List[int]) -> List[int]:\n        n = len(digits)\n        for i in range(n - 1, -1, -1):\n            if digits[i] < 9:\n                digits[i] += 1\n                return digits\n            digits[i] = 0\n        return [1] + digits",
+        "steps": [
+          {
+            "label": "Start loop from rightmost digit",
+            "note": "Initialize loop running from index n - 1 down to index 0.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Check if digit < 9",
+            "note": "Evaluate whether current digit can be incremented without producing a carry.",
+            "from": 5,
+            "to": 6,
+            "yes": "Digit is 0-8: Increment and return array",
+            "no": "Digit is 9: Set digit to 0 and carry over"
+          },
+          {
+            "label": "Increment and return",
+            "note": "Add 1 to digits[i] and return the mutated list immediately.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "Set digit to zero",
+            "note": "Since digits[i] was 9, set it to 0 due to carry-over.",
+            "from": 8,
+            "to": 4
+          },
+          {
+            "label": "Handle overflow case",
+            "note": "If loop finishes, all digits were 9 (e.g., [9,9] became [0,0]). Prepend [1] to form [1,0,0].",
+            "from": 9,
+            "to": 9
+          }
+        ]
+      }
+    ]
+  },
+  "pow-x-n": {
+    "statement": "Implement pow(x, n), which calculates x raised to the power n (i.e., x^n).",
+    "given": "a float x and an integer n",
+    "ret": "a float representing x raised to the power n",
+    "summary": "Use binary exponentiation (fast power) by halving the exponent n at each step. If n is negative, convert x to 1/x and n to -n.",
+    "starter": "class Solution:\n    def myPow(self, x: float, n: int) -> float:\n        pass",
+    "tests": [
+      {
+        "label": "x = 2.00000, n = 10",
+        "inputStr": "{\"x\": 2.0, \"n\": 10}",
+        "expectedStr": "1024.0"
+      },
+      {
+        "label": "x = 2.10000, n = 3",
+        "inputStr": "{\"x\": 2.1, \"n\": 3}",
+        "expectedStr": "9.261"
+      },
+      {
+        "label": "x = 2.00000, n = -2",
+        "inputStr": "{\"x\": 2.0, \"n\": -2}",
+        "expectedStr": "0.25"
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Linear Iterative Multiplication (Brute Force)",
+        "time": "O(|n|)",
+        "space": "O(1)",
+        "idea": "Multiply x by itself n times sequentially. Handle negative powers by taking reciprocal.",
+        "code": "class Solution:\n    def myPow(self, x: float, n: int) -> float:\n        if n < 0:\n            x = 1 / x\n            n = -n\n        res = 1.0\n        for _ in range(n):\n            res *= x\n        return res",
+        "steps": [
+          {
+            "label": "Check negative power",
+            "note": "Check if the exponent n is negative.",
+            "from": 3,
+            "to": 4,
+            "yes": "Convert x = 1/x and n = -n",
+            "no": "Keep x and n as they are"
+          },
+          {
+            "label": "Initialize result",
+            "note": "Set accumulation variable res to 1.0.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "Multiply repeatedly",
+            "note": "Loop n times, multiplying res by x in each iteration.",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "Return result",
+            "note": "Return total computed power res.",
+            "from": 9,
+            "to": 9
+          }
+        ]
+      },
+      {
+        "name": "Binary Exponentiation (Optimal)",
+        "time": "O(log |n|)",
+        "space": "O(1)",
+        "idea": "Exploit the property x^n = (x^2)^(n//2) for even n, and x^n = x * x^(n-1) for odd n. Halve exponent in each iteration.",
+        "code": "class Solution:\n    def myPow(self, x: float, n: int) -> float:\n        if n < 0:\n            x = 1 / x\n            n = -n\n        res = 1.0\n        curr = x\n        while n > 0:\n            if n % 2 == 1:\n                res *= curr\n            curr *= curr\n            n //= 2\n        return res",
+        "steps": [
+          {
+            "label": "Handle negative exponent",
+            "note": "If n < 0, invert base x and negate exponent n.",
+            "from": 3,
+            "to": 5
+          },
+          {
+            "label": "Init tracker variables",
+            "note": "Set res = 1.0 to accumulate odd power factors, and set curr = x.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "Loop while n > 0",
+            "note": "Process exponent bit-by-bit using integer division.",
+            "from": 8,
+            "to": 9
+          },
+          {
+            "label": "Check if exponent is odd",
+            "note": "If n is odd, multiply accumulated result res by current base factor curr.",
+            "from": 9,
+            "to": 10,
+            "yes": "Multiply res by curr",
+            "no": "Skip result multiplication"
+          },
+          {
+            "label": "Square base factor",
+            "note": "Square curr for next position (curr = curr * curr).",
+            "from": 11,
+            "to": 12
+          },
+          {
+            "label": "Halve exponent",
+            "note": "Divide exponent n by 2 using integer floor division.",
+            "from": 12,
+            "to": 8
+          },
+          {
+            "label": "Return computed power",
+            "note": "Once n becomes 0, return accumulated res.",
+            "from": 13,
+            "to": 13
+          }
+        ]
+      }
+    ]
+  },
+  "multiply-strings": {
+    "statement": "Given two non-negative integers num1 and num2 represented as strings, return the product of num1 and num2, also represented as a string. Note: You must not use any built-in BigInteger library or convert the inputs to integer directly.",
+    "given": "two strings num1 and num2 representing non-negative integers",
+    "ret": "a string representing the product of num1 and num2",
+    "summary": "Simulate elementary long multiplication by storing digit products into a positional array of size len(num1) + len(num2), handling carries sequentially.",
+    "starter": "class Solution:\n    def multiply(self, num1: str, num2: str) -> str:\n        pass",
+    "tests": [
+      {
+        "label": "num1 = \"2\", num2 = \"3\"",
+        "inputStr": "{\"num1\": \"2\", \"num2\": \"3\"}",
+        "expectedStr": "\"6\""
+      },
+      {
+        "label": "num1 = \"123\", num2 = \"456\"",
+        "inputStr": "{\"num1\": \"123\", \"num2\": \"456\"}",
+        "expectedStr": "\"56088\""
+      }
+    ],
+    "approaches": [
+      {
+        "name": "Character-by-Character Integer Conversion",
+        "time": "O(m + n)",
+        "space": "O(1)",
+        "idea": "Convert each string to integer digit-by-digit using ASCII offset ord(c) - ord('0') without directly casting whole string, then multiply and format to string.",
+        "code": "class Solution:\n    def multiply(self, num1: str, num2: str) -> str:\n        val1 = 0\n        for ch in num1:\n            val1 = val1 * 10 + (ord(ch) - ord('0'))\n        val2 = 0\n        for ch in num2:\n            val2 = val2 * 10 + (ord(ch) - ord('0'))\n        return str(val1 * val2)",
+        "steps": [
+          {
+            "label": "Parse num1 to integer",
+            "note": "Iterate characters of num1, converting each digit using ASCII math.",
+            "from": 3,
+            "to": 5
+          },
+          {
+            "label": "Parse num2 to integer",
+            "note": "Iterate characters of num2, converting each digit using ASCII math.",
+            "from": 6,
+            "to": 8
+          },
+          {
+            "label": "Multiply and return",
+            "note": "Compute product of val1 and val2, and convert result back to string.",
+            "from": 9,
+            "to": 9
+          }
+        ]
+      },
+      {
+        "name": "Positional Array Long Multiplication (Optimal)",
+        "time": "O(m * n)",
+        "space": "O(m + n)",
+        "idea": "Initialize a position array pos of length len(num1) + len(num2). Multiply digits at num1[i] and num2[j] and accumulate product into pos[i + j + 1]. Carry over tens place digit to pos[i + j].",
+        "code": "class Solution:\n    def multiply(self, num1: str, num2: str) -> str:\n        if num1 == \"0\" or num2 == \"0\":\n            return \"0\"\n        m, n = len(num1), len(num2)\n        res = [0] * (m + n)\n        for i in range(m - 1, -1, -1):\n            for j in range(n - 1, -1, -1):\n                mul = (ord(num1[i]) - ord('0')) * (ord(num2[j]) - ord('0'))\n                p1, p2 = i + j, i + j + 1\n                total = mul + res[p2]\n                res[p2] = total % 10\n                res[p1] += total // 10\n        while len(res) > 1 and res[0] == 0:\n            res.pop(0)\n        return ''.join(map(str, res))",
+        "steps": [
+          {
+            "label": "Zero Check",
+            "note": "If either string is zero, the product is zero.",
+            "from": 3,
+            "to": 4,
+            "yes": "Return '0'",
+            "no": "Proceed to multiplication algorithm"
+          },
+          {
+            "label": "Initialize product array",
+            "note": "Create array of size m + n filled with zeros to hold positional digits.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "Nested Loops for Digit Products",
+            "note": "Iterate backwards through digits of num1 and num2.",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "Calculate Position Product & Carry",
+            "note": "Multiply digits num1[i] and num2[j], add to current value at position p2, then write single digit back to p2 and carry over to p1.",
+            "from": 9,
+            "to": 13
+          },
+          {
+            "label": "Remove Leading Zeros",
+            "note": "Strip away unnecessary leading zeros in product array.",
+            "from": 14,
+            "to": 15
+          },
+          {
+            "label": "Format Result",
+            "note": "Join digits into string and return.",
+            "from": 16,
+            "to": 16
+          }
+        ]
+      }
+    ]
   }
 };
