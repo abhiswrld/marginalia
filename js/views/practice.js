@@ -123,7 +123,7 @@ function practiceActive() {
             <select class="sel ed-lang" id="ed-lang">
               ${['js', 'py'].map(l => `<option value="${l}" ${p.lang === l ? 'selected' : ''}>${langName(l)}</option>`).join('')}
             </select>
-            · <code>input</code> in scope, <code>return</code> the answer — or leetcode-style <code>class Solution</code>
+            · <code>input</code> in scope, <code>return</code> the answer
             <span class="flex1"></span>
             <button class="btn ghost xs btn-expand ${session.expanded ? 'on' : ''}" id="btn-expand">
               <i data-lucide="maximize-2" class="ic-exp"></i><i data-lucide="minimize-2" class="ic-shr"></i>
@@ -309,7 +309,30 @@ function mountEditor() {
     ta.addEventListener('keydown', e => {
         if (e.key === 'Tab') {
             e.preventDefault();
-            ta.setRangeText(lang === 'py' ? '    ' : '  ', ta.selectionStart, ta.selectionEnd, 'end');
+            const start = ta.selectionStart, end = ta.selectionEnd, val = ta.value;
+            const spaces = lang === 'py' ? '    ' : '  ';
+            if (e.shiftKey) {
+                const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+                const text = val.slice(lineStart, end);
+                const regex = new RegExp('^( {1,4}|\\t)', 'gm');
+                ta.setRangeText(text.replace(regex, ''), lineStart, end, 'select');
+            } else if (start === end) {
+                ta.setRangeText(spaces, start, end, 'end');
+            } else {
+                const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+                const text = val.slice(lineStart, end);
+                ta.setRangeText(text.replace(/^/gm, spaces), lineStart, end, 'select');
+            }
+            paint(); session.code = ta.value;
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            const start = ta.selectionStart, val = ta.value;
+            const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+            const currentLine = val.slice(lineStart, start);
+            const match = currentLine.match(/^\s*/);
+            let indent = match ? match[0] : '';
+            if (currentLine.trim().endsWith(':') || currentLine.trim().endsWith('{')) indent += (lang === 'py' ? '    ' : '  ');
+            ta.setRangeText('\n' + indent, start, ta.selectionEnd, 'end');
             paint(); session.code = ta.value;
         }
     });
@@ -337,7 +360,11 @@ async function runTests() {
         if (r.timeout) right = `<span class="tr-exp">${p.lang === 'py' ? 'timed out (60s) — runtime reset' : 'timed out (3s)'}</span>`;
         else if (r.err) right = `<span class="tr-exp">error: ${esc(r.err)}</span>${pyDebugHTML(r)}`;
         else right = `<span class="tr-got">got ${esc(fmtVal(r.result))}</span>${ok ? '' : `<span class="tr-exp">expected ${esc(fmtVal(t.expected))}</span>`}<span class="tr-ms">${r.ms ?? '—'}ms</span>`;
-        return `<div class="tr-row ${ok ? 'ok' : 'no'}"><i data-lucide="${ok ? 'check' : 'x'}"></i><span class="tr-l">${esc(t.label || fmtVal(t.input))}</span>${right}</div>`;
+        let logHTML = (r.logs && r.logs.length) ? `<div class="tr-logs" style="font-family: var(--font-mono); font-size: 13px; color: var(--text-light); padding: 0 10px 10px 36px; margin-top:-4px; white-space: pre-wrap; line-height:1.4;">${r.logs.map(esc).join('\\n')}</div>` : '';
+        return `<div class="tr-test-block" style="border-bottom: 1px dashed #d5cab0;">
+          <div class="tr-row ${ok ? 'ok' : 'no'}" style="border-bottom: none;"><i data-lucide="${ok ? 'check' : 'x'}"></i><span class="tr-l">${esc(t.label || fmtVal(t.input))}</span>${right}</div>
+          ${logHTML}
+        </div>`;
     }).join('') + (all ? '' : `<p class="marg sm">not quite — ${rows.filter(r => r.ok).length} of ${rows.length} passing. keep iterating.</p>`);
     icons();
     if (all) passSession();
