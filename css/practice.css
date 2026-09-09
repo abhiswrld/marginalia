@@ -503,3 +503,8 @@
     background-position: 16px 0;
     background-attachment: local;
 }
+
+.ed-ta::selection {
+    background: rgba(255, 255, 255, 0.2);
+    color: transparent;
+}
