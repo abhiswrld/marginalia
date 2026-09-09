@@ -119,11 +119,8 @@ function practiceActive() {
         </div>
         <div class="prac-right">
           <div class="ed-head">
-            <i data-lucide="pencil"></i>your editor —
-            <select class="sel ed-lang" id="ed-lang">
-              ${['js', 'py'].map(l => `<option value="${l}" ${p.lang === l ? 'selected' : ''}>${langName(l)}</option>`).join('')}
-            </select>
-            · <code>input</code> in scope, <code>return</code> the answer
+            <i data-lucide="pencil"></i>
+            <code>input</code> in scope, <code>return</code> the answer
             <span class="flex1"></span>
             <button class="btn ghost xs btn-expand ${session.expanded ? 'on' : ''}" id="btn-expand">
               <i data-lucide="maximize-2" class="ic-exp"></i><i data-lucide="minimize-2" class="ic-shr"></i>
@@ -254,30 +251,6 @@ function mountPractice() {
         exp.classList.toggle('on', session.expanded);
         const lbl = exp.querySelector('.exp-lbl');
         if (lbl) lbl.textContent = session.expanded ? 'shrink' : 'expand';
-    });
-
-    /* switch language mid-practice */
-    const langSel = $('#ed-lang');
-    langSel && langSel.addEventListener('change', () => {
-        const newLang = langSel.value;
-        if (!p || newLang === p.lang) return;
-        modal({
-            title: 'switch language?',
-            body: `your current ${langName(p.lang)} code will be replaced with a ${langName(newLang)} starter. the attempt will be recorded as ${langName(newLang)}.`,
-            actions: [
-                { label: 'keep ' + langName(p.lang), ghost: true, fn: () => { langSel.value = p.lang; } },
-                {
-                    label: 'switch', icon: 'repeat', fn: () => {
-                        const ta = $('#ed-ta');
-                        if (ta) session.code = ta.value;
-                        p.lang = newLang;
-                        store.save();
-                        session.code = starterFor(p);
-                        render();
-                    }
-                }
-            ]
-        });
     });
 
     if (session.done) mountSuccess();
