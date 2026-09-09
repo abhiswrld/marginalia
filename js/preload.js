@@ -33,34 +33,34 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Get length",
             "note": "Store total length of input array nums",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "Outer loop",
-            "note": "Iterate variable i from 0 to n - 1",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "Inner loop",
-            "note": "Iterate variable j from i + 1 to n - 1",
             "from": 3,
             "to": 4
           },
           {
+            "label": "Outer loop",
+            "note": "Iterate variable i from 0 to n - 1",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Inner loop",
+            "note": "Iterate variable j from i + 1 to n - 1",
+            "from": 5,
+            "to": 6
+          },
+          {
             "label": "Check target sum",
             "note": "Check if nums[i] + nums[j] equals target",
-            "from": 4,
-            "to": 5,
+            "from": 6,
+            "to": 7,
             "yes": "Match found, return indices [i, j]",
             "no": "Continue checking next pair"
           },
           {
             "label": "Return empty array",
             "note": "Fallback return if no solution found",
-            "from": 5,
-            "to": 6
+            "from": 7,
+            "to": 8
           }
         ]
       },
@@ -74,34 +74,34 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Init hash map",
             "note": "Create empty hash map 'seen' to hold number to index mapping",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "Iterate array",
-            "note": "Iterate through nums receiving current index i and value num",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "Calculate complement",
-            "note": "Compute target - current number",
             "from": 3,
             "to": 4
           },
           {
+            "label": "Iterate array",
+            "note": "Iterate through nums receiving current index i and value num",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Calculate complement",
+            "note": "Compute target - current number",
+            "from": 5,
+            "to": 6
+          },
+          {
             "label": "Check map for complement",
             "note": "Check if calculated diff exists in seen hash map",
-            "from": 4,
-            "to": 5,
+            "from": 6,
+            "to": 7,
             "yes": "Return [seen[diff], i]",
             "no": "Proceed to add current number to map"
           },
           {
             "label": "Store element index",
             "note": "Record seen[num] = i in hash map for future complement lookups",
-            "from": 5,
-            "to": 6
+            "from": 7,
+            "to": 8
           }
         ]
       }
@@ -141,28 +141,28 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Sort array",
             "note": "Sort nums array in-place",
-            "from": 1,
-            "to": 2
+            "from": 3,
+            "to": 4
           },
           {
             "label": "Iterate adjacent elements",
             "note": "Loop through array starting at index 1 to len(nums) - 1",
-            "from": 2,
-            "to": 3
+            "from": 4,
+            "to": 5
           },
           {
             "label": "Compare adjacent elements",
             "note": "Check if current element equals the element before it",
-            "from": 3,
-            "to": 4,
+            "from": 5,
+            "to": 6,
             "yes": "Duplicate found, return True",
             "no": "Continue checking remaining elements"
           },
           {
             "label": "Return false",
             "note": "All elements checked and unique, return False",
-            "from": 4,
-            "to": 5
+            "from": 6,
+            "to": 7
           }
         ]
       },
@@ -176,34 +176,34 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Init hash set",
             "note": "Initialize empty set 'seen' to keep track of traversed numbers",
-            "from": 1,
-            "to": 2
+            "from": 3,
+            "to": 4
           },
           {
             "label": "Loop array",
             "note": "Iterate through each number num in nums",
-            "from": 2,
-            "to": 3
+            "from": 4,
+            "to": 5
           },
           {
             "label": "Check presence in set",
             "note": "Check if num already exists in seen set",
-            "from": 3,
-            "to": 4,
+            "from": 5,
+            "to": 6,
             "yes": "Return True immediately",
             "no": "Add num to seen set"
           },
           {
             "label": "Add to set",
             "note": "Insert num into 'seen'",
-            "from": 4,
-            "to": 5
+            "from": 6,
+            "to": 7
           },
           {
             "label": "Return false",
             "note": "End of loop reached with no duplicates, return False",
-            "from": 5,
-            "to": 6
+            "from": 7,
+            "to": 8
           }
         ]
       }
@@ -238,20 +238,20 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Sort s",
             "note": "Sort characters of s into a list",
-            "from": 1,
-            "to": 1
+            "from": 3,
+            "to": 3
           },
           {
             "label": "Sort t",
             "note": "Sort characters of t into a list",
-            "from": 1,
-            "to": 1
+            "from": 3,
+            "to": 3
           },
           {
             "label": "Compare lists",
             "note": "Return comparison result of sorted lists sorted(s) == sorted(t)",
-            "from": 1,
-            "to": 1
+            "from": 3,
+            "to": 3
           }
         ]
       },
@@ -265,42 +265,42 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Check length guard",
             "note": "Check if length of s equals length of t",
-            "from": 1,
-            "to": 2,
+            "from": 3,
+            "to": 4,
             "yes": "Proceed to count characters",
             "no": "Return False immediately"
           },
           {
             "label": "Init count map",
             "note": "Initialize empty hash map count for storing character counts",
-            "from": 2,
-            "to": 3
+            "from": 4,
+            "to": 5
           },
           {
             "label": "Count s frequencies",
             "note": "Iterate through s and increment count[char]",
-            "from": 3,
-            "to": 4
+            "from": 5,
+            "to": 6
           },
           {
             "label": "Verify t frequencies",
             "note": "Iterate through t and check if character count exists and > 0",
-            "from": 4,
-            "to": 5,
+            "from": 6,
+            "to": 7,
             "yes": "Decrement count[char]",
             "no": "Return False"
           },
           {
             "label": "Decrement count",
             "note": "Subtract 1 from count[char]",
-            "from": 5,
-            "to": 6
+            "from": 7,
+            "to": 8
           },
           {
             "label": "Return true",
             "note": "All frequencies matched, return True",
-            "from": 6,
-            "to": 7
+            "from": 8,
+            "to": 9
           }
         ]
       }
@@ -1943,34 +1943,34 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Outer Loop Start",
             "note": "Pick the starting index 'i' of the substring.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "Initialize Set",
-            "note": "Create a new hash set 'seen' for unique character tracking.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "Inner Loop Expand",
-            "note": "Expand the right end 'j' of the substring.",
             "from": 3,
             "to": 4
           },
           {
+            "label": "Initialize Set",
+            "note": "Create a new hash set 'seen' for unique character tracking.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Inner Loop Expand",
+            "note": "Expand the right end 'j' of the substring.",
+            "from": 5,
+            "to": 6
+          },
+          {
             "label": "Check Duplicate",
             "note": "If s[j] is already in 'seen', break to start next 'i'.",
-            "from": 4,
-            "to": 5,
+            "from": 6,
+            "to": 7,
             "yes": "Duplicate found, break inner loop.",
             "no": "Character is unique, continue."
           },
           {
             "label": "Update Max Length",
             "note": "Add s[j] to set and update max_len with (j - i + 1).",
-            "from": 5,
-            "to": 6
+            "from": 7,
+            "to": 8
           }
         ]
       },
@@ -1984,28 +1984,28 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Initialize Pointers",
             "note": "Initialize 'left' pointer to 0, 'char_set' to empty set, and 'max_len' to 0.",
-            "from": 1,
-            "to": 2
+            "from": 3,
+            "to": 4
           },
           {
             "label": "Expand Right Pointer",
             "note": "Iterate 'right' from 0 to len(s) - 1.",
-            "from": 2,
-            "to": 3
+            "from": 4,
+            "to": 5
           },
           {
             "label": "Check Window Validity",
             "note": "While current character s[right] exists in char_set, shrink window.",
-            "from": 3,
-            "to": 4,
+            "from": 5,
+            "to": 6,
             "yes": "Remove s[left] and increment left.",
             "no": "Window is valid, proceed."
           },
           {
             "label": "Add Character & Update",
             "note": "Add s[right] to set and update max_len = max(max_len, right - left + 1).",
-            "from": 4,
-            "to": 5
+            "from": 6,
+            "to": 7
           }
         ]
       }
@@ -2040,20 +2040,20 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Outer Loop",
             "note": "Fix the start index 'i' of the substring.",
-            "from": 1,
-            "to": 2
+            "from": 3,
+            "to": 4
           },
           {
             "label": "Inner Loop",
             "note": "Expand substring to index 'j' and track character frequencies.",
-            "from": 2,
-            "to": 3
+            "from": 4,
+            "to": 5
           },
           {
             "label": "Calculate Replacements",
             "note": "Check if total length minus max_freq is <= k.",
-            "from": 3,
-            "to": 4,
+            "from": 5,
+            "to": 6,
             "yes": "Valid substring, update max_len.",
             "no": "Requires too many replacements."
           }
@@ -2069,28 +2069,28 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Initialize State",
             "note": "Set up counts dictionary, left pointer, max_freq, and max_len.",
-            "from": 1,
-            "to": 2
+            "from": 3,
+            "to": 4
           },
           {
             "label": "Expand Right Pointer",
             "note": "Add character s[right] to counts map and update global max_freq.",
-            "from": 2,
-            "to": 3
+            "from": 4,
+            "to": 5
           },
           {
             "label": "Check Replacement Limit",
             "note": "If window_size - max_freq > k, current window requires > k changes.",
-            "from": 3,
-            "to": 4,
+            "from": 5,
+            "to": 6,
             "yes": "Shrink window: decrement counts[s[left]] and increment left.",
             "no": "Window is valid, proceed."
           },
           {
             "label": "Update Max Length",
             "note": "Record maximum valid length found so far.",
-            "from": 4,
-            "to": 5
+            "from": 6,
+            "to": 7
           }
         ]
       }
@@ -2852,40 +2852,40 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "collect nodes",
             "note": "Traverse the linked list from head and store references to every node in a list.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "init two pointers",
-            "note": "Set pointer i at 0 and pointer j at len(nodes) - 1.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "interleave step 1",
-            "note": "Point nodes[i].next to nodes[j] and increment i.",
             "from": 3,
             "to": 4
           },
           {
+            "label": "init two pointers",
+            "note": "Set pointer i at 0 and pointer j at len(nodes) - 1.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "interleave step 1",
+            "note": "Point nodes[i].next to nodes[j] and increment i.",
+            "from": 5,
+            "to": 6
+          },
+          {
             "label": "check boundary",
             "note": "If i equals j, all nodes have been reordered.",
-            "from": 4,
-            "to": 5,
+            "from": 6,
+            "to": 7,
             "yes": "Break loop",
             "no": "Continue interleave"
           },
           {
             "label": "interleave step 2",
             "note": "Point nodes[j].next to nodes[i] and decrement j.",
-            "from": 5,
-            "to": 6
+            "from": 7,
+            "to": 8
           },
           {
             "label": "terminate list",
             "note": "Set nodes[i].next to None to prevent cycle in the reordered list.",
-            "from": 6,
-            "to": 7
+            "from": 8,
+            "to": 9
           }
         ]
       },
@@ -2899,32 +2899,32 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "find middle node",
             "note": "Advance slow by 1 step and fast by 2 steps until fast reaches the end.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "split list",
-            "note": "Store slow.next as start of second half, then break link slow.next = None.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "reverse second half",
-            "note": "Iteratively reverse pointer directions for the second half of nodes.",
             "from": 3,
             "to": 4
           },
           {
-            "label": "init merge pointers",
-            "note": "Set first = head and second = head of reversed second half (prev).",
+            "label": "split list",
+            "note": "Store slow.next as start of second half, then break link slow.next = None.",
             "from": 4,
             "to": 5
           },
           {
-            "label": "interleave nodes",
-            "note": "Save next pointers for both halves, wire first -> second -> tmp1, advance both pointers.",
+            "label": "reverse second half",
+            "note": "Iteratively reverse pointer directions for the second half of nodes.",
             "from": 5,
             "to": 6
+          },
+          {
+            "label": "init merge pointers",
+            "note": "Set first = head and second = head of reversed second half (prev).",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "interleave nodes",
+            "note": "Save next pointers for both halves, wire first -> second -> tmp1, advance both pointers.",
+            "from": 7,
+            "to": 8
           }
         ]
       }
@@ -2964,32 +2964,32 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "count total length",
             "note": "Traverse list from head to end, counting total nodes.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "init dummy node",
-            "note": "Create dummy node pointing to head to handle head node deletion seamlessly.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "advance to target predecessor",
-            "note": "Move pointer length - n times starting from dummy.",
             "from": 3,
             "to": 4
           },
           {
-            "label": "unlink node",
-            "note": "Set curr.next = curr.next.next to bypass target node.",
+            "label": "init dummy node",
+            "note": "Create dummy node pointing to head to handle head node deletion seamlessly.",
             "from": 4,
             "to": 5
           },
           {
-            "label": "return head",
-            "note": "Return dummy.next as new list head.",
+            "label": "advance to target predecessor",
+            "note": "Move pointer length - n times starting from dummy.",
             "from": 5,
             "to": 6
+          },
+          {
+            "label": "unlink node",
+            "note": "Set curr.next = curr.next.next to bypass target node.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "return head",
+            "note": "Return dummy.next as new list head.",
+            "from": 7,
+            "to": 8
           }
         ]
       },
@@ -3003,32 +3003,32 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "init dummy and pointers",
             "note": "Set fast and slow to point at dummy node.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "advance fast pointer",
-            "note": "Move fast pointer forward n + 1 steps to create gap.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "move both pointers",
-            "note": "Advance fast and slow together until fast reaches None.",
             "from": 3,
             "to": 4
           },
           {
-            "label": "delete target node",
-            "note": "Update slow.next to slow.next.next to drop the nth node from end.",
+            "label": "advance fast pointer",
+            "note": "Move fast pointer forward n + 1 steps to create gap.",
             "from": 4,
             "to": 5
           },
           {
-            "label": "return result",
-            "note": "Return dummy.next.",
+            "label": "move both pointers",
+            "note": "Advance fast and slow together until fast reaches None.",
             "from": 5,
             "to": 6
+          },
+          {
+            "label": "delete target node",
+            "note": "Update slow.next to slow.next.next to drop the nth node from end.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "return result",
+            "note": "Return dummy.next.",
+            "from": 7,
+            "to": 8
           }
         ]
       }
@@ -3068,26 +3068,26 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "collect values",
             "note": "Traverse each list in lists and push all node values into an array.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "sort array",
-            "note": "Sort all collected values in ascending order.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "reconstruct list",
-            "note": "Iterate sorted values and instantiate new ListNodes connected sequentially.",
             "from": 3,
             "to": 4
           },
           {
-            "label": "return head",
-            "note": "Return dummy.next as head of merged list.",
+            "label": "sort array",
+            "note": "Sort all collected values in ascending order.",
             "from": 4,
             "to": 5
+          },
+          {
+            "label": "reconstruct list",
+            "note": "Iterate sorted values and instantiate new ListNodes connected sequentially.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "return head",
+            "note": "Return dummy.next as head of merged list.",
+            "from": 6,
+            "to": 7
           }
         ]
       },
@@ -5830,34 +5830,34 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Initialize DP Array",
             "note": "Create a dp array of size n filled with 1s since every individual element is a valid sequence of length 1.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "Outer Loop",
-            "note": "Iterate through each element i from 0 to n-1 to compute the LIS ending at index i.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "Inner Loop",
-            "note": "Iterate through all preceding elements j from 0 to i-1.",
             "from": 3,
             "to": 4
           },
           {
+            "label": "Outer Loop",
+            "note": "Iterate through each element i from 0 to n-1 to compute the LIS ending at index i.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Inner Loop",
+            "note": "Iterate through all preceding elements j from 0 to i-1.",
+            "from": 5,
+            "to": 6
+          },
+          {
             "label": "Check Increasing Condition",
             "note": "Check if nums[i] > nums[j].",
-            "from": 4,
-            "to": 5,
+            "from": 6,
+            "to": 7,
             "yes": "Update dp[i] = max(dp[i], dp[j] + 1)",
             "no": "Continue to the next j"
           },
           {
             "label": "Return Result",
             "note": "Return the maximum value present in the dp array.",
-            "from": 5,
-            "to": 6
+            "from": 7,
+            "to": 8
           }
         ]
       },
@@ -5933,32 +5933,32 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Initialize 2D Grid",
             "note": "Create an m x n grid filled with 1s since top row and leftmost column cells only have 1 path.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "Outer Row Loop",
-            "note": "Iterate row index r from 1 to m-1.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "Inner Column Loop",
-            "note": "Iterate column index c from 1 to n-1.",
             "from": 3,
             "to": 4
           },
           {
-            "label": "Compute Paths",
-            "note": "Set dp[r][c] to the sum of cell above dp[r-1][c] and cell to the left dp[r][c-1].",
+            "label": "Outer Row Loop",
+            "note": "Iterate row index r from 1 to m-1.",
             "from": 4,
             "to": 5
           },
           {
-            "label": "Return Destination Value",
-            "note": "Return dp[m-1][n-1] containing total paths to the bottom-right corner.",
+            "label": "Inner Column Loop",
+            "note": "Iterate column index c from 1 to n-1.",
             "from": 5,
             "to": 6
+          },
+          {
+            "label": "Compute Paths",
+            "note": "Set dp[r][c] to the sum of cell above dp[r-1][c] and cell to the left dp[r][c-1].",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "Return Destination Value",
+            "note": "Return dp[m-1][n-1] containing total paths to the bottom-right corner.",
+            "from": 7,
+            "to": 8
           }
         ]
       },
@@ -5972,26 +5972,26 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Initialize 1D DP Array",
             "note": "Create a 1D list dp of size n with all 1s representing paths in the first row.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "Iterate Rows",
-            "note": "Loop through row indices from 1 to m-1.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "Iterate Columns & Accumulate",
-            "note": "For each column c from 1 to n-1, add dp[c-1] (left neighbor) to dp[c] (top neighbor).",
             "from": 3,
             "to": 4
           },
           {
-            "label": "Return Final Answer",
-            "note": "Return dp[-1], which stores unique paths to the bottom-right element.",
+            "label": "Iterate Rows",
+            "note": "Loop through row indices from 1 to m-1.",
             "from": 4,
             "to": 5
+          },
+          {
+            "label": "Iterate Columns & Accumulate",
+            "note": "For each column c from 1 to n-1, add dp[c-1] (left neighbor) to dp[c] (top neighbor).",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "Return Final Answer",
+            "note": "Return dp[-1], which stores unique paths to the bottom-right element.",
+            "from": 6,
+            "to": 7
           }
         ]
       }
@@ -6031,34 +6031,34 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Initialize DP Grid",
             "note": "Create an (m+1) x (n+1) grid populated with 0s to handle empty string base cases.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "Outer Loop text1",
-            "note": "Iterate index i from 1 to m.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "Inner Loop text2",
-            "note": "Iterate index j from 1 to n.",
             "from": 3,
             "to": 4
           },
           {
+            "label": "Outer Loop text1",
+            "note": "Iterate index i from 1 to m.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Inner Loop text2",
+            "note": "Iterate index j from 1 to n.",
+            "from": 5,
+            "to": 6
+          },
+          {
             "label": "Character Match Check",
             "note": "Check if text1[i-1] equals text2[j-1].",
-            "from": 4,
-            "to": 5,
+            "from": 6,
+            "to": 7,
             "yes": "Match: Set dp[i][j] = dp[i-1][j-1] + 1",
             "no": "Mismatch: Set dp[i][j] = max(dp[i-1][j], dp[i][j-1])"
           },
           {
             "label": "Return LCS Length",
             "note": "Return dp[m][n] which stores the maximum LCS length for full text1 and text2.",
-            "from": 5,
-            "to": 6
+            "from": 7,
+            "to": 8
           }
         ]
       },
@@ -6072,38 +6072,38 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Optimize String Lengths",
             "note": "Ensure text2 is the shorter string to optimize space complexity.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "Initialize 1D Array",
-            "note": "Create 1D dp array of size len(text2) + 1 filled with 0s.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "Outer Loop text1 Characters",
-            "note": "Iterate over each character char1 in text1.",
             "from": 3,
             "to": 4
           },
           {
-            "label": "Inner Loop text2 Characters",
-            "note": "Iterate over text2 saving current dp[j+1] as diagonal value for next iteration.",
+            "label": "Initialize 1D Array",
+            "note": "Create 1D dp array of size len(text2) + 1 filled with 0s.",
             "from": 4,
             "to": 5
           },
           {
-            "label": "Update Cell Value",
-            "note": "If char1 == char2, update dp[j+1] = prev_diag + 1; otherwise, max(dp[j+1], dp[j]).",
+            "label": "Outer Loop text1 Characters",
+            "note": "Iterate over each character char1 in text1.",
             "from": 5,
             "to": 6
           },
           {
-            "label": "Return Result",
-            "note": "Return dp[-1] containing the overall LCS length.",
+            "label": "Inner Loop text2 Characters",
+            "note": "Iterate over text2 saving current dp[j+1] as diagonal value for next iteration.",
             "from": 6,
             "to": 7
+          },
+          {
+            "label": "Update Cell Value",
+            "note": "If char1 == char2, update dp[j+1] = prev_diag + 1; otherwise, max(dp[j+1], dp[j]).",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "Return Result",
+            "note": "Return dp[-1] containing the overall LCS length.",
+            "from": 8,
+            "to": 9
           }
         ]
       }
@@ -6474,28 +6474,28 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "outer loop",
             "note": "Iterate through each meeting interval as the first meeting to compare.",
-            "from": 1,
-            "to": 2
+            "from": 3,
+            "to": 4
           },
           {
             "label": "inner loop",
             "note": "Iterate through subsequent meeting intervals to check against the first.",
-            "from": 2,
-            "to": 3
+            "from": 4,
+            "to": 5
           },
           {
             "label": "check overlap",
             "note": "Determine if interval i and interval j overlap in time.",
-            "from": 3,
-            "to": 4,
+            "from": 5,
+            "to": 6,
             "yes": "Conflict detected, return False.",
             "no": "Continue checking remaining pairs."
           },
           {
             "label": "return result",
             "note": "If no pairs overlap after checking all combinations, return True.",
-            "from": 4,
-            "to": 5
+            "from": 6,
+            "to": 7
           }
         ]
       },
@@ -6509,28 +6509,28 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "sort intervals",
             "note": "Sort all intervals in ascending order based on start time.",
-            "from": 1,
-            "to": 2
+            "from": 3,
+            "to": 4
           },
           {
             "label": "iterate intervals",
             "note": "Loop through the sorted list starting from the second meeting (index 1).",
-            "from": 2,
-            "to": 3
+            "from": 4,
+            "to": 5
           },
           {
             "label": "check adjacent overlap",
             "note": "Compare current start time with previous end time.",
-            "from": 3,
-            "to": 4,
+            "from": 5,
+            "to": 6,
             "yes": "Current starts before previous ends, return False.",
             "no": "No overlap, continue to next interval."
           },
           {
             "label": "return valid",
             "note": "If no adjacent overlaps are found, return True.",
-            "from": 4,
-            "to": 5
+            "from": 6,
+            "to": 7
           }
         ]
       }
@@ -6618,40 +6618,40 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "extract and sort",
             "note": "Separate start times and end times, then sort both arrays independently.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "init pointers",
-            "note": "Initialize start pointer (s_ptr), end pointer (e_ptr), and room counter.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "traverse starts",
-            "note": "Loop through each meeting's start time.",
             "from": 3,
             "to": 4
           },
           {
+            "label": "init pointers",
+            "note": "Initialize start pointer (s_ptr), end pointer (e_ptr), and room counter.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "traverse starts",
+            "note": "Loop through each meeting's start time.",
+            "from": 5,
+            "to": 6
+          },
+          {
             "label": "check meeting finish",
             "note": "If start time >= earliest end time, a room has freed up.",
-            "from": 4,
-            "to": 5,
+            "from": 6,
+            "to": 7,
             "yes": "Decrement room count and increment end pointer.",
             "no": "Do not decrement room count."
           },
           {
             "label": "allocate room",
             "note": "Increment room count and move start pointer to next meeting.",
-            "from": 5,
-            "to": 6
+            "from": 7,
+            "to": 8
           },
           {
             "label": "return rooms",
             "note": "Return maximum room count reached during traversal.",
-            "from": 6,
-            "to": 7
+            "from": 8,
+            "to": 9
           }
         ]
       }
@@ -6691,32 +6691,32 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "initialize max",
             "note": "Set max_sum to negative infinity.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "outer loop",
-            "note": "Select subarray start index i.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "inner loop",
-            "note": "Extend subarray end index j from i to end of array.",
             "from": 3,
             "to": 4
           },
           {
-            "label": "accumulate sum",
-            "note": "Add nums[j] to running current_sum and update max_sum if current_sum is larger.",
+            "label": "outer loop",
+            "note": "Select subarray start index i.",
             "from": 4,
             "to": 5
           },
           {
-            "label": "return result",
-            "note": "Return max_sum after evaluating all subarrays.",
+            "label": "inner loop",
+            "note": "Extend subarray end index j from i to end of array.",
             "from": 5,
             "to": 6
+          },
+          {
+            "label": "accumulate sum",
+            "note": "Add nums[j] to running current_sum and update max_sum if current_sum is larger.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "return result",
+            "note": "Return max_sum after evaluating all subarrays.",
+            "from": 7,
+            "to": 8
           }
         ]
       },
@@ -6730,32 +6730,32 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "initialize tracking variables",
             "note": "Set max_sum and current_sum to first element nums[0].",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "iterate remaining elements",
-            "note": "Loop through nums starting from index 1.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "update current sum",
-            "note": "Determine whether joining previous subarray (current_sum + num) is better than starting fresh (num).",
             "from": 3,
             "to": 4
           },
           {
-            "label": "update global max",
-            "note": "Update max_sum if current_sum exceeds max_sum.",
+            "label": "iterate remaining elements",
+            "note": "Loop through nums starting from index 1.",
             "from": 4,
             "to": 5
           },
           {
-            "label": "return max sum",
-            "note": "Return global maximum subarray sum found.",
+            "label": "update current sum",
+            "note": "Determine whether joining previous subarray (current_sum + num) is better than starting fresh (num).",
             "from": 5,
             "to": 6
+          },
+          {
+            "label": "update global max",
+            "note": "Update max_sum if current_sum exceeds max_sum.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "return max sum",
+            "note": "Return global maximum subarray sum found.",
+            "from": 7,
+            "to": 8
           }
         ]
       }
@@ -9202,20 +9202,20 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "combine arrays",
             "note": "Concatenate nums1 and nums2 into a single list.",
-            "from": 1,
-            "to": 2
+            "from": 3,
+            "to": 4
           },
           {
             "label": "sort combined list",
             "note": "Sort all merged elements in ascending order.",
-            "from": 2,
-            "to": 3
+            "from": 4,
+            "to": 5
           },
           {
             "label": "check length parity",
             "note": "Determine if total element count is odd or even.",
-            "from": 3,
-            "to": 4,
+            "from": 5,
+            "to": 6,
             "yes": "Return middle element if length is odd",
             "no": "Average middle two elements if length is even"
           }
@@ -9231,26 +9231,26 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "ensure smaller array first",
             "note": "Swap arrays if A is larger than B so binary search runs on the smaller array.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "binary search loop",
-            "note": "Compute partition index i for A and corresponding partition index j for B.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "extract boundary values",
-            "note": "Get boundary elements left/right of partitions with infinity guards for out-of-bounds.",
             "from": 3,
             "to": 4
           },
           {
+            "label": "binary search loop",
+            "note": "Compute partition index i for A and corresponding partition index j for B.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "extract boundary values",
+            "note": "Get boundary elements left/right of partitions with infinity guards for out-of-bounds.",
+            "from": 5,
+            "to": 6
+          },
+          {
             "label": "check partition validity",
             "note": "Check if Aleft <= Bright and Bleft <= Aright.",
-            "from": 4,
-            "to": 5,
+            "from": 6,
+            "to": 7,
             "yes": "Valid partition found; calculate median",
             "no": "Adjust search range using binary search logic"
           }
@@ -9287,26 +9287,26 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "null check",
             "note": "Return None immediately if list is empty.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "first pass - node creation",
-            "note": "Traverse original list and create copy nodes without pointers in hash map.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "second pass - pointer assignment",
-            "note": "Traverse original list again and link copy nodes' next and random pointers.",
             "from": 3,
             "to": 4
           },
           {
-            "label": "return copy head",
-            "note": "Return mapped copy corresponding to original head node.",
+            "label": "first pass - node creation",
+            "note": "Traverse original list and create copy nodes without pointers in hash map.",
             "from": 4,
             "to": 5
+          },
+          {
+            "label": "second pass - pointer assignment",
+            "note": "Traverse original list again and link copy nodes' next and random pointers.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "return copy head",
+            "note": "Return mapped copy corresponding to original head node.",
+            "from": 6,
+            "to": 7
           }
         ]
       },
@@ -9320,20 +9320,20 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "interleave nodes",
             "note": "Insert new duplicate node after each original node in the list.",
-            "from": 1,
-            "to": 2
+            "from": 3,
+            "to": 4
           },
           {
             "label": "copy random pointers",
             "note": "Assign copy.random = orig.random.next for each interleaved copy.",
-            "from": 2,
-            "to": 3
+            "from": 4,
+            "to": 5
           },
           {
             "label": "separate lists",
             "note": "Restore original next pointers and isolate copied nodes into standalone list.",
-            "from": 3,
-            "to": 4
+            "from": 5,
+            "to": 6
           }
         ]
       }
@@ -9373,26 +9373,26 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "init dummy and carry",
             "note": "Initialize dummy node to track result list head and carry variable to 0.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "traversal loop",
-            "note": "Loop while l1, l2, or carry remaining.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "compute sum and carry",
-            "note": "Extract digit values (defaulting to 0 if node is null) and sum with carry.",
             "from": 3,
             "to": 4
           },
           {
-            "label": "append result node",
-            "note": "Create new node with digit value (total % 10) and advance pointers.",
+            "label": "traversal loop",
+            "note": "Loop while l1, l2, or carry remaining.",
             "from": 4,
             "to": 5
+          },
+          {
+            "label": "compute sum and carry",
+            "note": "Extract digit values (defaulting to 0 if node is null) and sum with carry.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "append result node",
+            "note": "Create new node with digit value (total % 10) and advance pointers.",
+            "from": 6,
+            "to": 7
           }
         ]
       }
@@ -10380,20 +10380,20 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Define sort key",
             "note": "Use squared distance x^2 + y^2 as key to avoid computing square root operations.",
-            "from": 1,
-            "to": 3
+            "from": 3,
+            "to": 5
           },
           {
             "label": "Sort points",
             "note": "Sort all N points in ascending order based on their computed distance key.",
-            "from": 3,
-            "to": 3
+            "from": 5,
+            "to": 5
           },
           {
             "label": "Return prefix slice",
             "note": "Slice the array to get the first k points from the sorted list.",
-            "from": 3,
-            "to": 4
+            "from": 5,
+            "to": 6
           }
         ]
       },
@@ -10469,14 +10469,14 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Sort array",
             "note": "Sort all elements in nums in ascending order.",
-            "from": 1,
-            "to": 3
+            "from": 3,
+            "to": 5
           },
           {
             "label": "Access Kth Largest",
             "note": "The kth largest element is at index len(nums) - k after ascending sort.",
-            "from": 3,
-            "to": 4
+            "from": 5,
+            "to": 6
           }
         ]
       },
@@ -10757,26 +10757,26 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Initialize result",
             "note": "Start with base array containing empty subset [[]]",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "Iterate elements",
-            "note": "Loop through each number in nums",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "Cascade existing subsets",
-            "note": "For current number, duplicate all current subsets in res and append num to them",
             "from": 3,
             "to": 4
           },
           {
-            "label": "Return result",
-            "note": "Return completed power set res",
+            "label": "Iterate elements",
+            "note": "Loop through each number in nums",
             "from": 4,
             "to": 5
+          },
+          {
+            "label": "Cascade existing subsets",
+            "note": "For current number, duplicate all current subsets in res and append num to them",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "Return result",
+            "note": "Return completed power set res",
+            "from": 6,
+            "to": 7
           }
         ]
       },
@@ -10790,28 +10790,28 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Check base case",
             "note": "If index i equals length of nums, add clone of subset to res and return",
-            "from": 1,
-            "to": 2,
+            "from": 3,
+            "to": 4,
             "yes": "i >= len(nums)",
             "no": "i < len(nums)"
           },
           {
             "label": "Include branch",
             "note": "Append nums[i] to subset path, recurse to index i + 1",
-            "from": 2,
-            "to": 3
+            "from": 4,
+            "to": 5
           },
           {
             "label": "Backtrack",
             "note": "Pop nums[i] from subset path to restore state",
-            "from": 3,
-            "to": 4
+            "from": 5,
+            "to": 6
           },
           {
             "label": "Exclude branch",
             "note": "Recurse to index i + 1 without including nums[i]",
-            "from": 4,
-            "to": 5
+            "from": 6,
+            "to": 7
           }
         ]
       }
@@ -10846,36 +10846,36 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Base case check",
             "note": "If sol length equals nums length, permutation is complete. Save copy to res",
-            "from": 1,
-            "to": 2,
+            "from": 3,
+            "to": 4,
             "yes": "len(sol) == len(nums)",
             "no": "len(sol) < len(nums)"
           },
           {
             "label": "Iterate options",
             "note": "Loop through each candidate number x in nums",
-            "from": 2,
-            "to": 3
+            "from": 4,
+            "to": 5
           },
           {
             "label": "Check availability",
             "note": "Check if candidate x is already used in current permutation sol",
-            "from": 3,
-            "to": 4,
+            "from": 5,
+            "to": 6,
             "yes": "x not in sol",
             "no": "x already used"
           },
           {
             "label": "Make choice & Recurse",
             "note": "Append x to sol and trigger recursive backtrack call",
-            "from": 4,
-            "to": 5
+            "from": 6,
+            "to": 7
           },
           {
             "label": "Backtrack step",
             "note": "Remove last element x from sol to restore state for next candidate loop iteration",
-            "from": 5,
-            "to": 6
+            "from": 7,
+            "to": 8
           }
         ]
       },
@@ -10889,28 +10889,28 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Check termination",
             "note": "If first pointer reaches end of array, current arrangement is a full permutation",
-            "from": 1,
-            "to": 2,
+            "from": 3,
+            "to": 4,
             "yes": "first == len(nums)",
             "no": "first < len(nums)"
           },
           {
             "label": "Swap element",
             "note": "Swap current index element with target element at index i",
-            "from": 2,
-            "to": 3
+            "from": 4,
+            "to": 5
           },
           {
             "label": "Recurse next depth",
             "note": "Call backtrack with first + 1 to fix current position",
-            "from": 3,
-            "to": 4
+            "from": 5,
+            "to": 6
           },
           {
             "label": "Undo swap",
             "note": "Swap elements back to restore original state before trying next swap target i",
-            "from": 4,
-            "to": 5
+            "from": 6,
+            "to": 7
           }
         ]
       }
@@ -12387,34 +12387,34 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Define binary search range",
             "note": "Set low to grid[0][0] and high to n*n - 1 as upper bound.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "Calculate mid point",
-            "note": "Calculate mid time t = (low + high) // 2.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "Run DFS check",
-            "note": "Test if bottom-right can be reached in time mid using grid traversal.",
             "from": 3,
             "to": 4
           },
           {
+            "label": "Calculate mid point",
+            "note": "Calculate mid time t = (low + high) // 2.",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "Run DFS check",
+            "note": "Test if bottom-right can be reached in time mid using grid traversal.",
+            "from": 5,
+            "to": 6
+          },
+          {
             "label": "Branch on feasibility",
             "note": "If reached, save answer and shrink upper bound; else grow lower bound.",
-            "from": 4,
-            "to": 5,
+            "from": 6,
+            "to": 7,
             "yes": "Path exists: ans = mid, high = mid - 1",
             "no": "Path blocked: low = mid + 1"
           },
           {
             "label": "Return minimum target time",
             "note": "Return final optimal time when binary search terminates.",
-            "from": 5,
-            "to": 6
+            "from": 7,
+            "to": 8
           }
         ]
       },
@@ -12495,38 +12495,38 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Initialize distances",
             "note": "Set prices[src] = 0 and all other cities to infinity.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "Outer loop k + 1 times",
-            "note": "Loop k + 1 times to allow up to k stops (k + 1 edges).",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "Copy price state",
-            "note": "Create tmp_prices copy so updates rely only on prices from the previous stop count.",
             "from": 3,
             "to": 4
           },
           {
-            "label": "Relax edges",
-            "note": "Iterate all flights (u, v, p) and update tmp_prices[v] if prices[u] + p is lower.",
+            "label": "Outer loop k + 1 times",
+            "note": "Loop k + 1 times to allow up to k stops (k + 1 edges).",
             "from": 4,
             "to": 5
           },
           {
-            "label": "Update prices array",
-            "note": "Replace prices with tmp_prices after processing all edges.",
+            "label": "Copy price state",
+            "note": "Create tmp_prices copy so updates rely only on prices from the previous stop count.",
             "from": 5,
             "to": 6
           },
           {
-            "label": "Return result",
-            "note": "Return prices[dst] if reachable, otherwise -1.",
+            "label": "Relax edges",
+            "note": "Iterate all flights (u, v, p) and update tmp_prices[v] if prices[u] + p is lower.",
             "from": 6,
             "to": 7
+          },
+          {
+            "label": "Update prices array",
+            "note": "Replace prices with tmp_prices after processing all edges.",
+            "from": 7,
+            "to": 8
+          },
+          {
+            "label": "Return result",
+            "note": "Return prices[dst] if reachable, otherwise -1.",
+            "from": 8,
+            "to": 9
           }
         ]
       },
@@ -12608,28 +12608,28 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Initialize memoization table",
             "note": "Create hash map memo to cache completed step calculations.",
-            "from": 1,
-            "to": 2
+            "from": 3,
+            "to": 4
           },
           {
             "label": "Base case check",
             "note": "If step index i >= len(cost), cost is 0 (already reached the top).",
-            "from": 2,
-            "to": 3,
+            "from": 4,
+            "to": 5,
             "yes": "Return 0",
             "no": "Proceed to cache check / recurrence"
           },
           {
             "label": "Recurrence calculation",
             "note": "Compute current step cost plus min of jumping 1 step or 2 steps.",
-            "from": 3,
-            "to": 4
+            "from": 5,
+            "to": 6
           },
           {
             "label": "Return top entry point min",
             "note": "Return min(dp(0), dp(1)) to decide starting position.",
-            "from": 4,
-            "to": 5
+            "from": 6,
+            "to": 7
           }
         ]
       },
@@ -12643,32 +12643,32 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "Initialize DP variables",
             "note": "Set first = 0, second = 0 representing cost beyond the last step.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "Iterate backwards",
-            "note": "Loop through cost array from index n-1 down to 0.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "Calculate current step optimal cost",
-            "note": "Compute current step cost + min(first, second).",
             "from": 3,
             "to": 4
           },
           {
-            "label": "Shift state variables",
-            "note": "Set second = first, and first = current step optimal cost.",
+            "label": "Iterate backwards",
+            "note": "Loop through cost array from index n-1 down to 0.",
             "from": 4,
             "to": 5
           },
           {
-            "label": "Return overall minimum cost",
-            "note": "Return min(first, second) which holds optimal solution from step 0 and 1.",
+            "label": "Calculate current step optimal cost",
+            "note": "Compute current step cost + min(first, second).",
             "from": 5,
             "to": 6
+          },
+          {
+            "label": "Shift state variables",
+            "note": "Set second = first, and first = current step optimal cost.",
+            "from": 6,
+            "to": 7
+          },
+          {
+            "label": "Return overall minimum cost",
+            "note": "Return min(first, second) which holds optimal solution from step 0 and 1.",
+            "from": 7,
+            "to": 8
           }
         ]
       }
@@ -14946,26 +14946,26 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "initialize accumulator",
             "note": "Set res = 0 (identity for XOR).",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "loop through array",
-            "note": "Iterate through each element in nums.",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "XOR operation",
-            "note": "Update res = res ^ num. Identical values will evaluate to 0.",
             "from": 3,
             "to": 4
           },
           {
-            "label": "return result",
-            "note": "Return accumulated res which contains the unique number.",
+            "label": "loop through array",
+            "note": "Iterate through each element in nums.",
             "from": 4,
             "to": 5
+          },
+          {
+            "label": "XOR operation",
+            "note": "Update res = res ^ num. Identical values will evaluate to 0.",
+            "from": 5,
+            "to": 6
+          },
+          {
+            "label": "return result",
+            "note": "Return accumulated res which contains the unique number.",
+            "from": 6,
+            "to": 7
           }
         ]
       }
@@ -15005,26 +15005,26 @@ window.PRELOADED_PROBLEMS = {
           {
             "label": "determine sign",
             "note": "Store sign multiplier (-1 or 1) based on sign of x.",
-            "from": 1,
-            "to": 2
-          },
-          {
-            "label": "reverse string",
-            "note": "Convert abs(x) to string and slice backwards [::-1].",
-            "from": 2,
-            "to": 3
-          },
-          {
-            "label": "reconstruct integer",
-            "note": "Convert reversed string back to integer and reapply sign.",
             "from": 3,
             "to": 4
           },
           {
+            "label": "reverse string",
+            "note": "Convert abs(x) to string and slice backwards [::-1].",
+            "from": 4,
+            "to": 5
+          },
+          {
+            "label": "reconstruct integer",
+            "note": "Convert reversed string back to integer and reapply sign.",
+            "from": 5,
+            "to": 6
+          },
+          {
             "label": "overflow check",
             "note": "Verify if reconstructed integer fits in [-2^31, 2^31 - 1].",
-            "from": 4,
-            "to": 5,
+            "from": 6,
+            "to": 7,
             "yes": "Return 0 due to overflow",
             "no": "Return reversed integer"
           }
