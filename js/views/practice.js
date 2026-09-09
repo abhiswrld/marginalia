@@ -133,7 +133,7 @@ function practiceActive() {
           <div class="editor">
             <div class="ed-gut" id="ed-gut"></div>
             <div class="ed-stack">
-              <pre class="ed-hl" id="ed-hl"><code id="ed-code"></code></pre>
+              <pre class="ed-hl" id="ed-hl" data-lang="${p.lang}"><code id="ed-code"></code></pre>
               <textarea class="ed-ta" id="ed-ta" wrap="off" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
             </div>
           </div>
@@ -289,6 +289,7 @@ function mountEditor() {
     const p = store.byId(session.pid);
     const lang = p ? (p.lang || 'js') : 'js';
     const code = $('#ed-code'), gut = $('#ed-gut'), pre = $('#ed-hl');
+    if (pre) pre.setAttribute('data-lang', lang);
     ta.value = session.code;
     /* keep the highlight layer glued to the textarea — on every
        input AND scroll, not just scroll (typing at the bottom used
@@ -334,6 +335,20 @@ function mountEditor() {
             if (currentLine.trim().endsWith(':') || currentLine.trim().endsWith('{')) indent += (lang === 'py' ? '    ' : '  ');
             ta.setRangeText('\n' + indent, start, ta.selectionEnd, 'end');
             paint(); session.code = ta.value;
+        } else if (e.key === 'Backspace') {
+            const start = ta.selectionStart, end = ta.selectionEnd, val = ta.value;
+            if (start === end && start > 0) {
+                const lineStart = val.lastIndexOf('\n', start - 1) + 1;
+                const beforeCursor = val.slice(lineStart, start);
+                if (beforeCursor.length > 0 && beforeCursor.trim() === '') {
+                    e.preventDefault();
+                    const spaceCount = lang === 'py' ? 4 : 2;
+                    let toDelete = beforeCursor.length % spaceCount;
+                    if (toDelete === 0) toDelete = spaceCount;
+                    ta.setRangeText('', start - toDelete, start, 'end');
+                    paint(); session.code = ta.value;
+                }
+            }
         }
     });
 }

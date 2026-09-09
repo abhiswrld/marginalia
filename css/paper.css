@@ -39,7 +39,8 @@ body {
 }
 
 ::selection {
-    background: var(--hl)
+    background: var(--hl);
+    color: var(--ink);
 }
 
 a {
