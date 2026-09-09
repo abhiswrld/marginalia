@@ -72,11 +72,12 @@ function viewForm() {
         <a class="crumbs" onclick="go('#library')"><i data-lucide="arrow-left"></i>back to the index</a>
       </div>
       <h1 class="p-title"><span>${exists ? 'edit a page' : 'write a new page'}</span>${svgSquiggle(230, 9, 'swg tswg')}</h1>
-      <p class="marg">pre-filled with optimal solutions, edit to your liking</p>
+      <p class="marg">${exists ? 'pre-filled with optimal solutions, edit to your liking' : 'the more honestly this gets filled in, the better practice gets — future-you is reading.'}</p>
+      ${exists ? '' : pasteBoxHTML()}
       <div id="f-errs"></div>
       <div class="f-sec">
         <div class="f-row3">
-          ${fField('title', 'f-title', d.title, 'contains duplicate')}
+          ${fField('title', 'f-title', d.title, 'Contains Duplicate')}
           ${fSel('difficulty', 'f-diff', ['easy', 'medium', 'hard'], d.difficulty)}
           ${fSel('language', 'f-lang', ['JavaScript', 'Python'], langName(d.lang))}
         </div>

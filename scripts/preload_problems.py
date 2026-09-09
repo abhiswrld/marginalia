@@ -121,7 +121,7 @@ def fetch_batch_from_gemini(batch, api_key):
                 text = ""
                 
             json_str = re.sub(r'```json|```', '', text).strip()
-            return json.loads(json_str)
+            return json.loads(json_str, strict=False)
     except urllib.error.HTTPError as e:
         raise Exception(f"API Error: {e.code} {e.reason}")
 
