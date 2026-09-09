@@ -494,14 +494,18 @@
     display: none
 }
 .ed-hl[data-lang="py"] {
-    background-image: repeating-linear-gradient(to right, transparent, transparent calc(4ch - 1px), rgba(213, 202, 176, 0.1) calc(4ch - 1px), rgba(213, 202, 176, 0.1) 4ch);
+    background-image: repeating-linear-gradient(to right, transparent, transparent calc(4ch - 1px), rgba(213, 202, 176, 0.04) calc(4ch - 1px), rgba(213, 202, 176, 0.04) 4ch);
     background-position: 16px 0;
     background-attachment: local;
+    background-size: 48ch 100%;
+    background-repeat: no-repeat;
 }
 .ed-hl[data-lang="js"] {
-    background-image: repeating-linear-gradient(to right, transparent, transparent calc(2ch - 1px), rgba(213, 202, 176, 0.1) calc(2ch - 1px), rgba(213, 202, 176, 0.1) 2ch);
+    background-image: repeating-linear-gradient(to right, transparent, transparent calc(2ch - 1px), rgba(213, 202, 176, 0.04) calc(2ch - 1px), rgba(213, 202, 176, 0.04) 2ch);
     background-position: 16px 0;
     background-attachment: local;
+    background-size: 48ch 100%;
+    background-repeat: no-repeat;
 }
 
 .ed-ta::selection {
