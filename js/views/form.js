@@ -40,7 +40,7 @@ function fTa(lbl, attr, val = '', ph = '', rows = 3, cls = '') {
 
 /* the paste-first entry — only on brand-new pages, never on edit */
 function pasteBoxHTML() {
-    if (store.problems.some(x => x.id === draft.id)) return '';
+    if (store.problems.some(x => x.id === draft.id) || draft.statement.trim()) return '';
     const hasKey = !!brand.geminiKey;
     const aiBox = draft.title ? `
     <div class="ai-gen-box" style="margin-bottom: 24px; padding: 16px; background: rgba(var(--red-rgb), 0.05); border: 1px dashed var(--red); border-radius: 8px;">
