@@ -1,7 +1,7 @@
 # Marginalia
 **The notes you scribble while learning to code.**
 
-[![Netlify Status](https://api.netlify.com/api/v1/badges/b25146a9-43bd-4e9d-9d18-69e0f7174571/deploy-status)](https://marginaliaweb.netlify.app/)
+[![Vercel Status](https://img.shields.io/github/deployments/abhiswrld/marginalia/Production?label=Vercel&logo=vercel)](https://practicemarginalia.vercel.app)
 
 Marginalia is a practice notebook for coding problems that works the way your actual notebook does - a messy, honest, handwritten-style record of how you think.
 
