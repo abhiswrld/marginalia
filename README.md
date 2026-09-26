@@ -16,7 +16,7 @@ You write problem pages: the statement, what's given and what to return, how to 
 *   **JavaScript and Python** - switch languages mid-practice. Python runs locally via Pyodide (WebAssembly CPython, downloaded once on first run); JavaScript in a sandboxed Web Worker. LeetCode-style class Solution code works too - the runner calls your method for you.
 *   **Attempt history** - every solve is logged with time, lines, and peeks; a hand-drawn sparkline tracks your solve times; any two attempts can be diffed side by side.
 *   **The journey** - Blind 75 and NeetCode 150 as checklist curricula with hand-drawn progress bars. Write a page for a problem and it auto-links and crosses off in both lists. A GitHub-style ink-dot heatmap and a day-streak tracker chart the whole thing.
-*   **Make it yours** - rename the notebook, change the tagline, pick your ink color. Each visitor's notebook is their own.
+*   **Make it yours** - rename the notebook, change the tagline, pick your ink color.
 
 ## Coming Soon
 
